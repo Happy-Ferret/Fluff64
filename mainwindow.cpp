@@ -9,9 +9,12 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    m_work.m_colorList.CreateUI(ui);
+    m_work.m_colorList.CreateUI(ui->layoutColors,0);
+    m_work.m_colorList.CreateUI(ui->layoutColorsEdit,1);
     m_work.m_colorList.FillComboBox(ui->cmbForeground);
     m_work.m_colorList.FillComboBox(ui->cmbBackground);
+
+    m_toolBox.Initialize(ui->lyToolbox);;
 
     //m_updateThread = new QThread(this);
 //    m_updateThread->mw = this;

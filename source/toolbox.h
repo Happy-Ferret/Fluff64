@@ -1,0 +1,31 @@
+#ifndef TOOLBOX_H
+#define TOOLBOX_H
+
+#include "source/toolboxitem.h"
+#include <QVector>
+#include <QLayout>
+#include <QPushButton>
+
+
+class Toolbox
+{
+public:
+    Toolbox();
+
+    QVector<ToolboxItem*> m_items;
+    QVector<QPushButton*> m_buttons;
+
+    ToolBox();
+
+    void Initialize(QLayout* layout);
+
+    void BuildGUI(QLayout* ly);
+    ToolboxItem* m_current;
+
+    void handleButton(int data);
+
+    unsigned char m_currentColor = 0;
+
+};
+
+#endif // TOOLBOX_H

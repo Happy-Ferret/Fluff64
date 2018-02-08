@@ -100,7 +100,7 @@ int LColorList::getIndex(QColor c)
     return 0;
 }
 
-void LColorList::CreateUI(Ui::MainWindow* ui)
+void LColorList::CreateUI(QLayout* ly, int type)
 {
     m_buttons.clear();
     for(int j=0; j<m_list.count(); j++)
@@ -118,14 +118,23 @@ void LColorList::CreateUI(Ui::MainWindow* ui)
         b->setMaximumWidth(40);
         b->setMinimumWidth(40);
         b->setAutoFillBackground( true );
-        QObject::connect( b, &QPushButton::clicked,  [=](){ handleButton(j); } );
+        if (type==0)
+            QObject::connect( b, &QPushButton::clicked,  [=](){ handleButtonImport(j); } );
+        if (type==1)
+            QObject::connect( b, &QPushButton::clicked,  [=](){ handleButtonEdit(j); } );
 
-        ui->layoutColors->addWidget(b);
+
+        ly->addWidget(b);
         m_buttons.append(b);
     }
 }
 
-void LColorList::handleButton(int data)
+void LColorList::handleButtonEdit(int data)
+{
+    Data::data.currentColor = data;
+}
+
+void LColorList::handleButtonImport(int data)
  {
     //qDebug() << data;
     m_list[data].inUse=!m_list[data].inUse;

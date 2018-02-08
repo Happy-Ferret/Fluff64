@@ -9,6 +9,8 @@
 #include "data.h"
 #include <QThread>
 #include <thread>
+#include <QLayout>
+#include <source/toolbox.h>
 
 namespace Ui {
     class MainWindow;
@@ -23,6 +25,7 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
     ImageWorker m_work;
+    Toolbox m_toolBox;
     void UpdateInput();
     void UpdateOutput();
     void Convert();

@@ -8,7 +8,7 @@ public:
     Data();
 
     bool redraw=false;
-
+    unsigned char currentColor = 0;
     static Data data;
 };
 

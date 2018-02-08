@@ -30,7 +30,9 @@ SOURCES += main.cpp\
     source/lcolorlist.cpp \
     source/util/util.cpp \
     data.cpp \
-    source/multicolorimage.cpp
+    source/multicolorimage.cpp \
+    source/toolbox.cpp \
+    source/toolboxitem.cpp
 
 HEADERS  += mainwindow.h \
     source/limage.h \
@@ -39,6 +41,8 @@ HEADERS  += mainwindow.h \
     source/util/random.h \
     source/util/util.h \
     data.h \
-    source/multicolorimage.h
+    source/multicolorimage.h \
+    source/toolbox.h \
+    source/toolboxitem.h
 
 FORMS    += mainwindow.ui

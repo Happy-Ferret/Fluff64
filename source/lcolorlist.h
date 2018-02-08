@@ -10,6 +10,8 @@
 #include <QPushButton>
 #include <QIcon>
 #include <QPixmap>
+#include <QLayout>
+
 class Metric {
 public:
     virtual float getDistance(QColor& a, QColor& b) = 0;
@@ -56,8 +58,9 @@ public:
 
     int getIndex(QColor c);
 
-    void CreateUI(Ui::MainWindow* ui);
-    void handleButton(int data);
+    void CreateUI(QLayout* ly, int type);
+    void handleButtonImport(int data);
+    void handleButtonEdit(int data);
 
 };
 
