@@ -41,6 +41,8 @@ public:
     MultiColorImage m_image;
     MultiColorImage m_temp;
     QVector<MultiColorImage> m_undo;
+    void Undo();
+    void AddUndo();
     const int m_undoMax = 10;
 
 

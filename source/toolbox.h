@@ -24,7 +24,6 @@ public:
 
     void handleButton(int data);
 
-    unsigned char m_currentColor = 0;
 
 };
 

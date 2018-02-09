@@ -40,7 +40,10 @@ void ImageConverter::Convert()
     m_mcImage.Clear();
     m_mcImage.fromQImage(m_output.m_qImage, *m_colorList);
 
-    m_output.m_qImage = m_mcImage.ToQImage(*m_colorList);
+    if (m_output.m_qImage==nullptr)
+         m_output.m_qImage = new QImage(320,200, QImage::Format_ARGB32);
+
+    m_mcImage.ToQImage(*m_colorList,m_output.m_qImage);
 
 }
 
@@ -54,5 +57,23 @@ void ImageConverter::Blur()
 
 ImageEditor::ImageEditor()
 {
+
+}
+
+void ImageEditor::Undo()
+{
+    if (m_undo.count()<1)
+        return;
+    m_image.CopyFrom(m_undo[m_undo.count()-1]);
+    m_undo.remove(m_undo.count()-1);
+    Data::data.redrawOutput = true;
+}
+
+void ImageEditor::AddUndo()
+{
+    m_undo.append(MultiColorImage());
+    m_undo[m_undo.count()-1].CopyFrom(m_image);
+    if (m_undo.count()>m_undoMax)
+        m_undo.remove(0);
 
 }

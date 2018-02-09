@@ -4,6 +4,9 @@
 #include <QDebug>
 #include <QThread>
 #include "data.h"
+#include "source/util/util.h"
+#include <QWheelEvent>
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -13,7 +16,6 @@ MainWindow::MainWindow(QWidget *parent) :
     m_work.m_colorList.CreateUI(ui->layoutColorsEdit,1);
     m_work.m_colorList.FillComboBox(ui->cmbForeground);
     m_work.m_colorList.FillComboBox(ui->cmbBackground);
-
     m_toolBox.Initialize(ui->lyToolbox);;
 
     //m_updateThread = new QThread(this);
@@ -57,14 +59,82 @@ void MainWindow::Convert()
 
 }
 
+void MainWindow::UpdateDrawing()
+{
+    m_work.m_editor.m_temp.CopyFrom(m_work.m_editor.m_image);
+
+    QPoint pos = m_currentPos;
+    if (pos.x()>=0 && pos.x()<m_work.m_editor.m_image.m_width &&
+       pos.y()>=0 && pos.y()<m_work.m_editor.m_image.m_height) {
+
+        MultiColorImage* img = &m_work.m_editor.m_image;
+        //qDebug() << m_currentButton;
+        if (m_currentButton == 0) {
+            img = &m_work.m_editor.m_temp;
+        }
+
+
+        m_toolBox.m_current->Perform(pos.x(), pos.y(), Data::data.currentColor, img);
+
+        Data::data.redrawOutput =true;
+    }
+
+}
+
+void MainWindow::UpdateMousePosition()
+{
+    QPointF pos = QCursor::pos() - ui->lblImage->mapToGlobal(ui->lblImage->rect().topLeft());
+    pos.setX(pos.x()/(float)ui->lblImage->width()*m_work.m_editor.m_image.m_width);
+    pos.setY(pos.y()/(float)ui->lblImage->height()*m_work.m_editor.m_image.m_height);
+    m_currentPos = QPoint(pos.x(), pos.y());
+
+//    qDebug() << QApplication()::mouseButtons();
+}
+
+
+
+
 void MainWindow::UpdateImage(MultiColorImage &mc)
 {
-    QImage* image = mc.ToQImage(m_work.m_colorList);
-    QPixmap p;
-    p.convertFromImage(*image);
-    ui->lblImage->setPixmap(p);
-    delete image;
+    if (m_tmpImage==nullptr)
+        m_tmpImage = new QImage(320,200,QImage::Format_ARGB32);
 
+
+    mc.ToQImage(m_work.m_colorList, m_tmpImage);
+    QPixmap p;
+    p.convertFromImage(*m_tmpImage);
+    ui->lblImage->setPixmap(p);
+}
+
+void MainWindow::mousePressEvent(QMouseEvent *e)
+{
+    m_currentButton = 1;
+    m_buttonDown = 1;
+    m_work.m_editor.AddUndo();
+
+}
+
+void MainWindow::mouseReleaseEvent(QMouseEvent *e)
+{
+    m_currentButton = 0;
+    m_buttonDown = 0;
+
+}
+
+void MainWindow::wheelEvent(QWheelEvent *event)
+{
+    float f = event->delta()/100.0f;
+    m_toolBox.m_current->m_size +=f;
+    m_toolBox.m_current->m_size = max(m_toolBox.m_current->m_size,1.0f);
+    m_toolBox.m_current->m_size = min(m_toolBox.m_current->m_size,20.0f);
+
+}
+
+void MainWindow::keyPressEvent(QKeyEvent *e)
+{
+    if (e->key()==Qt::Key_Z && QApplication::keyboardModifiers() & Qt::ControlModifier) {
+        m_work.m_editor.Undo();
+    }
 }
 
 
@@ -110,13 +180,28 @@ void MainWindow::Update()
 {
 
     while (!m_quit) {
-        if (Data::data.redraw) {
+
+        UpdateMousePosition();
+        UpdateDrawing();
+
+        if (Data::data.redrawInput) {
             m_work.Convert();
             UpdateOutput();
+            Data::data.redrawInput = false;
+        }
+        if (Data::data.redrawOutput) {
+            MultiColorImage* img = &m_work.m_editor.m_image;
+            if (m_currentButton == 0) {
+                img = &m_work.m_editor.m_temp;
+
+            }
+
+            UpdateImage(*img);
+            Data::data.redrawOutput = false;
+
         }
 
-        Data::data.redraw = false;
-        thread()->sleep(0.1);
+        QThread::msleep(10);
     }
 
 }

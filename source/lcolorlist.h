@@ -44,7 +44,8 @@ public:
     LColorList();
 
     QVector<LColor> m_list;
-    QVector<QPushButton*> m_buttons;
+    QVector<QPushButton*> m_buttonsImport;
+    QVector<QPushButton*> m_buttonsEdit;
 
     Metric* m_metric = nullptr;
     void InitC64_org();

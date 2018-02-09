@@ -10,6 +10,7 @@
 #include <QThread>
 #include <thread>
 #include <QLayout>
+#include <QPointF>
 #include <source/toolbox.h>
 
 namespace Ui {
@@ -26,10 +27,23 @@ public:
     ~MainWindow();
     ImageWorker m_work;
     Toolbox m_toolBox;
+    QPoint m_currentPos;
+    int m_currentButton = 0;
+    int m_buttonDown = 0;
+    QImage* m_tmpImage = nullptr;
+
     void UpdateInput();
     void UpdateOutput();
     void Convert();
+    void UpdateDrawing();
+    void UpdateMousePosition();
+
     void UpdateImage(MultiColorImage& mc);
+
+    void mousePressEvent(QMouseEvent *e) override;
+    void mouseReleaseEvent(QMouseEvent *e) override;
+    void wheelEvent(QWheelEvent *event);
+    void keyPressEvent(QKeyEvent* e);
 
    // void Quit() override;
 

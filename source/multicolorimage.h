@@ -17,6 +17,8 @@ public:
     QString bitmapToAssembler();
     QString colorMapToAssembler();
     QString colorToAssembler();
+    void Reorganize();
+    int Count(unsigned int col);
     unsigned char reverse(unsigned char b) {
        b = (b & 0xF0) >> 4 | (b & 0x0F) << 4;
        b = (b & 0xCC) >> 2 | (b & 0x33) << 2;
@@ -31,7 +33,8 @@ class MultiColorImage
 public:
     unsigned char m_version = 1;
     QString m_ID = "LMC";
-
+    int m_width=160;
+    int m_height=200;
     MultiColorImage();
     PixelChar m_data[40*25];
     PixelChar& getPixelChar(int x, int y);
@@ -44,12 +47,13 @@ public:
 
     void setForeground(int col);
     void setBackground(int col);
+    void Reorganize();
 
     void Save(QString filename);
     bool Load(QString filename);
 
 
-    QImage* ToQImage(LColorList& lst);
+    void ToQImage(LColorList& lst, QImage* img);
     void fromQImage(QImage* img, LColorList& lst);
 
     void CopyFrom(MultiColorImage& mc);

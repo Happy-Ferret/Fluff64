@@ -7,7 +7,8 @@ class Data
 public:
     Data();
 
-    bool redraw=false;
+    bool redrawOutput=false;
+    bool redrawInput=false;
     unsigned char currentColor = 0;
     static Data data;
 };

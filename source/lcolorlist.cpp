@@ -102,7 +102,7 @@ int LColorList::getIndex(QColor c)
 
 void LColorList::CreateUI(QLayout* ly, int type)
 {
-    m_buttons.clear();
+//    m_buttons.clear();
     for(int j=0; j<m_list.count(); j++)
     {
         QPushButton *b = new QPushButton();
@@ -125,13 +125,15 @@ void LColorList::CreateUI(QLayout* ly, int type)
 
 
         ly->addWidget(b);
-        m_buttons.append(b);
+        if (type==0)
+            m_buttonsImport.append(b);
     }
 }
 
 void LColorList::handleButtonEdit(int data)
 {
     Data::data.currentColor = data;
+
 }
 
 void LColorList::handleButtonImport(int data)
@@ -139,9 +141,10 @@ void LColorList::handleButtonImport(int data)
     //qDebug() << data;
     m_list[data].inUse=!m_list[data].inUse;
     if (m_list[data].inUse)
-        m_buttons[data]->setText(" ");
-    else
-        m_buttons[data]->setText("X");
+        m_buttonsImport[data]->setText(" ");
+    else {
+        m_buttonsImport[data]->setText("X ");
+   }
 
-    Data::data.redraw = true;
+    Data::data.redrawInput = true;
  }

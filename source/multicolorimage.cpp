@@ -5,12 +5,16 @@
 
 MultiColorImage::MultiColorImage()
 {
-
+    Clear();
 }
 
 void MultiColorImage::setPixel(int x, int y, unsigned char color)
 {
+    if (x>=m_width || x<0 && y>=m_height && y<0)
+        return ;
     PixelChar& pc = getPixelChar(x,y);
+
+    pc.Reorganize();
 
     int ix = x % 4;//- (dx*40);
     int iy = y % 8;//- (dy*25);
@@ -22,6 +26,8 @@ void MultiColorImage::setPixel(int x, int y, unsigned char color)
 
 unsigned char MultiColorImage::getPixel(int x, int y)
 {
+    if (x>=m_width || x<0 && y>=m_height && y<0)
+        return 0;
     PixelChar& pc = getPixelChar(x,y);
 
     int ix = x % 4;//- (dx*40);
@@ -43,6 +49,12 @@ void MultiColorImage::setBackground(int col)
     for (int i=0;i<40*25;i++) {
         m_data[i].c[0] = col;
     }
+}
+
+void MultiColorImage::Reorganize()
+{
+    for (int i=0;i<40*25;i++)
+        m_data[i].Reorganize();
 }
 
 void MultiColorImage::Save(QString filename)
@@ -87,18 +99,20 @@ bool MultiColorImage::Load(QString filename)
     return true;
 }
 
-QImage* MultiColorImage::ToQImage(LColorList& lst)
+void MultiColorImage::ToQImage(LColorList& lst, QImage* img)
 {
-    QImage* img = new QImage(320,200, QImage::Format_ARGB32);
+    //QImage* img = new QImage(320,200, QImage::Format_ARGB32);
+//    Reorganize();
     for (int i=0;i<160;i++)
         for (int j=0;j<200;j++) {
             unsigned char col = getPixel(i,j);
+//            qDebug() << col;
             //if (rand()%500 == 0)
             //    qDebug() << col;
             img->setPixel(2*i,j,(lst.m_list[col].color).rgb());
             img->setPixel(2*i+1,j,lst.m_list[col].color.rgb());
         }
-    return img;
+    //return img;
 }
 
 void MultiColorImage::fromQImage(QImage *img, LColorList &lst)
@@ -108,6 +122,7 @@ void MultiColorImage::fromQImage(QImage *img, LColorList &lst)
             unsigned char col = lst.getIndex(QColor(img->pixel(2*i, j)));
             setPixel(i,j,col);
         }
+ //   Reorganize();
 
 }
 
@@ -264,7 +279,7 @@ void PixelChar::set(int x, int y, unsigned char color)
     }
 
 
-    int winner = -1;
+     unsigned char winner = 254;
     // Does color exist in map?
     for (int i=0;i<4;i++) {
         if (c[i] == color) {
@@ -273,20 +288,25 @@ void PixelChar::set(int x, int y, unsigned char color)
         }
     }
 
-    if (winner==-1 && color!=0) {
+    if (winner==254) {// && color!=c[0]) {
 
-        if (c[1]==0) winner=1;
+        if (c[1]==255) winner=1;
         else
-        if (c[2]==0) winner=2;
+        if (c[2]==255) winner=2;
         else
-        if (c[3]==0) winner=3;
-        else winner = 1;
+        if (c[3]==255) winner=3;
+        else
+            winner = 3;
 
         if (winner>=1)
             c[winner] = color;
 
     }
 
+    // Clear
+    unsigned int f = ~(0b11 << x);
+    p[y] &= f;
+    // Add
     p[y] |= winner<<x;
 
 }
@@ -296,7 +316,7 @@ void PixelChar::Clear(unsigned char bg)
     for (int i=0;i<8;i++)
         p[i] = 0;
     for (int i=1;i<4;i++)
-        c[i] = 0;
+        c[i] = 255;
     c[0] = bg;
 
 }
@@ -322,4 +342,25 @@ QString PixelChar::colorToAssembler()
 {
     return QString(QString::number(c[3]));
 
+}
+
+void PixelChar::Reorganize()
+{
+    for (int i=1;i<4;i++) {
+        unsigned int cnt = Count(i);
+        if ((cnt == 0)) {
+            c[i] = 255;
+           // qDebug() << "REMOVING COLOR";
+        }
+    }
+}
+
+int PixelChar::Count(unsigned int val)
+{
+    int cnt=0;
+    for (int i=0;i<4;i++)
+        for (int j=0;j<8;j++)
+            if ( ((p[j]>>2*i) & 0b11)==val)
+                cnt++;
+    return cnt;
 }
