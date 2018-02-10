@@ -18,11 +18,24 @@ MainWindow::MainWindow(QWidget *parent) :
     m_work.m_colorList.FillComboBox(ui->cmbBackground);
     m_toolBox.Initialize(ui->lyToolbox);;
 
+    m_grid.Initialize(320*2,200*2);
+    m_grid.CreateGrid(40,25,m_gridColor,4, 1, QPoint(0,0));
+
+
+    m_grid.ApplyToLabel(ui->lblGrid);
+
+
     //m_updateThread = new QThread(this);
 //    m_updateThread->mw = this;
     //QObject::connect(m_updateThread, SIGNAL(valueChanged()), this, SLOT (Update()));
 
-    m_updateThread = new std::thread(&MainWindow::Update, this);
+    m_updateThread = new WorkerThread(&m_work, ui, &m_toolBox);
+    connect(m_updateThread, SIGNAL(updateImageSignal()), this, SLOT(updateImage()));
+
+    connect(qApp, SIGNAL(aboutToQuit()), m_updateThread, SLOT(OnQuit()));
+
+    m_updateThread->start();
+
 
 //    m_updateThread->join();
 //    m_updateThread->
@@ -36,7 +49,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::UpdateInput()
+void WorkerThread::UpdateInput()
 {
     return;
     /*QPixmap p;
@@ -44,14 +57,10 @@ void MainWindow::UpdateInput()
     ui->lblOne->setPixmap(p);*/
 }
 
-void MainWindow::UpdateOutput()
+void WorkerThread::UpdateOutput()
 {
-
-    m_work.Convert();
-    QPixmap p;
-    p.convertFromImage(*m_work.m_converter.m_output.m_qImage);
-    ui->lblTwo->setPixmap(p);
-
+    m_work->Convert();
+    m_work->m_converter.m_output.ApplyToLabel(ui->lblTwo);
 }
 
 void MainWindow::Convert()
@@ -59,33 +68,32 @@ void MainWindow::Convert()
 
 }
 
-void MainWindow::UpdateDrawing()
+void WorkerThread::UpdateDrawing()
 {
-    m_work.m_editor.m_temp.CopyFrom(m_work.m_editor.m_image);
+    m_work->m_editor.m_temp.CopyFrom(m_work->m_editor.m_image);
 
-    QPoint pos = m_currentPos;
-    if (pos.x()>=0 && pos.x()<m_work.m_editor.m_image.m_width &&
-       pos.y()>=0 && pos.y()<m_work.m_editor.m_image.m_height) {
+    QPoint pos = (m_currentPos-m_zoomCenter)*m_zoom + m_zoomCenter ;
+    if (pos.x()>=0 && pos.x()<m_work->m_editor.m_image.m_width &&
+       pos.y()>=0 && pos.y()<m_work->m_editor.m_image.m_height) {
 
-        MultiColorImage* img = &m_work.m_editor.m_image;
+        MultiColorImage* img = &m_work->m_editor.m_image;
         //qDebug() << m_currentButton;
         if (m_currentButton == 0) {
-            img = &m_work.m_editor.m_temp;
+            img = &m_work->m_editor.m_temp;
         }
 
-
-        m_toolBox.m_current->Perform(pos.x(), pos.y(), Data::data.currentColor, img);
+        m_toolBox->m_current->Perform(pos.x(), pos.y(), Data::data.currentColor, img);
 
         Data::data.redrawOutput =true;
     }
 
 }
 
-void MainWindow::UpdateMousePosition()
+void WorkerThread::UpdateMousePosition()
 {
     QPointF pos = QCursor::pos() - ui->lblImage->mapToGlobal(ui->lblImage->rect().topLeft());
-    pos.setX(pos.x()/(float)ui->lblImage->width()*m_work.m_editor.m_image.m_width);
-    pos.setY(pos.y()/(float)ui->lblImage->height()*m_work.m_editor.m_image.m_height);
+    pos.setX(pos.x()/(float)ui->lblImage->width()*m_work->m_editor.m_image.m_width);
+    pos.setY(pos.y()/(float)ui->lblImage->height()*m_work->m_editor.m_image.m_height);
     m_currentPos = QPoint(pos.x(), pos.y());
 
 //    qDebug() << QApplication()::mouseButtons();
@@ -94,39 +102,58 @@ void MainWindow::UpdateMousePosition()
 
 
 
-void MainWindow::UpdateImage(MultiColorImage &mc)
+void WorkerThread::UpdateImage(MultiColorImage &mc)
 {
     if (m_tmpImage==nullptr)
         m_tmpImage = new QImage(320,200,QImage::Format_ARGB32);
 
+    m_tmpImage->fill(QColor(255,0,0,255));
 
-    mc.ToQImage(m_work.m_colorList, m_tmpImage);
-    QPixmap p;
-    p.convertFromImage(*m_tmpImage);
-    ui->lblImage->setPixmap(p);
+    mc.ToQImage(m_work->m_colorList, m_tmpImage, m_zoom, m_zoomCenter);
+    m_pixMapImage.convertFromImage(*m_tmpImage);
+    emit updateImageSignal();
+    //ui->lblImage->setPixmap(m_pixMapImage);
+}
+
+void WorkerThread::OnQuit()
+{
+    m_quit = true;
 }
 
 void MainWindow::mousePressEvent(QMouseEvent *e)
 {
-    m_currentButton = 1;
-    m_buttonDown = 1;
+    m_updateThread->m_currentButton = 1;
+
     m_work.m_editor.AddUndo();
 
 }
 
 void MainWindow::mouseReleaseEvent(QMouseEvent *e)
 {
-    m_currentButton = 0;
-    m_buttonDown = 0;
+    m_updateThread->m_currentButton = 0;
 
 }
 
 void MainWindow::wheelEvent(QWheelEvent *event)
 {
     float f = event->delta()/100.0f;
-    m_toolBox.m_current->m_size +=f;
-    m_toolBox.m_current->m_size = max(m_toolBox.m_current->m_size,1.0f);
-    m_toolBox.m_current->m_size = min(m_toolBox.m_current->m_size,20.0f);
+
+    if (QApplication::keyboardModifiers() & Qt::ControlModifier) {
+        m_updateThread->m_zoom -=f*0.05;
+        m_updateThread->m_zoom = min(m_updateThread->m_zoom, 1.0f);
+        m_updateThread->m_zoom = max(m_updateThread->m_zoom, 0.1f);
+        float t = 0.0f;
+        m_updateThread->m_zoomCenter = (m_updateThread->m_zoomCenter*t + (1-t)*m_updateThread->m_currentPos);//*(2-2*m_zoom);
+        Data::data.redrawOutput = true;
+
+        m_grid.CreateGrid(40,25,m_gridColor,4, m_updateThread->m_zoom, m_updateThread->m_zoomCenter);
+
+    }
+    else {
+        m_toolBox.m_current->m_size +=f;
+        m_toolBox.m_current->m_size = max(m_toolBox.m_current->m_size,1.0f);
+        m_toolBox.m_current->m_size = min(m_toolBox.m_current->m_size,30.0f);
+    }
 
 }
 
@@ -135,6 +162,12 @@ void MainWindow::keyPressEvent(QKeyEvent *e)
     if (e->key()==Qt::Key_Z && QApplication::keyboardModifiers() & Qt::ControlModifier) {
         m_work.m_editor.Undo();
     }
+    if (e->key() == Qt::Key_Z  && !(QApplication::keyboardModifiers() & Qt::ControlModifier)) {
+       ui->chkGrid->setChecked(!ui->chkGrid->isChecked());
+       ui->lblGrid->setVisible(ui->chkGrid->isChecked());
+    }
+
+
 }
 
 
@@ -144,18 +177,18 @@ void MainWindow::on_actionImport_triggered()
         tr("Open Image"), "", tr("Image Files (*.png *.jpg *.bmp *.jpeg)"));
 
     m_work.Import(fileName);
-    UpdateInput();
+    m_updateThread->UpdateInput();
     m_work.Blur();
 
     m_work.Convert();
-    UpdateOutput();
+    m_updateThread->UpdateOutput();
 
 }
 
 void MainWindow::on_btnConvert_clicked()
 {
     m_work.Convert();
-    UpdateOutput();
+    m_updateThread->UpdateOutput();
 
 }
 
@@ -163,7 +196,7 @@ void MainWindow::on_hsContrast_sliderMoved(int position)
 {
     m_work.m_converter.m_contrast = (float)position/100.0*4;;
     m_work.Convert();
-    UpdateOutput();
+    m_updateThread->UpdateOutput();
 
 }
 
@@ -171,7 +204,7 @@ void MainWindow::on_hsShift_sliderMoved(int position)
 {
     m_work.m_converter.m_shift = ((float)position/100.0 - 0.5) * 255;;
     m_work.Convert();
-    UpdateOutput();
+    m_updateThread->UpdateOutput();
 
 }
 
@@ -179,38 +212,14 @@ void MainWindow::on_hsShift_sliderMoved(int position)
 void MainWindow::Update()
 {
 
-    while (!m_quit) {
-
-        UpdateMousePosition();
-        UpdateDrawing();
-
-        if (Data::data.redrawInput) {
-            m_work.Convert();
-            UpdateOutput();
-            Data::data.redrawInput = false;
-        }
-        if (Data::data.redrawOutput) {
-            MultiColorImage* img = &m_work.m_editor.m_image;
-            if (m_currentButton == 0) {
-                img = &m_work.m_editor.m_temp;
-
-            }
-
-            UpdateImage(*img);
-            Data::data.redrawOutput = false;
-
-        }
-
-        QThread::msleep(10);
-    }
-
 }
+
 
 void MainWindow::on_hsHsv_sliderMoved(int position)
 {
     m_work.m_converter.m_hsv = ((float)position/100.0) * 1;;
     m_work.Convert();
-    UpdateOutput();
+    m_updateThread->UpdateOutput();
 
 }
 
@@ -218,7 +227,7 @@ void MainWindow::on_hsSat_sliderMoved(int position)
 {
     m_work.m_converter.m_saturation = ((float)position/100.0) * 1;
     m_work.Convert();
-    UpdateOutput();
+    m_updateThread->UpdateOutput();
 
 }
 
@@ -226,7 +235,7 @@ void MainWindow::on_hsBlur_sliderMoved(int position)
 {
     m_work.m_converter.m_blur = ((float)position/100.0) ;
     m_work.Blur();
-    UpdateOutput();
+    m_updateThread->UpdateOutput();
 
 }
 
@@ -245,20 +254,20 @@ void MainWindow::on_btnExportAsm_clicked()
 void MainWindow::on_cmbForeground_activated(int index)
 {
     m_work.m_converter.m_mcImage.setForeground(index);
-    UpdateOutput();
+    m_updateThread->UpdateOutput();
 }
 
 void MainWindow::on_cmbBackground_activated(int index)
 {
     m_work.m_converter.m_mcImage.setBackground(index);
-    UpdateOutput();
+    m_updateThread->UpdateOutput();
 }
 
 void MainWindow::on_pushButton_clicked()
 {
     m_work.m_editor.m_image.CopyFrom(m_work.m_converter.m_mcImage);
     ui->tabWidget->setCurrentIndex(0);
-    UpdateImage(m_work.m_editor.m_image);
+    m_updateThread->UpdateImage(m_work.m_editor.m_image);
 }
 
 void MainWindow::on_btnLoad_clicked()
@@ -268,7 +277,7 @@ void MainWindow::on_btnLoad_clicked()
     if (filename=="")
         return;
     m_work.m_editor.m_image.Load(filename);
-    UpdateImage(m_work.m_editor.m_image);
+    m_updateThread->UpdateImage(m_work.m_editor.m_image);
 
 
 }
@@ -281,5 +290,52 @@ void MainWindow::on_btnSave_clicked()
         return;
 
     m_work.m_editor.m_image.Save(filename);
+
+}
+
+void MainWindow::on_chkGrid_clicked(bool checked)
+{
+//    if (checked)
+        ui->lblGrid->setVisible(checked);
+}
+
+void WorkerThread::run()
+{
+    while (!m_quit) {
+
+        UpdateMousePosition();
+        UpdateDrawing();
+
+        if (Data::data.redrawInput) {
+            m_work->Convert();
+            UpdateOutput();
+            Data::data.redrawInput = false;
+        }
+        if (Data::data.redrawOutput) {
+            MultiColorImage* img = &m_work->m_editor.m_image;
+            if (m_currentButton == 0) {
+                img = &m_work->m_editor.m_temp;
+
+            }
+
+
+            UpdateImage(*img);
+            Data::data.redrawOutput = false;
+
+        }
+        int newShift = 0;
+        if (QApplication::keyboardModifiers() & Qt::ShiftModifier)
+            newShift = 1;
+
+        if (newShift!=m_toolBox->m_current->m_type) {
+            m_toolBox->m_current->m_type = newShift;
+            Data::data.redrawOutput = true;
+
+        }
+
+
+
+        QThread::msleep(5);
+    }
 
 }

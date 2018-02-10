@@ -53,7 +53,7 @@ public:
     bool Load(QString filename);
 
 
-    void ToQImage(LColorList& lst, QImage* img);
+    void ToQImage(LColorList& lst, QImage* img, float zoom = 1, QPoint center = QPoint(160,100));
     void fromQImage(QImage* img, LColorList& lst);
 
     void CopyFrom(MultiColorImage& mc);

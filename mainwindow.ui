@@ -13,6 +13,9 @@
   <property name="windowTitle">
    <string>Fluff 64 0.01</string>
   </property>
+  <property name="autoFillBackground">
+   <bool>true</bool>
+  </property>
   <widget class="QWidget" name="centralWidget">
    <widget class="QTabWidget" name="tabWidget">
     <property name="geometry">
@@ -91,7 +94,7 @@
         </rect>
        </property>
        <property name="autoFillBackground">
-        <bool>true</bool>
+        <bool>false</bool>
        </property>
        <property name="text">
         <string/>
@@ -147,6 +150,50 @@
         </property>
         <layout class="QGridLayout" name="layoutColorsEdit"/>
        </widget>
+      </widget>
+      <widget class="QLabel" name="lblGrid">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>10</y>
+         <width>771</width>
+         <height>581</height>
+        </rect>
+       </property>
+       <property name="autoFillBackground">
+        <bool>false</bool>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="scaledContents">
+        <bool>true</bool>
+       </property>
+      </widget>
+      <widget class="QWidget" name="horizontalLayoutWidget_3">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>610</y>
+         <width>761</width>
+         <height>51</height>
+        </rect>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="QCheckBox" name="chkGrid">
+          <property name="text">
+           <string>Grid</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </widget>
      </widget>
     </widget>

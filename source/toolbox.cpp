@@ -13,7 +13,9 @@ Toolbox::ToolBox()
 void Toolbox::Initialize(QLayout* ly)
 {
     m_items.clear();
-    m_items.append(new ShapeBox("Rectangle",""));
+    m_items.append(new ShapeBox("R",""));
+    m_items.append(new Spray("S",""));
+    m_items.append(new Dither("D",""));
 
     m_current = m_items[0];
 
@@ -46,4 +48,5 @@ void Toolbox::BuildGUI(QLayout *ly)
 void Toolbox::handleButton(int data)
 {
     m_current = m_items[data];
+//    qDebug() << "Setting toolbox "<< data;
 }

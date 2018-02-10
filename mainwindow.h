@@ -18,6 +18,46 @@ namespace Ui {
 }
 
 
+
+class WorkerThread : public QThread {
+    Q_OBJECT
+
+public:
+
+    ImageWorker* m_work = nullptr;
+    bool m_quit = false;
+    Ui::MainWindow* ui;
+    Toolbox* m_toolBox = nullptr;
+    WorkerThread(ImageWorker* iw, Ui::MainWindow* _ui, Toolbox* toolbox) {
+            m_work = iw;
+            m_toolBox = toolbox;
+            ui = _ui;
+    }
+
+    QPoint m_currentPos;
+    int m_currentButton = 0;
+    float m_zoom = 1;
+    QPoint m_zoomCenter = QPoint(00,00);
+
+    void run() override;
+    QImage* m_tmpImage = nullptr;
+    QPixmap m_pixMapImage;
+
+
+    void UpdateInput();
+    void UpdateOutput();
+    void UpdateDrawing();
+    void UpdateMousePosition();
+    void UpdateImage(MultiColorImage& mc);
+
+signals:
+    void updateImageSignal();
+
+public slots:
+    void OnQuit();
+};
+
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -27,32 +67,32 @@ public:
     ~MainWindow();
     ImageWorker m_work;
     Toolbox m_toolBox;
-    QPoint m_currentPos;
-    int m_currentButton = 0;
-    int m_buttonDown = 0;
-    QImage* m_tmpImage = nullptr;
 
-    void UpdateInput();
-    void UpdateOutput();
+    LImage m_grid;
+    QColor m_gridColor = QColor(64,128,128,128);
+
     void Convert();
-    void UpdateDrawing();
-    void UpdateMousePosition();
-
-    void UpdateImage(MultiColorImage& mc);
 
     void mousePressEvent(QMouseEvent *e) override;
     void mouseReleaseEvent(QMouseEvent *e) override;
     void wheelEvent(QWheelEvent *event);
     void keyPressEvent(QKeyEvent* e);
 
-   // void Quit() override;
-
-    std::thread* m_updateThread;
+    WorkerThread* m_updateThread;
 
    bool m_quit = false;
 
 public slots:
    void Update();
+//   void OnQuit();
+
+    void updateImage() {
+        ui->lblImage->setPixmap(m_updateThread->m_pixMapImage);
+        m_grid.ApplyToLabel(ui->lblGrid);
+
+    }
+
+
 signals:
    void ValueChanged();
 
@@ -86,6 +126,8 @@ private slots:
     void on_btnLoad_clicked();
 
     void on_btnSave_clicked();
+
+    void on_chkGrid_clicked(bool checked);
 
 private:
     Ui::MainWindow *ui;

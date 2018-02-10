@@ -15,7 +15,7 @@ void MultiColorImage::setPixel(int x, int y, unsigned char color)
         return;
     PixelChar& pc = getPixelChar(x,y);
 
-    //pc.Reorganize();
+    pc.Reorganize();
 
     int ix = x % 4;//- (dx*40);
     int iy = y % 8;//- (dy*25);
@@ -100,13 +100,17 @@ bool MultiColorImage::Load(QString filename)
     return true;
 }
 
-void MultiColorImage::ToQImage(LColorList& lst, QImage* img)
+void MultiColorImage::ToQImage(LColorList& lst, QImage* img, float zoom, QPoint center)
 {
     //QImage* img = new QImage(320,200, QImage::Format_ARGB32);
 //    Reorganize();
     for (int i=0;i<160;i++)
         for (int j=0;j<200;j++) {
-            unsigned char col = getPixel(i,j);
+
+            float xp = ((i-center.x())*zoom)+ center.x();
+            float yp = ((j-center.y())*zoom) + center.y();
+
+            unsigned char col = getPixel(xp,yp);
 //            qDebug() << col;
             //if (rand()%500 == 0)
             //    qDebug() << col;

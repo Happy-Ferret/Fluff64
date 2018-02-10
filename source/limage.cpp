@@ -20,6 +20,14 @@ void LImage::Load(QString filename)
 
 }
 
+void LImage::Initialize(int width, int height)
+{
+    if (m_qImage != nullptr)
+        delete m_qImage;
+    m_qImage = new QImage(width, height, QImage::Format_ARGB32);
+
+}
+
 QImage* LImage::ApplyEffectToImage(QImage& src, QGraphicsBlurEffect *effect)
 {
 //    if(src.isNull()) return QImage(); //No need to do anything else!
@@ -37,6 +45,52 @@ QImage* LImage::ApplyEffectToImage(QImage& src, QGraphicsBlurEffect *effect)
     QPainter ptr(res);
     scene.render(&ptr, QRectF(), QRectF( 0, 0, src.width(), src.height() ) );
     return res;
+}
+
+void LImage::CreateGrid(int x, int y,  QColor color, int strip, float zoom, QPoint center)
+{
+
+    int width = m_qImage->width();
+    int height = m_qImage->height();
+    m_qImage->fill(QColor(0,0,0,0));
+    center.setX(center.x()/320.0*width);
+    center.setY(center.y()/200.0*height);
+    for (int i=1;i<x;i++)
+        for (int j = 0;j<height;j++) {
+            float xp = (width/(x))*(i);
+
+            xp = (xp - 2*center.x())/zoom + 2*center.x();
+           float yp = (j - center.y())/zoom + center.y();
+
+
+       //     if (j%strip>strip/2)
+           if (xp>=0 && xp<width && yp>=0 && yp<height)
+            m_qImage->setPixel(xp, yp, color.rgba());
+        }
+
+    // width lines
+    for (int i=1;i<y;i++)
+        for (int j = 0;j<width;j++) {
+            float yp = (height/(y))*(i);
+
+            yp = (yp - center.y())/zoom + center.y();
+            float xp = (j - 2*center.x())/zoom + 2*center.x();
+
+     //       if (j%strip>strip/2)
+            if (xp>=0 && xp<width && yp>=0 && yp<height)
+                m_qImage->setPixel(xp, yp, color.rgba());
+        }
+
+
+
+}
+
+void LImage::ApplyToLabel(QLabel *l)
+{
+    QPixmap p;
+    if (m_qImage!=nullptr)
+        p.convertFromImage(*m_qImage);
+    l->setPixmap(p);
 }
 
 QImage* LImage::Resize(int x, int y, LColorList& lst, float gamma, float shift, float hsvShift, float sat)
