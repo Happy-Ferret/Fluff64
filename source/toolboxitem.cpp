@@ -21,10 +21,22 @@ ToolboxItem::ToolboxItem(QString name, QString imagefile)
 
 void ShapeBox::Perform(int x, int y, unsigned char color, MultiColorImage* img)
 {
-    for (int i=0;i<m_size;i++)
-        for (int j=0;j<m_size;j++) {
-            int d = m_size/2;
-            img->setPixel(x+i-d,y+j-d,color);
+
+    float m= m_size;
+
+    for (int i=0;i<m;i++)
+        for (int j=0;j<m;j++) {
+            int d = m/2;
+            float xx = i-d;
+            float yy = (j-d);
+            float l = sqrt(xx*xx*1.5 + yy*yy);
+            if (l<m/2)
+                img->setPixel(x+xx,y+yy,color);
         }
 }
 
+
+void Circle::Perform(int x, int y, unsigned char color, MultiColorImage *img)
+{
+
+}

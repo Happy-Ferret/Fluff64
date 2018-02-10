@@ -10,11 +10,12 @@ MultiColorImage::MultiColorImage()
 
 void MultiColorImage::setPixel(int x, int y, unsigned char color)
 {
-    if (x>=m_width || x<0 && y>=m_height && y<0)
-        return ;
+
+    if (x>=m_width || x<0 || y>=m_height || y<0)
+        return;
     PixelChar& pc = getPixelChar(x,y);
 
-    pc.Reorganize();
+    //pc.Reorganize();
 
     int ix = x % 4;//- (dx*40);
     int iy = y % 8;//- (dy*25);
@@ -26,7 +27,7 @@ void MultiColorImage::setPixel(int x, int y, unsigned char color)
 
 unsigned char MultiColorImage::getPixel(int x, int y)
 {
-    if (x>=m_width || x<0 && y>=m_height && y<0)
+    if (x>=m_width || x<0 || y>=m_height || y<0)
         return 0;
     PixelChar& pc = getPixelChar(x,y);
 
@@ -335,11 +336,14 @@ QString PixelChar::bitmapToAssembler()
 
 QString PixelChar::colorMapToAssembler()
 {
+    if (c[1]==255) c[1] = 0;
+    if (c[2]==255) c[2] = 0;
     return QString(QString::number(c[1] | c[2]<<4));
 }
 
 QString PixelChar::colorToAssembler()
 {
+    if (c[3]==255) c[3] = 0;
     return QString(QString::number(c[3]));
 
 }

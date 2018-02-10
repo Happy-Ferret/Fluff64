@@ -34,6 +34,14 @@ public:
     ShapeBox();
     ShapeBox(QString name, QString imagefile) : ToolboxItem(name, imagefile) { }
 
+};
+
+class Circle : public ToolboxItem {
+public:
+    void Perform(int x, int y, unsigned char color, MultiColorImage *img) override;
+
+    Circle() {}
+    Circle(QString name, QString imagefile) : ToolboxItem(name, imagefile) { }
 
 };
 

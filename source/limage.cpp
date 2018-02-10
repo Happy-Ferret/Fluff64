@@ -64,7 +64,7 @@ QImage* LImage::Resize(int x, int y, LColorList& lst, float gamma, float shift, 
         for (int j=0;j<y;j++) {
             QColor color = black;
 
-            int xx = i/sx + addx;
+            int xx = ((i-x/4)*1.4 + x/4)/sx + addx;
             int yy = j/sy + addy;
 
             if (xx>=0 && xx<m_qImage->width() && yy>=0 && yy<m_qImage->height())
