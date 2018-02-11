@@ -12,6 +12,7 @@
 #include <QLayout>
 #include <QPointF>
 #include <source/toolbox.h>
+#include "source/workerthread.h"
 
 namespace Ui {
     class MainWindow;
@@ -19,43 +20,6 @@ namespace Ui {
 
 
 
-class WorkerThread : public QThread {
-    Q_OBJECT
-
-public:
-
-    ImageWorker* m_work = nullptr;
-    bool m_quit = false;
-    Ui::MainWindow* ui;
-    Toolbox* m_toolBox = nullptr;
-    WorkerThread(ImageWorker* iw, Ui::MainWindow* _ui, Toolbox* toolbox) {
-            m_work = iw;
-            m_toolBox = toolbox;
-            ui = _ui;
-    }
-
-    QPoint m_currentPos;
-    int m_currentButton = 0;
-    float m_zoom = 1;
-    QPoint m_zoomCenter = QPoint(00,00);
-
-    void run() override;
-    QImage* m_tmpImage = nullptr;
-    QPixmap m_pixMapImage;
-
-
-    void UpdateInput();
-    void UpdateOutput();
-    void UpdateDrawing();
-    void UpdateMousePosition();
-    void UpdateImage(MultiColorImage& mc);
-
-signals:
-    void updateImageSignal();
-
-public slots:
-    void OnQuit();
-};
 
 
 class MainWindow : public QMainWindow
@@ -71,7 +35,6 @@ public:
     LImage m_grid;
     QColor m_gridColor = QColor(64,128,128,128);
 
-    void Convert();
 
     void mousePressEvent(QMouseEvent *e) override;
     void mouseReleaseEvent(QMouseEvent *e) override;
@@ -128,6 +91,12 @@ private slots:
     void on_btnSave_clicked();
 
     void on_chkGrid_clicked(bool checked);
+
+    void on_cmbBackgroundMain_currentIndexChanged(int index);
+
+    void on_btnNew_clicked();
+
+    void on_btnExportImage_clicked();
 
 private:
     Ui::MainWindow *ui;

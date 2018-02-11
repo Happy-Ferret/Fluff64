@@ -32,7 +32,8 @@ SOURCES += main.cpp\
     data.cpp \
     source/multicolorimage.cpp \
     source/toolbox.cpp \
-    source/toolboxitem.cpp
+    source/toolboxitem.cpp \
+    source/workerthread.cpp
 
 HEADERS  += mainwindow.h \
     source/limage.h \
@@ -43,6 +44,10 @@ HEADERS  += mainwindow.h \
     data.h \
     source/multicolorimage.h \
     source/toolbox.h \
-    source/toolboxitem.h
+    source/toolboxitem.h \
+    source/workerthread.h
 
 FORMS    += mainwindow.ui
+
+RESOURCES += \
+    resources.qrc

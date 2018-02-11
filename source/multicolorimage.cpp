@@ -27,6 +27,7 @@ void MultiColorImage::setPixel(int x, int y, unsigned char color)
 
 unsigned char MultiColorImage::getPixel(int x, int y)
 {
+
     if (x>=m_width || x<0 || y>=m_height || y<0)
         return 0;
     PixelChar& pc = getPixelChar(x,y);
@@ -46,7 +47,6 @@ void MultiColorImage::setForeground(int col)
 void MultiColorImage::setBackground(int col)
 {
     m_background = col;
-    qDebug() << col;
     for (int i=0;i<40*25;i++) {
         m_data[i].c[0] = col;
     }
@@ -98,6 +98,27 @@ bool MultiColorImage::Load(QString filename)
     }
 
     return true;
+}
+
+void MultiColorImage::drawLine(float x0, float y0, float x1, float y1, unsigned int col, int size)
+{
+        float x{x1 - x0}, y{y1 - y0};
+        const float max{std::max(std::fabs(x), std::fabs(y))};
+        x /= max; y /= max;
+        for (float n{0}; n < max; ++n)
+        {
+            // draw pixel at ( x0, y0 )
+            Box(x0,y0, col, size);
+            x0 += x; y0 += y;
+        }
+}
+
+void MultiColorImage::Box(int x, int y, unsigned char col, int size)
+{
+    for (int i=0;i<size;i++)
+        for (int j=0;j<size;j++) {
+            setPixel(x+i-size/2, y+j-size/2, col);
+        }
 }
 
 void MultiColorImage::ToQImage(LColorList& lst, QImage* img, float zoom, QPoint center)
@@ -300,8 +321,13 @@ void PixelChar::set(int x, int y, unsigned char color)
         if (c[2]==255) winner=2;
         else
         if (c[3]==255) winner=3;
-        else
-            winner = 3;
+        else {
+            //winner = 3;
+            winner = (p[y]>>x) & 0b11;
+            if (winner==0)
+                winner = 3;
+
+        }
 
         if (winner>=1)
             c[winner] = color;

@@ -11,6 +11,7 @@ public:
     bool redrawInput=false;
     unsigned char currentColor = 0;
     static Data data;
+    void Redraw();
 };
 
 #endif // DATA_H

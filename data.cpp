@@ -6,3 +6,8 @@ Data::Data()
 {
 
 }
+
+void Data::Redraw()
+{
+    redrawOutput = true;
+}

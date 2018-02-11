@@ -52,6 +52,9 @@ public:
     void Save(QString filename);
     bool Load(QString filename);
 
+    void drawLine(float x0, float y0, float x1, float y1, unsigned int col, int size);
+
+    void Box(int x, int y, unsigned char col, int size);
 
     void ToQImage(LColorList& lst, QImage* img, float zoom = 1, QPoint center = QPoint(160,100));
     void fromQImage(QImage* img, LColorList& lst);

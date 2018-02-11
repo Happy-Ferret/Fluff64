@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/">
+        <file>resources/images/brush_dither.png</file>
+        <file>resources/images/brush_fill.png</file>
+        <file>resources/images/brush_spray.png</file>
+        <file>resources/images/brush_circle.png</file>
+        <file>resources/images/brush_line.png</file>
+    </qresource>
+</RCC>

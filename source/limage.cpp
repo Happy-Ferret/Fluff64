@@ -96,7 +96,7 @@ void LImage::ApplyToLabel(QLabel *l)
 QImage* LImage::Resize(int x, int y, LColorList& lst, float gamma, float shift, float hsvShift, float sat)
 {
     QImage* other = new QImage(x,y,QImage::Format_ARGB32);
-    float aspect = 320.0/200.0;
+    float aspect = m_qImage->width()/(float)m_qImage->height();
     float m = max(m_qImage->width(), m_qImage->height());
     float sx = (float)x/m/2.0;
     float sy = (float)y/m;//*aspect;
@@ -113,13 +113,22 @@ QImage* LImage::Resize(int x, int y, LColorList& lst, float gamma, float shift, 
         addx=-d/2;
     }
 
+    float aspectX = 1;
+    float aspectY = 1/aspect;
+    if (aspect<1) {
+        aspectX = 1/aspect;
+        aspectY = 1;
+    }
     QColor black(0,0,0);
     for (int i=0;i<x/2;i++)
         for (int j=0;j<y;j++) {
             QColor color = black;
 
-            int xx = ((i-x/4)*1.4 + x/4)/sx + addx;
-            int yy = j/sy + addy;
+
+            int xx = ((i-x/4)*aspectX + x/4)/sx + addx;
+            int yy = ((j-y/2)*aspectY + y/2)/sy + addy;
+//            int xx = ((i-x/4)*1.4 + x/4)/sx + addx;
+//            int yy = j/sy + addy;
 
             if (xx>=0 && xx<m_qImage->width() && yy>=0 && yy<m_qImage->height())
                 color = QColor(m_qImage->pixel(xx,yy));
