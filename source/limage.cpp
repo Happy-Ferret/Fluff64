@@ -114,9 +114,9 @@ QImage* LImage::Resize(int x, int y, LColorList& lst, float gamma, float shift, 
     }
 
     float aspectX = 1;
-    float aspectY = 1/aspect;
+    float aspectY = 1.4*0.5;//1/aspect;
     if (aspect<1) {
-        aspectX = 1/aspect;
+        aspectX = 1*(1.4);
         aspectY = 1;
     }
     QColor black(0,0,0);
