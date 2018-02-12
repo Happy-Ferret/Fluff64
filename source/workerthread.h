@@ -46,7 +46,7 @@ public:
     void UpdateDrawing();
     void UpdateMousePosition();
     void UpdatePanning();
-    void UpdateImage(MultiColorImage& mc);
+    void UpdateImage(LImage* mc);
 
 signals:
     void updateImageSignal();

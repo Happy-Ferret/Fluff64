@@ -3,6 +3,8 @@
 
 #include <QVector>
 #include "source/lcolorlist.h"
+#include "source/limage/limage.h"
+#include <QImage>
 
 #define CHECK_BIT(var,pos) ((var) & (1<<(pos)))
 
@@ -28,41 +30,47 @@ public:
 };
 
 
-class MultiColorImage
+class MultiColorImage  : public LImage
 {
 public:
     unsigned char m_version = 1;
     QString m_ID = "LMC";
-    int m_width=160;
-    int m_height=200;
     MultiColorImage();
     PixelChar m_data[40*25];
     PixelChar& getPixelChar(int x, int y);
-    void Clear();
+    void Clear() override;
 
-    unsigned char m_border=0, m_background=0;
+//    unsigned char m_border=0, m_background=0;
 
-    void setPixel(int x, int y, unsigned char color);
-    unsigned char getPixel(int x, int y);
+    void setPixel(int x, int y, unsigned int color) override;
+    unsigned int getPixel(int x, int y) override;
 
-    void setForeground(int col);
-    void setBackground(int col);
     void Reorganize();
 
-    void Save(QString filename);
-    bool Load(QString filename);
+    void Save(QString filename) override;
+    bool Load(QString filename) override;
+    void Initialize(int width, int height) override {}
 
-    void drawLine(float x0, float y0, float x1, float y1, unsigned int col, int size);
+    void setForeground(unsigned int col) override;
+    void setBackground(unsigned int col) override;
+
+    void ToQImage(LColorList& lst, QImage* img, float zoom, QPoint center) override;
+
+    void Release() override {}
+
+    void ApplyToLabel(QLabel* l) override {}
+
+/*    void drawLine(float x0, float y0, float x1, float y1, unsigned int col, int size);
 
     void Box(int x, int y, unsigned char col, int size);
-
-    void ToQImage(LColorList& lst, QImage* img, float zoom = 1, QPoint center = QPoint(160,100));
+*/
+//    void ToQImage(LColorList& lst, QImage* img, float zoom = 1, QPoint center = QPoint(160,100));
     void fromQImage(QImage* img, LColorList& lst);
 
     void CopyFrom(MultiColorImage& mc);
 
 
-    void ExportAsm(QString filename);
+    void ExportAsm(QString filename) override;
 
 };
 

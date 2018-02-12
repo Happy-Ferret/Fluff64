@@ -25,27 +25,31 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    source/limage.cpp \
+    source/limage/limage.cpp \
     imageworker.cpp \
     source/lcolorlist.cpp \
     source/util/util.cpp \
     data.cpp \
-    source/multicolorimage.cpp \
     source/toolbox.cpp \
     source/toolboxitem.cpp \
-    source/workerthread.cpp
+    source/workerthread.cpp \
+    source/limage/limageqimage.cpp \
+    source/limage/multicolorimage.cpp \
+    source/limage/limagefactory.cpp
 
 HEADERS  += mainwindow.h \
-    source/limage.h \
+    source/limage/limage.h \
     imageworker.h \
     source/lcolorlist.h \
     source/util/random.h \
     source/util/util.h \
     data.h \
-    source/multicolorimage.h \
     source/toolbox.h \
     source/toolboxitem.h \
-    source/workerthread.h
+    source/workerthread.h \
+    source/limage/limageqimage.h \
+    source/limage/multicolorimage.h \
+    source/limage/limagefactory.h
 
 FORMS    += mainwindow.ui
 

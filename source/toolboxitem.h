@@ -1,7 +1,7 @@
 #ifndef TOOLBOXITEM_H
 #define TOOLBOXITEM_H
 
-#include "source/multicolorimage.h"
+#include "source/limage/LImage.h"
 #include <QPixmap>
 #include <QString>
 
@@ -17,7 +17,7 @@ public:
 
     virtual void IsPreview(int button, bool& isPreview) { }
 
-    virtual void Perform(int x, int y, unsigned char color, MultiColorImage* img, bool isPreview, int button) = 0;
+    virtual void Perform(int x, int y, unsigned char color, LImage* img, bool isPreview, int button) = 0;
     virtual void Init() {}
 
 
@@ -34,7 +34,7 @@ public:
 
 class ShapeBox : public ToolboxItem {
 public:
-    void Perform(int x, int y, unsigned char color, MultiColorImage *img, bool isPreview, int button) override;
+    void Perform(int x, int y, unsigned char color, LImage *img, bool isPreview, int button) override;
 
     ShapeBox();
     ShapeBox(QString name, QString imagefile) : ToolboxItem(name, imagefile) { }
@@ -43,7 +43,7 @@ public:
 
 class Circle : public ToolboxItem {
 public:
-    void Perform(int x, int y, unsigned char color, MultiColorImage *img, bool isPreview, int button) override;
+    void Perform(int x, int y, unsigned char color, LImage *img, bool isPreview, int button) override;
 
     Circle() {}
     Circle(QString name, QString imagefile) : ToolboxItem(name, imagefile) { }
@@ -52,7 +52,7 @@ public:
 
 class Spray : public ToolboxItem {
 public:
-    void Perform(int x, int y, unsigned char color, MultiColorImage *img, bool isPreview, int button) override;
+    void Perform(int x, int y, unsigned char color, LImage *img, bool isPreview, int button) override;
 
     Spray() {}
     Spray(QString name, QString imagefile) : ToolboxItem(name, imagefile) { }
@@ -61,7 +61,7 @@ public:
 
 class Dither : public ToolboxItem {
 public:
-    void Perform(int x, int y, unsigned char color, MultiColorImage *img, bool isPreview, int button) override;
+    void Perform(int x, int y, unsigned char color, LImage *img, bool isPreview, int button) override;
 
     Dither() {}
     Dither(QString name, QString imagefile) : ToolboxItem(name, imagefile) { }
@@ -70,17 +70,17 @@ public:
 
 class Filler : public ToolboxItem {
 public:
-    void Perform(int x, int y, unsigned char color, MultiColorImage *img, bool isPreview, int button) override;
+    void Perform(int x, int y, unsigned char color, LImage *img, bool isPreview, int button) override;
 
     Filler() {}
     Filler(QString name, QString imagefile) : ToolboxItem(name, imagefile) { }
 
-    void Fill(int i, int j, unsigned char col, unsigned char testCol, MultiColorImage *img );
+    void Fill(int i, int j, unsigned char col, unsigned char testCol, LImage *img );
 };
 
 class Line : public ToolboxItem {
 public:
-    void Perform(int x, int y, unsigned char color, MultiColorImage *img, bool isPreview, int button) override;
+    void Perform(int x, int y, unsigned char color, LImage *img, bool isPreview, int button) override;
     QPoint m_start;
     Line() {}
     Line(QString name, QString imagefile) : ToolboxItem(name, imagefile) { }
@@ -90,15 +90,15 @@ public:
     }
 
 };
-
+/*
 class CopyStamp : public ToolboxItem {
 public:
-    void Perform(int x, int y, unsigned char color, MultiColorImage *img, bool isPreview, int button) override;
+    void Perform(int x, int y, unsigned char color, LImage *img, bool isPreview, int button) override;
     QPoint m_start;
     QPoint m_end;
     enum Status { Selecting, DoneSelecting, Stamp, Idle };
     Status m_status = Status::Idle;
-    MultiColorImage m_copy;
+    LImage* m_copy;
 
     CopyStamp() {}
     CopyStamp(QString name, QString imagefile) : ToolboxItem(name, imagefile) { }
@@ -107,12 +107,12 @@ public:
         isPreview = true;
     }
 
-    void StampImage(int x, int y, MultiColorImage* img);
+    void StampImage(int x, int y, LImage* img);
     void Init() override { m_status = Status::Idle;}
 
 
 };
 
-
+*/
 
 #endif // TOOLBOXITEM_H

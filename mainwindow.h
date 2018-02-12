@@ -32,7 +32,7 @@ public:
     ImageWorker m_work;
     Toolbox m_toolBox;
 
-    LImage m_grid;
+    LImageQImage m_grid;
     QColor m_gridColor = QColor(64,128,128,128);
 
 

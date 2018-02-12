@@ -187,7 +187,7 @@ void MainWindow::on_btnExportAsm_clicked()
           tr("Asm (*.asm);"));
 
 
-    m_work.m_editor.m_image.ExportAsm(fileName);
+    m_work.m_editor.m_image->ExportAsm(fileName);
 }
 
 void MainWindow::on_cmbForeground_activated(int index)
@@ -204,9 +204,9 @@ void MainWindow::on_cmbBackground_activated(int index)
 
 void MainWindow::on_pushButton_clicked()
 {
-    m_work.m_editor.m_image.CopyFrom(m_work.m_converter.m_mcImage);
+    m_work.m_editor.m_image->CopyFrom(&m_work.m_converter.m_mcImage);
     ui->tabWidget->setCurrentIndex(0);
-    m_updateThread->UpdateImage(m_work.m_editor.m_image);
+    m_updateThread->UpdateImage((LImage*)m_work.m_editor.m_image);
 }
 
 void MainWindow::on_btnLoad_clicked()
@@ -215,7 +215,7 @@ void MainWindow::on_btnLoad_clicked()
         tr("Open LMC image"), "", tr("Image Files (*.lmc)"));
     if (filename=="")
         return;
-    m_work.m_editor.m_image.Load(filename);
+    m_work.m_editor.m_image->Load(filename);
     m_updateThread->UpdateImage(m_work.m_editor.m_image);
 
 
@@ -228,7 +228,7 @@ void MainWindow::on_btnSave_clicked()
     if (filename=="")
         return;
 
-    m_work.m_editor.m_image.Save(filename);
+    m_work.m_editor.m_image->Save(filename);
 
 }
 
@@ -241,14 +241,14 @@ void MainWindow::on_chkGrid_clicked(bool checked)
 
 void MainWindow::on_cmbBackgroundMain_currentIndexChanged(int index)
 {
-    m_work.m_editor.m_image.setBackground(index);
+    m_work.m_editor.m_image->setBackground(index);
     Data::data.redrawOutput = true;
 }
 
 
 void MainWindow::on_btnNew_clicked()
 {
-    m_work.m_editor.m_image.Clear();
+    m_work.m_editor.m_image->Clear();
     Data::data.Redraw();
 }
 

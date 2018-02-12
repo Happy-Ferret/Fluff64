@@ -1,34 +1,44 @@
-#include "limage.h"
-#include <algorithm>
-
-#include "source/util/util.h"
-#include <QGraphicsBlurEffect>
+#include "limageqimage.h"
 #include <QGraphicsScene>
 #include <QGraphicsPixmapItem>
 #include <QPainter>
+#include "source/util/util.h"
 
-
-LImage::LImage()
+LImageQImage::LImageQImage()
 {
-
+    Initialize(320,200);
+    m_fileExtension = "png";
 }
 
-void LImage::Load(QString filename)
+bool LImageQImage::Load(QString filename)
 {
     m_qImage = new QImage();
-    m_qImage->load(filename);
+    m_fileExtension = "png";
+    return m_qImage->load(filename);
 
 }
 
-void LImage::Initialize(int width, int height)
+void LImageQImage::Initialize(int width, int height)
 {
     if (m_qImage != nullptr)
         delete m_qImage;
+
+    m_width = width;
+    m_height = height;
+
     m_qImage = new QImage(width, height, QImage::Format_ARGB32);
+    m_fileExtension = "png";
 
 }
 
-QImage* LImage::ApplyEffectToImage(QImage& src, QGraphicsBlurEffect *effect)
+void LImageQImage::Save(QString filename)
+{
+    if (m_qImage==nullptr)
+        return;
+    m_qImage->save(filename);
+}
+
+QImage* LImageQImage::ApplyEffectToImage(QImage& src, QGraphicsBlurEffect *effect)
 {
 //    if(src.isNull()) return QImage(); //No need to do anything else!
     if (effect==nullptr)
@@ -47,7 +57,7 @@ QImage* LImage::ApplyEffectToImage(QImage& src, QGraphicsBlurEffect *effect)
     return res;
 }
 
-void LImage::CreateGrid(int x, int y,  QColor color, int strip, float zoom, QPoint center)
+void LImageQImage::CreateGrid(int x, int y,  QColor color, int strip, float zoom, QPoint center)
 {
 
     int width = m_qImage->width();
@@ -85,7 +95,7 @@ void LImage::CreateGrid(int x, int y,  QColor color, int strip, float zoom, QPoi
 
 }
 
-void LImage::ApplyToLabel(QLabel *l)
+void LImageQImage::ApplyToLabel(QLabel *l)
 {
     QPixmap p;
     if (m_qImage!=nullptr)
@@ -93,7 +103,33 @@ void LImage::ApplyToLabel(QLabel *l)
     l->setPixmap(p);
 }
 
-QImage* LImage::Resize(int x, int y, LColorList& lst, float gamma, float shift, float hsvShift, float sat)
+void LImageQImage::setPixel(int x, int y, unsigned int color)
+{
+    if (m_qImage==nullptr)
+        return;
+    if (x>=0 && x<m_qImage->width() && y>=0 && y<m_qImage->height())
+        m_qImage->setPixel(x,y,QRgb(color));
+}
+
+unsigned int LImageQImage::getPixel(int x, int y)
+{
+    if (m_qImage==nullptr)
+        return 0;
+    if (x>=0 && x<m_qImage->width() && y>=0 && y<m_qImage->height())
+        return m_qImage->pixel(x,y);
+
+}
+
+void LImageQImage::Release()
+{
+    if (m_qImage)
+        delete m_qImage;
+    m_qImage = nullptr;
+}
+
+
+
+QImage* LImageQImage::Resize(int x, int y, LColorList& lst, float gamma, float shift, float hsvShift, float sat)
 {
     QImage* other = new QImage(x,y,QImage::Format_ARGB32);
     float aspect = m_qImage->width()/(float)m_qImage->height();
@@ -160,7 +196,7 @@ QImage* LImage::Resize(int x, int y, LColorList& lst, float gamma, float shift, 
     return other;
 }
 
-QImage *LImage::Blur(float blurRadius)
+QImage *LImageQImage::Blur(float blurRadius)
 {
     if (blurRadius==0) {
         QImage* q = new QImage();
@@ -173,8 +209,18 @@ QImage *LImage::Blur(float blurRadius)
 
 }
 
-void LImage::Release()
+void LImageQImage::ToQImage(LColorList& lst, QImage* img, float zoom, QPoint center)
 {
-    if (m_qImage)
-        delete m_qImage;
+    for (int i=0;i<m_width;i++)
+        for (int j=0;j<m_height;j++) {
+
+            float xp = ((i-center.x())*zoom)+ center.x();
+            float yp = ((j-center.y())*zoom) + center.y();
+
+            unsigned int col = getPixel(xp,yp) % 16;
+
+//            img->setPixel(i,j,QRgb(col));
+            img->setPixel(i,j,lst.m_list[col%16].color.rgb());
+        }
+    //return img;
 }

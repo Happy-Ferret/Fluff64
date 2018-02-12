@@ -1,14 +1,18 @@
-#include "multicolorimage.h"
+#include "source/limage/multicolorimage.h"
 #include <QDebug>
 #include <QFile>
 #include <QTextStream>
 
 MultiColorImage::MultiColorImage()
 {
+    m_width = 160;
+    m_height = 200;
+    m_scaleX = 2.5f;
+    m_fileExtension = "lmc";
     Clear();
 }
 
-void MultiColorImage::setPixel(int x, int y, unsigned char color)
+void MultiColorImage::setPixel(int x, int y, unsigned int color)
 {
 
     if (x>=m_width || x<0 || y>=m_height || y<0)
@@ -25,7 +29,7 @@ void MultiColorImage::setPixel(int x, int y, unsigned char color)
 
 }
 
-unsigned char MultiColorImage::getPixel(int x, int y)
+unsigned int MultiColorImage::getPixel(int x, int y)
 {
 
     if (x>=m_width || x<0 || y>=m_height || y<0)
@@ -39,12 +43,12 @@ unsigned char MultiColorImage::getPixel(int x, int y)
 
 }
 
-void MultiColorImage::setForeground(int col)
+void MultiColorImage::setForeground(unsigned int col)
 {
     m_border = col;
 }
 
-void MultiColorImage::setBackground(int col)
+void MultiColorImage::setBackground(unsigned int col)
 {
     m_background = col;
     for (int i=0;i<40*25;i++) {
@@ -98,47 +102,6 @@ bool MultiColorImage::Load(QString filename)
     }
 
     return true;
-}
-
-void MultiColorImage::drawLine(float x0, float y0, float x1, float y1, unsigned int col, int size)
-{
-        float x{x1 - x0}, y{y1 - y0};
-        const float max{std::max(std::fabs(x), std::fabs(y))};
-        x /= max; y /= max;
-        for (float n{0}; n < max; ++n)
-        {
-            // draw pixel at ( x0, y0 )
-            Box(x0,y0, col, size);
-            x0 += x; y0 += y;
-        }
-}
-
-void MultiColorImage::Box(int x, int y, unsigned char col, int size)
-{
-    for (int i=0;i<size;i++)
-        for (int j=0;j<size;j++) {
-            setPixel(x+i-size/2, y+j-size/2, col);
-        }
-}
-
-void MultiColorImage::ToQImage(LColorList& lst, QImage* img, float zoom, QPoint center)
-{
-    //QImage* img = new QImage(320,200, QImage::Format_ARGB32);
-//    Reorganize();
-    for (int i=0;i<160;i++)
-        for (int j=0;j<200;j++) {
-
-            float xp = ((i-center.x())*zoom)+ center.x();
-            float yp = ((j-center.y())*zoom) + center.y();
-
-            unsigned char col = getPixel(xp,yp);
-//            qDebug() << col;
-            //if (rand()%500 == 0)
-            //    qDebug() << col;
-            img->setPixel(2*i,j,(lst.m_list[col].color).rgb());
-            img->setPixel(2*i+1,j,lst.m_list[col].color.rgb());
-        }
-    //return img;
 }
 
 void MultiColorImage::fromQImage(QImage *img, LColorList &lst)
@@ -397,4 +360,19 @@ int PixelChar::Count(unsigned int val)
             if ( ((p[j]>>2*i) & 0b11)==val)
                 cnt++;
     return cnt;
+}
+
+void MultiColorImage::ToQImage(LColorList& lst, QImage* img, float zoom, QPoint center)
+{
+    for (int i=0;i<m_width;i++)
+        for (int j=0;j<m_height;j++) {
+
+            float xp = ((i-center.x())*zoom)+ center.x();
+            float yp = ((j-center.y())*zoom) + center.y();
+
+            unsigned int col = getPixel(xp,yp);
+            img->setPixel(2*i,j,(lst.m_list[col].color).rgb());
+            img->setPixel(2*i+1,j,lst.m_list[col].color.rgb());
+        }
+    //return img;
 }

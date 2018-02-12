@@ -26,7 +26,7 @@ ToolboxItem::ToolboxItem(QString name, QString imagefile)
 
 }
 
-void ShapeBox::Perform(int x, int y, unsigned char color, MultiColorImage* img, bool isPreview, int button)
+void ShapeBox::Perform(int x, int y, unsigned char color, LImage* img, bool isPreview, int button)
 {
     float m= m_size;
     for (int i=0;i<m;i++)
@@ -34,11 +34,11 @@ void ShapeBox::Perform(int x, int y, unsigned char color, MultiColorImage* img, 
             int d = m/2;
             float xx = i-d;
             float yy = (j-d);
-            float l = sqrt(xx*xx*2.5 + yy*yy);
+            float l = sqrt(xx*xx*img->m_scaleX + yy*yy);
 
-            bool ok = l<m/2;
+            bool ok = l<m/2.5;
             if (m_type==1)
-                ok = abs(l-m/2.5)<1;
+                ok = abs(l-m/3)<1;
             if (ok)
             {
 
@@ -48,12 +48,12 @@ void ShapeBox::Perform(int x, int y, unsigned char color, MultiColorImage* img, 
 }
 
 
-void Circle::Perform(int x, int y, unsigned char color, MultiColorImage *img, bool isPreview, int button)
+void Circle::Perform(int x, int y, unsigned char color, LImage *img, bool isPreview, int button)
 {
 
 }
 
-void Spray::Perform(int x, int y, unsigned char color, MultiColorImage *img, bool isPreview, int button)
+void Spray::Perform(int x, int y, unsigned char color, LImage *img, bool isPreview, int button)
 {
     float m= m_size;
 
@@ -62,8 +62,8 @@ void Spray::Perform(int x, int y, unsigned char color, MultiColorImage *img, boo
             int d = m/2;
             float xx = i-d;
             float yy = (j-d);
-            float l = sqrt(xx*xx*2.5 + yy*yy);
-            if (l<m/2) {
+            float l = sqrt(xx*xx*img->m_scaleX + yy*yy);
+            if (l<m/2.5) {
                 if (rand()%100<2)
                     img->setPixel(x+xx,y+yy,color);
             }
@@ -71,7 +71,7 @@ void Spray::Perform(int x, int y, unsigned char color, MultiColorImage *img, boo
 
 }
 
-void Dither::Perform(int x, int y, unsigned char color, MultiColorImage *img, bool isPreview, int button)
+void Dither::Perform(int x, int y, unsigned char color, LImage *img, bool isPreview, int button)
 {
     float m= m_size;
     int shift = m_type;
@@ -84,8 +84,8 @@ void Dither::Perform(int x, int y, unsigned char color, MultiColorImage *img, bo
             int d = m/2;
             float xx = (i-d);
             float yy = (j-d);
-            float l = sqrt(xx*xx*2.5 + yy*yy);
-            if (l<m/2) {
+            float l = sqrt(xx*xx*img->m_scaleX + yy*yy);
+            if (l<m/2.5) {
                 int s = (int)(xx + (int)yy%2)%2;
                 if (s == 0 ) {
                     img->setPixel(x+xx+shift,y+yy,color);
@@ -95,7 +95,7 @@ void Dither::Perform(int x, int y, unsigned char color, MultiColorImage *img, bo
 
 }
 
-void Filler::Perform(int x, int y, unsigned char color, MultiColorImage *img, bool isPreview, int button)
+void Filler::Perform(int x, int y, unsigned char color, LImage *img, bool isPreview, int button)
 {
 //    if (isPreview)
   //      return;
@@ -105,7 +105,7 @@ void Filler::Perform(int x, int y, unsigned char color, MultiColorImage *img, bo
     Fill(x,y,color, testCol, img);
 }
 
-void Filler::Fill(int i, int j, unsigned char col, unsigned char testCol, MultiColorImage *img)
+void Filler::Fill(int i, int j, unsigned char col, unsigned char testCol, LImage *img)
 {
     if (testCol == img->getPixel(i,j)) {
         img->setPixel(i,j, col);
@@ -121,7 +121,7 @@ void Filler::Fill(int i, int j, unsigned char col, unsigned char testCol, MultiC
 
 }
 
-void Line::Perform(int x, int y, unsigned char color, MultiColorImage *img, bool isPreview, int button)
+void Line::Perform(int x, int y, unsigned char color, LImage *img, bool isPreview, int button)
 {
     if (button==0) {
         m_start = QPoint(x,y);
@@ -139,7 +139,7 @@ void Line::Perform(int x, int y, unsigned char color, MultiColorImage *img, bool
 
 }
 
-void CopyStamp::Perform(int x, int y, unsigned char color, MultiColorImage *img, bool isPreview, int button)
+/*void CopyStamp::Perform(int x, int y, unsigned char color, LImage *img, bool isPreview, int button)
 {
     if (button==1 && m_status == Status::Idle) {
         m_status = Status::Selecting;
@@ -167,7 +167,7 @@ void CopyStamp::Perform(int x, int y, unsigned char color, MultiColorImage *img,
 
 }
 
-void CopyStamp::StampImage(int x, int y, MultiColorImage* img)
+void CopyStamp::StampImage(int x, int y, LImage* img)
 {
     int w = abs(m_end.x()-m_start.x());
     int h = abs(m_end.y()-m_start.y());
@@ -178,3 +178,5 @@ void CopyStamp::StampImage(int x, int y, MultiColorImage* img)
                 img->setPixel(i-w/2+x,j-h/2+y, col);
         }
 }
+
+*/

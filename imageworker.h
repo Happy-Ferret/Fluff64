@@ -3,19 +3,22 @@
 
 #include <QVector>
 
-#include "source/limage.h"
+#include "source/limage/limageqimage.h"
 #include "source/lcolorlist.h"
-#include "source/multicolorimage.h"
+#include "source/limage/multicolorimage.h"
+#include "source/limage/limagefactory.h"
+
 
 class ImageConverter {
 public:
     LColorList* m_colorList = nullptr;
+    LImageFactory::Type m_imageType;
 
-    ImageConverter();
+    ImageConverter(LImageFactory::Type type);
 
-    LImage m_input;
-    LImage m_work;
-    LImage m_output;
+    LImageQImage m_input;
+    LImageQImage m_work;
+    LImageQImage m_output;
     MultiColorImage m_mcImage;
 
     float m_contrast = 1;
@@ -35,12 +38,14 @@ public:
 
 class ImageEditor {
 public:
-    ImageEditor();
+    ImageEditor(LImageFactory::Type t);
+    LImageFactory::Type m_imageType;
     LColorList* m_colorList = nullptr;
+    void Initialize();
 
-    MultiColorImage m_image;
-    MultiColorImage m_temp;
-    QVector<MultiColorImage> m_undo;
+    LImage* m_image;
+    LImage* m_temp;
+    QVector<LImage*> m_undo;
     void Undo();
     void AddUndo();
     const int m_undoMax = 10;
@@ -53,8 +58,8 @@ class ImageWorker
 {
 public:
     ImageWorker();
-    ImageConverter m_converter;
-    ImageEditor m_editor;
+    ImageConverter m_converter = ImageConverter(LImageFactory::Type::QImage);
+    ImageEditor m_editor = ImageEditor(LImageFactory::Type::QImage);
 
     LColorList m_colorList;
 
