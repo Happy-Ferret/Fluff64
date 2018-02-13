@@ -45,6 +45,7 @@ void ImageWorker::SetImage(int cur)
 {
     if (cur>=0 && cur<m_images.count())
         m_currentImage = m_images[cur];
+
 }
 
 void ImageWorker::Import(QString filename)

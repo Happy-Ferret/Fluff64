@@ -267,11 +267,12 @@ void MainWindow::on_btnExportImage_clicked()
 
 void MainWindow::on_b_clicked()
 {
-
     m_work.New(rand()%m_work.m_types.count());
 }
 
 void MainWindow::on_lstImages_clicked(const QModelIndex &index)
 {
     m_work.SetImage(index.row());
+    ui->lblImageName->setText(m_work.m_currentImage->m_name  + "(" + m_work.m_currentImage->m_imageType->name + ")");
+    Data::data.redrawFileList = true;
 }
