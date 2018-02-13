@@ -13,12 +13,12 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     m_work.m_colorList.CreateUI(ui->layoutColors,0);
-    m_work.m_colorList.CreateUI(ui->layoutColorsEdit,1);
+    m_work.m_colorList.CreateUI(ui->layoutColorsEdit_3,1);
     m_work.m_colorList.FillComboBox(ui->cmbForeground);
     m_work.m_colorList.FillComboBox(ui->cmbBackground);
-    m_work.m_colorList.FillComboBox(ui->cmbBackgroundMain);
-    m_work.m_colorList.FillComboBox(ui->cmbBorderMain);
-    m_toolBox.Initialize(ui->lyToolbox);;
+    m_work.m_colorList.FillComboBox(ui->cmbBackgroundMain_3);
+    m_work.m_colorList.FillComboBox(ui->cmbBorderMain_3);
+    m_toolBox.Initialize(ui->lyToolbox_3);;
 
     m_grid.Initialize(320*2,200*2);
     m_grid.CreateGrid(40,25,m_gridColor,4, 1, QPoint(0,0));
@@ -57,7 +57,7 @@ void MainWindow::mousePressEvent(QMouseEvent *e)
         m_updateThread->m_currentButton = 2;
     if(e->buttons() == Qt::LeftButton) {
         m_updateThread->m_currentButton = 1;
-        m_work.m_editor.AddUndo();
+        m_work.m_currentImage->AddUndo();
 
     }
 
@@ -99,7 +99,7 @@ void MainWindow::wheelEvent(QWheelEvent *event)
 void MainWindow::keyPressEvent(QKeyEvent *e)
 {
     if (e->key()==Qt::Key_Z && QApplication::keyboardModifiers() & Qt::ControlModifier) {
-        m_work.m_editor.Undo();
+        m_work.m_currentImage->Undo();
     }
     if (e->key() == Qt::Key_Z  && !(QApplication::keyboardModifiers() & Qt::ControlModifier)) {
        ui->chkGrid->setChecked(!ui->chkGrid->isChecked());
@@ -187,7 +187,7 @@ void MainWindow::on_btnExportAsm_clicked()
           tr("Asm (*.asm);"));
 
 
-    m_work.m_editor.m_image->ExportAsm(fileName);
+    m_work.m_currentImage->m_image->ExportAsm(fileName);
 }
 
 void MainWindow::on_cmbForeground_activated(int index)
@@ -204,9 +204,9 @@ void MainWindow::on_cmbBackground_activated(int index)
 
 void MainWindow::on_pushButton_clicked()
 {
-    m_work.m_editor.m_image->CopyFrom(&m_work.m_converter.m_mcImage);
+    m_work.m_currentImage->m_image->CopyFrom(&m_work.m_converter.m_mcImage);
     ui->tabWidget->setCurrentIndex(0);
-    m_updateThread->UpdateImage((LImage*)m_work.m_editor.m_image);
+    m_updateThread->UpdateImage((LImage*)m_work.m_currentImage->m_image);
 }
 
 void MainWindow::on_btnLoad_clicked()
@@ -215,8 +215,8 @@ void MainWindow::on_btnLoad_clicked()
         tr("Open LMC image"), "", tr("Image Files (*.lmc)"));
     if (filename=="")
         return;
-    m_work.m_editor.m_image->Load(filename);
-    m_updateThread->UpdateImage(m_work.m_editor.m_image);
+    m_work.m_currentImage->m_image->Load(filename);
+    m_updateThread->UpdateImage(m_work.m_currentImage->m_image);
 
 
 }
@@ -228,7 +228,7 @@ void MainWindow::on_btnSave_clicked()
     if (filename=="")
         return;
 
-    m_work.m_editor.m_image->Save(filename);
+    m_work.m_currentImage->m_image->Save(filename);
 
 }
 
@@ -241,14 +241,14 @@ void MainWindow::on_chkGrid_clicked(bool checked)
 
 void MainWindow::on_cmbBackgroundMain_currentIndexChanged(int index)
 {
-    m_work.m_editor.m_image->setBackground(index);
+    m_work.m_currentImage->m_image->setBackground(index);
     Data::data.redrawOutput = true;
 }
 
 
 void MainWindow::on_btnNew_clicked()
 {
-    m_work.m_editor.m_image->Clear();
+    m_work.m_currentImage->m_image->Clear();
     Data::data.Redraw();
 }
 
@@ -263,4 +263,15 @@ void MainWindow::on_btnExportImage_clicked()
     m_updateThread->m_tmpImage->save(fileName);
 
 
+}
+
+void MainWindow::on_b_clicked()
+{
+
+    m_work.New(rand()%m_work.m_types.count());
+}
+
+void MainWindow::on_lstImages_clicked(const QModelIndex &index)
+{
+    m_work.SetImage(index.row());
 }

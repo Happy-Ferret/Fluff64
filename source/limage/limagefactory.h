@@ -3,16 +3,19 @@
 
 #include "source/limage/limageqimage.h"
 #include "source/limage/multicolorimage.h"
+#include "source/limage/standardcolorimage.h"
 
 class LImageFactory {
 public:
-    enum Type { QImage, MultiColor };
+    enum Type { QImage, MultiColorBitmap, HiresBitmap };
 
     static LImage* Create(Type t) {
         if (t == Type::QImage)
             return new LImageQImage();
-        if (t == Type::MultiColor)
+        if (t == Type::MultiColorBitmap)
             return new MultiColorImage();
+        if (t == Type::HiresBitmap)
+            return new StandardColorImage();
 
         qDebug() << "ERROR: LImageFactory could not find type " << t;
         return nullptr;

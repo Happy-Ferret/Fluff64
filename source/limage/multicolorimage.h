@@ -13,14 +13,14 @@ public:
     PixelChar();
     unsigned char p[8];
     unsigned char c[4];
-    unsigned char get(int x, int y);
-    void set(int x, int y, unsigned char color);
+    unsigned char get(int x, int y, unsigned char bitMask);
+    void set(int x, int y, unsigned char color, unsigned char bitMask, unsigned char maxCol, unsigned char minCol);
     void Clear(unsigned char background);
     QString bitmapToAssembler();
     QString colorMapToAssembler();
     QString colorToAssembler();
-    void Reorganize();
-    int Count(unsigned int col);
+    void Reorganize(unsigned char bitMask, unsigned char Scale,unsigned char minCol, unsigned char maxCol);
+    int Count(unsigned int col, unsigned char bitMask, unsigned char Scale);
     unsigned char reverse(unsigned char b) {
        b = (b & 0xF0) >> 4 | (b & 0x0F) << 4;
        b = (b & 0xCC) >> 2 | (b & 0x33) << 2;
@@ -35,6 +35,12 @@ class MultiColorImage  : public LImage
 public:
     unsigned char m_version = 1;
     QString m_ID = "LMC";
+    unsigned char m_bitMask = 0b11;
+    unsigned char m_scale = 2;
+    unsigned char m_noColors = 4;
+    unsigned char m_minCol = 1;
+
+
     MultiColorImage();
     PixelChar m_data[40*25];
     PixelChar& getPixelChar(int x, int y);
@@ -67,7 +73,7 @@ public:
 //    void ToQImage(LColorList& lst, QImage* img, float zoom = 1, QPoint center = QPoint(160,100));
     void fromQImage(QImage* img, LColorList& lst);
 
-    void CopyFrom(MultiColorImage& mc);
+    void CopyFrom(LImage* mc) override;
 
 
     void ExportAsm(QString filename) override;

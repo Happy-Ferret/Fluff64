@@ -20,15 +20,15 @@ void WorkerThread::UpdateDrawing()
     if (m_isPanning)
         return;
 
-    m_work->m_editor.m_temp->CopyFrom(m_work->m_editor.m_image);
+    m_work->m_currentImage->m_temp->CopyFrom(m_work->m_currentImage->m_image);
 
     QPoint pos = (m_currentPos-m_zoomCenter)*m_zoom + m_zoomCenter ;
 
 
-    if (pos.x()>=0 && pos.x()<m_work->m_editor.m_image->m_width &&
-       pos.y()>=0 && pos.y()<m_work->m_editor.m_image->m_height) {
+    if (pos.x()>=0 && pos.x()<m_work->m_currentImage->m_image->m_width &&
+       pos.y()>=0 && pos.y()<m_work->m_currentImage->m_image->m_height) {
 
-        LImage* img = (LImage*)m_work->m_editor.m_image;
+        LImage* img = (LImage*)m_work->m_currentImage->m_image;
         isPreview = false;
 
         //qDebug() << m_currentButton;
@@ -41,7 +41,7 @@ void WorkerThread::UpdateDrawing()
             col = img->m_background;
 
         if (isPreview)
-            img = (LImage*)m_work->m_editor.m_temp;
+            img = (LImage*)m_work->m_currentImage->m_temp;
 
         m_toolBox->m_current->Perform(pos.x(), pos.y(), col, img, isPreview, m_currentButton);
 
@@ -59,8 +59,8 @@ void WorkerThread::UpdateDrawing()
 void WorkerThread::UpdateMousePosition()
 {
     QPointF pos = QCursor::pos() - ui->lblImage->mapToGlobal(ui->lblImage->rect().topLeft());
-    pos.setX(pos.x()/(float)ui->lblImage->width()*m_work->m_editor.m_image->m_width);
-    pos.setY(pos.y()/(float)ui->lblImage->height()*m_work->m_editor.m_image->m_height);
+    pos.setX(pos.x()/(float)ui->lblImage->width()*m_work->m_currentImage->m_image->m_width);
+    pos.setY(pos.y()/(float)ui->lblImage->height()*m_work->m_currentImage->m_image->m_height);
     m_prevPos = m_currentPos;
     m_currentPos = QPoint(pos.x(), pos.y());
     //    qDebug() << QApplication()::mouseButtons();
@@ -116,9 +116,9 @@ void WorkerThread::run()
             Data::data.redrawInput = false;
         }
         if (Data::data.redrawOutput) {
-            LImage* img = m_work->m_editor.m_image;
+            LImage* img = m_work->m_currentImage->m_image;
             if (isPreview) {
-                img = m_work->m_editor.m_temp;
+                img = m_work->m_currentImage->m_temp;
 
             }
 
@@ -139,7 +139,7 @@ void WorkerThread::run()
 
 
 
-        QThread::msleep(5);
+        QThread::msleep(2);
     }
 
 }

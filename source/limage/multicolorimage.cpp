@@ -2,6 +2,8 @@
 #include <QDebug>
 #include <QFile>
 #include <QTextStream>
+#include "source/limage/standardcolorimage.h"
+#include <typeinfo>
 
 MultiColorImage::MultiColorImage()
 {
@@ -19,13 +21,13 @@ void MultiColorImage::setPixel(int x, int y, unsigned int color)
         return;
     PixelChar& pc = getPixelChar(x,y);
 
-    pc.Reorganize();
+    pc.Reorganize(m_bitMask, m_scale,m_minCol, m_noColors);
 
-    int ix = x % 4;//- (dx*40);
+    int ix = x % (8/m_scale);//- (dx*40);
     int iy = y % 8;//- (dy*25);
 
     //if (ix==0 || ix == 2 || ix == 4 || ix == 6)
-    pc.set(2*ix, iy, color);
+    pc.set(m_scale*ix, iy, color, m_bitMask, m_noColors, m_minCol);
 
 }
 
@@ -36,10 +38,10 @@ unsigned int MultiColorImage::getPixel(int x, int y)
         return 0;
     PixelChar& pc = getPixelChar(x,y);
 
-    int ix = x % 4;//- (dx*40);
+    int ix = x % (8/m_scale);//- (dx*40);
     int iy = y % 8;//- (dy*25);
 
-    return pc.get(2*ix, iy);
+    return pc.get(m_scale*ix, iy, m_bitMask);
 
 }
 
@@ -58,8 +60,9 @@ void MultiColorImage::setBackground(unsigned int col)
 
 void MultiColorImage::Reorganize()
 {
+#pragma omp parallel for
     for (int i=0;i<40*25;i++)
-        m_data[i].Reorganize();
+        m_data[i].Reorganize(m_bitMask, m_scale, m_minCol, m_noColors);
 }
 
 void MultiColorImage::Save(QString filename)
@@ -106,25 +109,36 @@ bool MultiColorImage::Load(QString filename)
 
 void MultiColorImage::fromQImage(QImage *img, LColorList &lst)
 {
-    for (int i=0;i<160;i++)
-        for (int j=0;j<200;j++) {
-            unsigned char col = lst.getIndex(QColor(img->pixel(2*i, j)));
+#pragma omp parallel for
+    for (int i=0;i<m_width;i++)
+        for (int j=0;j<m_height;j++) {
+            unsigned char col = lst.getIndex(QColor(img->pixel(m_scale*i, j)));
             setPixel(i,j,col);
         }
  //   Reorganize();
 
 }
 
-void MultiColorImage::CopyFrom(MultiColorImage &mc)
+void MultiColorImage::CopyFrom(LImage* img)
 {
-    m_background = mc.m_background;
-    m_border = mc.m_border;
-    for(int i=0;i<25*40;i++) {
-      for (int j=0;j<8;j++)
-        m_data[i].p[j] = mc.m_data[i].p[j];
-      for (int j=0;j<4;j++)
-        m_data[i].c[j] = mc.m_data[i].c[j];
+    if ((typeid(*img) == typeid(MultiColorImage)) || (typeid(*img) == typeid(StandardColorImage))) {
+        MultiColorImage* mc = (MultiColorImage*)img;
+         m_background = mc->m_background;
+         m_border = mc->m_border;
+#pragma omp parallel for
+         for(int i=0;i<25*40;i++) {
+             for (int j=0;j<8;j++)
+                 m_data[i].p[j] = mc->m_data[i].p[j];
+             for (int j=0;j<4;j++)
+                 m_data[i].c[j] = mc->m_data[i].c[j];
+         }
     }
+    else
+    {
+        LImage::CopyFrom(img);
+        return;
+    }
+
 }
 
 void MultiColorImage::ExportAsm(QString filename)
@@ -238,7 +252,7 @@ void MultiColorImage::Clear()
 
 PixelChar &MultiColorImage::getPixelChar(int x, int y)
 {
-    int dx = x/4;
+    int dx = x/(8/m_scale);
     int dy = y/8;
     return m_data[dx + 40*dy];
 
@@ -249,18 +263,18 @@ PixelChar::PixelChar()
     Clear(0);
 }
 
-unsigned char PixelChar::get(int x, int y)
+unsigned char PixelChar::get(int x, int y, unsigned char bitMask)
 {
     if (x<0 || x>=8 || y<0 || y>=8)
         return 0;
 
-    unsigned char pp = (p[y]>>x) & 0b11;
+    unsigned char pp = (p[y]>>x) & bitMask;
 
     return c[pp];
 
 }
 
-void PixelChar::set(int x, int y, unsigned char color)
+void PixelChar::set(int x, int y, unsigned char color, unsigned char bitMask, unsigned char maxCol, unsigned char minCol)
 {
     if (x<0 || x>=8 || y<0 || y>=8) {
         qDebug() << "Trying to set " << x << ", " << y << " out of bounds";
@@ -270,7 +284,7 @@ void PixelChar::set(int x, int y, unsigned char color)
 
      unsigned char winner = 254;
     // Does color exist in map?
-    for (int i=0;i<4;i++) {
+    for (int i=0;i<maxCol;i++) {
         if (c[i] == color) {
             winner = i;
             break;
@@ -279,26 +293,36 @@ void PixelChar::set(int x, int y, unsigned char color)
 
     if (winner==254) {// && color!=c[0]) {
 
-        if (c[1]==255) winner=1;
+        for (int j=minCol;j<maxCol;j++)
+            if (c[j]==255) {
+                winner = j;
+                break;
+            }
+
+
+/*        if (c[1]==255) winner=1;
         else
         if (c[2]==255) winner=2;
         else
         if (c[3]==255) winner=3;
-        else {
+        else */
+        // No found
+        if (winner==254)
+        {
             //winner = 3;
-            winner = (p[y]>>x) & 0b11;
+            winner = (p[y]>>x) & bitMask;
             if (winner==0)
-                winner = 3;
+                winner = maxCol-1;
 
         }
 
-        if (winner>=1)
+        if (winner>=minCol)
             c[winner] = color;
 
     }
 
     // Clear
-    unsigned int f = ~(0b11 << x);
+    unsigned int f = ~(bitMask << x);
     p[y] &= f;
     // Add
     p[y] |= winner<<x;
@@ -341,10 +365,10 @@ QString PixelChar::colorToAssembler()
 
 }
 
-void PixelChar::Reorganize()
+void PixelChar::Reorganize(unsigned char bitMask, unsigned char scale, unsigned char minCol, unsigned char maxCol)
 {
-    for (int i=1;i<4;i++) {
-        unsigned int cnt = Count(i);
+    for (int i=minCol;i<maxCol;i++) {
+        unsigned int cnt = Count(i, bitMask, scale);
         if ((cnt == 0)) {
             c[i] = 255;
            // qDebug() << "REMOVING COLOR";
@@ -352,18 +376,20 @@ void PixelChar::Reorganize()
     }
 }
 
-int PixelChar::Count(unsigned int val)
+int PixelChar::Count(unsigned int col, unsigned char bitMask, unsigned char scale)
 {
     int cnt=0;
-    for (int i=0;i<4;i++)
+    for (int i=0;i<8/scale;i++)
         for (int j=0;j<8;j++)
-            if ( ((p[j]>>2*i) & 0b11)==val)
+            if ( ((p[j]>>scale*i) & bitMask)==col)
                 cnt++;
     return cnt;
 }
 
 void MultiColorImage::ToQImage(LColorList& lst, QImage* img, float zoom, QPoint center)
 {
+//    return;
+#pragma omp parallel for
     for (int i=0;i<m_width;i++)
         for (int j=0;j<m_height;j++) {
 
@@ -371,8 +397,10 @@ void MultiColorImage::ToQImage(LColorList& lst, QImage* img, float zoom, QPoint 
             float yp = ((j-center.y())*zoom) + center.y();
 
             unsigned int col = getPixel(xp,yp);
-            img->setPixel(2*i,j,(lst.m_list[col].color).rgb());
-            img->setPixel(2*i+1,j,lst.m_list[col].color.rgb());
+            QRgb rgbCol = (lst.m_list[col].color).rgb();
+            for (int k=0;k<m_scale;k++)
+                img->setPixel(m_scale*i + k,j,rgbCol);
+//            img->setPixel(2*i+1,j,lst.m_list[col].color.rgb());
         }
     //return img;
 }

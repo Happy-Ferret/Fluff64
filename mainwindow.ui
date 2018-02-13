@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1298</width>
-    <height>842</height>
+    <width>1391</width>
+    <height>730</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,9 +20,9 @@
    <widget class="QTabWidget" name="tabWidget">
     <property name="geometry">
      <rect>
-      <x>30</x>
+      <x>120</x>
       <y>10</y>
-      <width>1241</width>
+      <width>921</width>
       <height>781</height>
      </rect>
     </property>
@@ -38,52 +38,13 @@
        <rect>
         <x>10</x>
         <y>10</y>
-        <width>1171</width>
+        <width>891</width>
         <height>721</height>
        </rect>
       </property>
       <property name="title">
        <string/>
       </property>
-      <widget class="QPushButton" name="btnExportAsm">
-       <property name="geometry">
-        <rect>
-         <x>840</x>
-         <y>580</y>
-         <width>91</width>
-         <height>28</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Export Asm</string>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="btnLoad">
-       <property name="geometry">
-        <rect>
-         <x>840</x>
-         <y>500</y>
-         <width>91</width>
-         <height>28</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Load</string>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="btnSave">
-       <property name="geometry">
-        <rect>
-         <x>840</x>
-         <y>540</y>
-         <width>91</width>
-         <height>28</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Save</string>
-       </property>
-      </widget>
       <widget class="QLabel" name="lblImage">
        <property name="geometry">
         <rect>
@@ -102,100 +63,6 @@
        <property name="scaledContents">
         <bool>true</bool>
        </property>
-      </widget>
-      <widget class="QGroupBox" name="groupBox_3">
-       <property name="geometry">
-        <rect>
-         <x>850</x>
-         <y>10</y>
-         <width>151</width>
-         <height>431</height>
-        </rect>
-       </property>
-       <property name="title">
-        <string>Toolbox</string>
-       </property>
-       <widget class="QWidget" name="gridLayoutWidget">
-        <property name="geometry">
-         <rect>
-          <x>9</x>
-          <y>19</y>
-          <width>131</width>
-          <height>401</height>
-         </rect>
-        </property>
-        <layout class="QGridLayout" name="lyToolbox"/>
-       </widget>
-      </widget>
-      <widget class="QGroupBox" name="groupBox_5">
-       <property name="geometry">
-        <rect>
-         <x>1000</x>
-         <y>10</y>
-         <width>171</width>
-         <height>431</height>
-        </rect>
-       </property>
-       <property name="title">
-        <string>Colors</string>
-       </property>
-       <widget class="QWidget" name="gridLayoutWidget_2">
-        <property name="geometry">
-         <rect>
-          <x>9</x>
-          <y>19</y>
-          <width>71</width>
-          <height>401</height>
-         </rect>
-        </property>
-        <layout class="QGridLayout" name="layoutColorsEdit"/>
-       </widget>
-       <widget class="QComboBox" name="cmbBackgroundMain">
-        <property name="geometry">
-         <rect>
-          <x>90</x>
-          <y>40</y>
-          <width>61</width>
-          <height>41</height>
-         </rect>
-        </property>
-       </widget>
-       <widget class="QComboBox" name="cmbBorderMain">
-        <property name="geometry">
-         <rect>
-          <x>90</x>
-          <y>120</y>
-          <width>61</width>
-          <height>41</height>
-         </rect>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label_6">
-        <property name="geometry">
-         <rect>
-          <x>90</x>
-          <y>10</y>
-          <width>71</width>
-          <height>16</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Background</string>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label_7">
-        <property name="geometry">
-         <rect>
-          <x>90</x>
-          <y>90</y>
-          <width>55</width>
-          <height>16</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Border</string>
-        </property>
-       </widget>
       </widget>
       <widget class="QLabel" name="lblGrid">
        <property name="enabled">
@@ -241,203 +108,19 @@
         </item>
        </layout>
       </widget>
-      <widget class="QPushButton" name="btnNew">
-       <property name="geometry">
-        <rect>
-         <x>950</x>
-         <y>500</y>
-         <width>91</width>
-         <height>28</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>New</string>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="btnExportImage">
-       <property name="geometry">
-        <rect>
-         <x>950</x>
-         <y>580</y>
-         <width>91</width>
-         <height>28</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Export image</string>
-       </property>
-      </widget>
      </widget>
     </widget>
     <widget class="QWidget" name="tab_2">
      <attribute name="title">
       <string>Import</string>
      </attribute>
-     <widget class="QGroupBox" name="groupBox_2">
-      <property name="geometry">
-       <rect>
-        <x>790</x>
-        <y>80</y>
-        <width>421</width>
-        <height>281</height>
-       </rect>
-      </property>
-      <property name="title">
-       <string>GroupBox</string>
-      </property>
-      <widget class="QSlider" name="hsSat">
-       <property name="geometry">
-        <rect>
-         <x>90</x>
-         <y>110</y>
-         <width>321</width>
-         <height>22</height>
-        </rect>
-       </property>
-       <property name="value">
-        <number>50</number>
-       </property>
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_2">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>50</y>
-         <width>55</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Shift</string>
-       </property>
-      </widget>
-      <widget class="QSlider" name="hsShift">
-       <property name="geometry">
-        <rect>
-         <x>90</x>
-         <y>50</y>
-         <width>321</width>
-         <height>22</height>
-        </rect>
-       </property>
-       <property name="value">
-        <number>50</number>
-       </property>
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>20</y>
-         <width>55</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Gamma</string>
-       </property>
-      </widget>
-      <widget class="QSlider" name="hsHsv">
-       <property name="geometry">
-        <rect>
-         <x>90</x>
-         <y>80</y>
-         <width>321</width>
-         <height>22</height>
-        </rect>
-       </property>
-       <property name="value">
-        <number>50</number>
-       </property>
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_4">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>110</y>
-         <width>81</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Saturation</string>
-       </property>
-      </widget>
-      <widget class="QSlider" name="hsContrast">
-       <property name="geometry">
-        <rect>
-         <x>90</x>
-         <y>20</y>
-         <width>321</width>
-         <height>22</height>
-        </rect>
-       </property>
-       <property name="value">
-        <number>25</number>
-       </property>
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_5">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>140</y>
-         <width>81</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Blur</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_3">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>80</y>
-         <width>55</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>HSV</string>
-       </property>
-      </widget>
-      <widget class="QSlider" name="hsBlur">
-       <property name="geometry">
-        <rect>
-         <x>90</x>
-         <y>140</y>
-         <width>321</width>
-         <height>22</height>
-        </rect>
-       </property>
-       <property name="value">
-        <number>0</number>
-       </property>
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-     </widget>
      <widget class="QGroupBox" name="groupBox">
       <property name="geometry">
        <rect>
         <x>10</x>
         <y>60</y>
-        <width>771</width>
-        <height>561</height>
+        <width>721</width>
+        <height>631</height>
        </rect>
       </property>
       <property name="title">
@@ -447,9 +130,9 @@
        <property name="geometry">
         <rect>
          <x>19</x>
-         <y>19</y>
-         <width>731</width>
-         <height>501</height>
+         <y>9</y>
+         <width>571</width>
+         <height>371</height>
         </rect>
        </property>
        <layout class="QHBoxLayout" name="horizontalLayout">
@@ -465,19 +148,177 @@
         </item>
        </layout>
       </widget>
-     </widget>
-     <widget class="QPushButton" name="pushButton">
-      <property name="geometry">
-       <rect>
-        <x>790</x>
-        <y>370</y>
-        <width>93</width>
-        <height>28</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Import</string>
-      </property>
+      <widget class="QGroupBox" name="groupBox_2">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>450</y>
+         <width>401</width>
+         <height>161</height>
+        </rect>
+       </property>
+       <property name="title">
+        <string>GroupBox</string>
+       </property>
+       <widget class="QSlider" name="hsSat">
+        <property name="geometry">
+         <rect>
+          <x>90</x>
+          <y>110</y>
+          <width>321</width>
+          <height>22</height>
+         </rect>
+        </property>
+        <property name="value">
+         <number>50</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_2">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>50</y>
+          <width>55</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Shift</string>
+        </property>
+       </widget>
+       <widget class="QSlider" name="hsShift">
+        <property name="geometry">
+         <rect>
+          <x>90</x>
+          <y>50</y>
+          <width>321</width>
+          <height>22</height>
+         </rect>
+        </property>
+        <property name="value">
+         <number>50</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>20</y>
+          <width>55</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Gamma</string>
+        </property>
+       </widget>
+       <widget class="QSlider" name="hsHsv">
+        <property name="geometry">
+         <rect>
+          <x>90</x>
+          <y>80</y>
+          <width>321</width>
+          <height>22</height>
+         </rect>
+        </property>
+        <property name="value">
+         <number>50</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_4">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>110</y>
+          <width>81</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Saturation</string>
+        </property>
+       </widget>
+       <widget class="QSlider" name="hsContrast">
+        <property name="geometry">
+         <rect>
+          <x>90</x>
+          <y>20</y>
+          <width>321</width>
+          <height>22</height>
+         </rect>
+        </property>
+        <property name="value">
+         <number>25</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_5">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>140</y>
+          <width>81</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Blur</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_3">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>80</y>
+          <width>55</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>HSV</string>
+        </property>
+       </widget>
+       <widget class="QSlider" name="hsBlur">
+        <property name="geometry">
+         <rect>
+          <x>90</x>
+          <y>140</y>
+          <width>321</width>
+          <height>22</height>
+         </rect>
+        </property>
+        <property name="value">
+         <number>0</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QPushButton" name="pushButton">
+       <property name="geometry">
+        <rect>
+         <x>430</x>
+         <y>540</y>
+         <width>93</width>
+         <height>28</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Import</string>
+       </property>
+      </widget>
      </widget>
      <widget class="QGroupBox" name="grpColors">
       <property name="geometry">
@@ -525,13 +366,171 @@
      </widget>
     </widget>
    </widget>
+   <widget class="QGroupBox" name="groupBox_5">
+    <property name="geometry">
+     <rect>
+      <x>1200</x>
+      <y>40</y>
+      <width>171</width>
+      <height>431</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Colors</string>
+    </property>
+    <widget class="QWidget" name="gridLayoutWidget_6">
+     <property name="geometry">
+      <rect>
+       <x>9</x>
+       <y>19</y>
+       <width>71</width>
+       <height>401</height>
+      </rect>
+     </property>
+     <layout class="QGridLayout" name="layoutColorsEdit_3"/>
+    </widget>
+    <widget class="QComboBox" name="cmbBackgroundMain_3">
+     <property name="geometry">
+      <rect>
+       <x>90</x>
+       <y>40</y>
+       <width>61</width>
+       <height>41</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QComboBox" name="cmbBorderMain_3">
+     <property name="geometry">
+      <rect>
+       <x>90</x>
+       <y>120</y>
+       <width>61</width>
+       <height>41</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_10">
+     <property name="geometry">
+      <rect>
+       <x>90</x>
+       <y>10</y>
+       <width>71</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Background</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_11">
+     <property name="geometry">
+      <rect>
+       <x>90</x>
+       <y>90</y>
+       <width>55</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Border</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="groupBox_3">
+    <property name="geometry">
+     <rect>
+      <x>1050</x>
+      <y>40</y>
+      <width>151</width>
+      <height>431</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Toolbox</string>
+    </property>
+    <widget class="QWidget" name="gridLayoutWidget_5">
+     <property name="geometry">
+      <rect>
+       <x>9</x>
+       <y>19</y>
+       <width>131</width>
+       <height>401</height>
+      </rect>
+     </property>
+     <layout class="QGridLayout" name="lyToolbox_3"/>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="gridLayoutWidget_7">
+    <property name="geometry">
+     <rect>
+      <x>1160</x>
+      <y>520</y>
+      <width>195</width>
+      <height>135</height>
+     </rect>
+    </property>
+    <layout class="QGridLayout" name="gridLayout" rowstretch="0,0,0,0" columnstretch="0,0" rowminimumheight="0,0,0,0" columnminimumwidth="0,0">
+     <item row="1" column="0">
+      <widget class="QPushButton" name="btnSave">
+       <property name="text">
+        <string>Save</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QPushButton" name="btnNew">
+       <property name="text">
+        <string>Clear</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QPushButton" name="b">
+       <property name="text">
+        <string>New</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QPushButton" name="btnExportAsm">
+       <property name="text">
+        <string>Export Asm</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QPushButton" name="btnLoad">
+       <property name="text">
+        <string>Load</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QPushButton" name="btnExportImage">
+       <property name="text">
+        <string>Export image</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QListView" name="lstImages">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>41</y>
+      <width>111</width>
+      <height>331</height>
+     </rect>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1298</width>
+     <width>1391</width>
      <height>26</height>
     </rect>
    </property>

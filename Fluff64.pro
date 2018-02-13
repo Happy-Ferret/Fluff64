@@ -22,6 +22,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
+QMAKE_CXXFLAGS += -fopenmp
+LIBS += -fopenmp
 
 SOURCES += main.cpp\
         mainwindow.cpp \
@@ -35,7 +37,10 @@ SOURCES += main.cpp\
     source/workerthread.cpp \
     source/limage/limageqimage.cpp \
     source/limage/multicolorimage.cpp \
-    source/limage/limagefactory.cpp
+    source/limage/limagefactory.cpp \
+    source/limage/standardcolorimage.cpp \
+    imageeditor.cpp \
+    dialognewimage.cpp
 
 HEADERS  += mainwindow.h \
     source/limage/limage.h \
@@ -49,9 +54,13 @@ HEADERS  += mainwindow.h \
     source/workerthread.h \
     source/limage/limageqimage.h \
     source/limage/multicolorimage.h \
-    source/limage/limagefactory.h
+    source/limage/limagefactory.h \
+    source/limage/standardcolorimage.h \
+    imageeditor.h \
+    dialognewimage.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    dialognewimage.ui
 
 RESOURCES += \
     resources.qrc

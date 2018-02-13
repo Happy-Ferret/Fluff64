@@ -46,11 +46,14 @@ public:
 
     virtual void ToQImage(LColorList& lst, QImage* img, float zoom = 1, QPoint center = QPoint(160,100)) = 0;
 
-    void CopyFrom(LImage* img) {
+    virtual void CopyFrom(LImage* img) {
+        #pragma omp parallel for
+
         for (int i=0;i<m_width;i++)
             for (int j=0;j<m_height;j++)
                 setPixel(i,j,img->getPixel(i,j));
     }
+
 
     void CopyTo(LImage* img);
 

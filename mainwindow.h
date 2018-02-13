@@ -13,6 +13,8 @@
 #include <QPointF>
 #include <source/toolbox.h>
 #include "source/workerthread.h"
+#include "imageeditor.h"
+
 
 namespace Ui {
     class MainWindow;
@@ -52,6 +54,10 @@ public slots:
     void updateImage() {
         ui->lblImage->setPixmap(m_updateThread->m_pixMapImage);
         m_grid.ApplyToLabel(ui->lblGrid);
+        if (Data::data.redrawFileList) {
+            m_work.UpdateListView(ui->lstImages);
+            Data::data.redrawFileList = false;
+        }
 
     }
 
@@ -97,6 +103,10 @@ private slots:
     void on_btnNew_clicked();
 
     void on_btnExportImage_clicked();
+
+    void on_b_clicked();
+
+    void on_lstImages_clicked(const QModelIndex &index);
 
 private:
     Ui::MainWindow *ui;

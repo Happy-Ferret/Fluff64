@@ -1,13 +1,50 @@
 #include "imageworker.h"
 #include <QDebug>
+#include <QStandardItemModel>
 
 ImageWorker::ImageWorker()
 {
     m_colorList.InitC64();
-    m_editor.m_colorList = &m_colorList;
     m_converter.m_colorList = &m_colorList;
 
+    m_types.append(ImageType("Fake C64 png", LImageFactory::Type::QImage));
+    m_types.append(ImageType("C64 MultiColor bitmap", LImageFactory::Type::MultiColorBitmap));
+    m_types.append(ImageType("C64 Hires Bitmap", LImageFactory::Type::HiresBitmap));
 
+
+    New(1);
+}
+
+ImageWorker::~ImageWorker()
+{
+    for (ImageEdit* ie: m_images)
+        delete ie;
+    m_images.clear();
+}
+
+void ImageWorker::UpdateListView(QListView *lst)
+{
+    QStandardItemModel *model = new QStandardItemModel( m_images.count(), 1, nullptr);
+    for (int i=0;i<m_images.count();i++) {
+        QStandardItem *item = new QStandardItem(m_images[i]->m_name);
+        model->setItem(i,0, item);
+    }
+
+    lst->setModel(model);
+
+}
+
+void ImageWorker::New(int type)
+{
+    m_currentImage = new ImageEdit(&m_types[type], "Type " + QString::number(type));
+    m_images.append(m_currentImage);
+    Data::data.redrawFileList = true;
+}
+
+void ImageWorker::SetImage(int cur)
+{
+    if (cur>=0 && cur<m_images.count())
+        m_currentImage = m_images[cur];
 }
 
 void ImageWorker::Import(QString filename)
@@ -35,6 +72,7 @@ ImageConverter::ImageConverter(LImageFactory::Type t)
     m_imageType = t;
 }
 
+
 void ImageConverter::Convert()
 {
     m_output.Release();
@@ -58,35 +96,3 @@ void ImageConverter::Blur()
 
 }
 
-ImageEditor::ImageEditor(LImageFactory::Type t)
-{
-    m_imageType = t;
-    Initialize();
-}
-
-void ImageEditor::Initialize()
-{
-    m_image = LImageFactory::Create(m_imageType);
-    m_temp = LImageFactory::Create(m_imageType);
-}
-
-void ImageEditor::Undo()
-{
-    if (m_undo.count()<1)
-        return;
-    m_image->CopyFrom(m_undo[m_undo.count()-1]);
-    delete m_undo[m_undo.count()-1];
-    m_undo.remove(m_undo.count()-1);
-    Data::data.redrawOutput = true;
-}
-
-void ImageEditor::AddUndo()
-{
-    m_undo.append(LImageFactory::Create(m_imageType));
-    m_undo[m_undo.count()-1]->CopyFrom(m_image);
-    if (m_undo.count()>m_undoMax) {
-        delete m_undo[0];
-        m_undo.remove(0);
-    }
-
-}
