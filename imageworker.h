@@ -8,35 +8,8 @@
 #include "source/limage/multicolorimage.h"
 #include "source/limage/limagefactory.h"
 #include "imageeditor.h"
+#include "source/limage/limagefactory.h"
 #include <QListView>
-
-class ImageConverter {
-public:
-    LColorList* m_colorList = nullptr;
-    LImageFactory::Type m_imageType;
-
-    ImageConverter(LImageFactory::Type type);
-
-    LImageQImage m_input;
-    LImageQImage m_work;
-    LImageQImage m_output;
-    MultiColorImage m_mcImage;
-
-    float m_contrast = 1;
-    float m_shift = 0;
-    float m_hsv = 0.5;
-    float m_saturation = 0.5;
-    float m_blur;
-
-
-
-    void Load(QString filename);
-    void Convert();
-    void Blur();
-
-
-};
-
 
 
 class ImageWorker
@@ -44,9 +17,8 @@ class ImageWorker
 public:
     ImageWorker();
     ~ImageWorker();
-    LImageFactory::Type imageType = LImageFactory::MultiColorBitmap;
+    //LImageFactory::Type imageType = LImageFactory::MultiColorBitmap;
 
-    ImageConverter m_converter = ImageConverter(imageType);
     //ImageEdit m_editor = ImageEdit(imageType);
 
     LColorList m_colorList;
@@ -56,11 +28,12 @@ public:
     QVector<ImageType> m_types;
     void UpdateListView(QListView* lst);
 
+    QStringList getImageTypes();
+
     void New(int type);
     void SetImage(int cur);
 
-    void Import(QString filename);
-    void Load(QString filename);
+//    void Load(QString filename);
 
     void Blur();
     void Convert();

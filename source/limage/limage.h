@@ -25,6 +25,12 @@ public:
     float m_scaleX = 0.6f;
     unsigned int m_border=0, m_background=0;
 
+    unsigned char m_bitMask = 0b11;
+    unsigned char m_scale = 2;
+    unsigned char m_noColors = 4;
+    unsigned char m_minCol = 1;
+
+
     virtual void Initialize(int width, int height) = 0;
 
     virtual void setPixel(int x, int y, unsigned int color) = 0;
@@ -58,6 +64,7 @@ public:
     void CopyTo(LImage* img);
 
     virtual void Clear() = 0;
+    virtual void fromQImage(QImage* img, LColorList& lst) = 0;
 
     virtual void ExportAsm(QString filename)  { qDebug() << "ASM Write not supported"; }
 

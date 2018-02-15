@@ -118,10 +118,13 @@ void LColorList::CreateUI(QLayout* ly, int type)
         b->setMaximumWidth(40);
         b->setMinimumWidth(40);
         b->setAutoFillBackground( true );
-        if (type==0)
-            QObject::connect( b, &QPushButton::clicked,  [=](){ handleButtonImport(j); } );
-        if (type==1)
+        if (type==0) {
+            QObject::connect( b, &QPushButton::clicked,  [=](){ handleButtonImport(j);} );
+        }
+        if (type==1) {
             QObject::connect( b, &QPushButton::clicked,  [=](){ handleButtonEdit(j); } );
+        }
+        //QObject::connect( b, &QPushButton::clicked,  colorValueChanged );
 
 
         ly->addWidget(b);
@@ -146,5 +149,6 @@ void LColorList::handleButtonImport(int data)
         m_buttonsImport[data]->setText("X ");
    }
 
-    Data::data.redrawInput = true;
+    //Data::data.redrawInput = true;
+    emit colorValueChanged();
  }

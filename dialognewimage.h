@@ -2,7 +2,7 @@
 #define DIALOGNEWIMAGE_H
 
 #include <QDialog>
-
+#include <QDebug>
 namespace Ui {
 class DialogNewImage;
 }
@@ -13,7 +13,11 @@ class DialogNewImage : public QDialog
 
 public:
     explicit DialogNewImage(QWidget *parent = 0);
+    void Initialize(QStringList cmbData);
+    int retVal = -1;
     ~DialogNewImage();
+private slots:
+    void slotOk();
 
 private:
     Ui::DialogNewImage *ui;

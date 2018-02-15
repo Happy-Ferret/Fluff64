@@ -40,7 +40,8 @@ SOURCES += main.cpp\
     source/limage/limagefactory.cpp \
     source/limage/standardcolorimage.cpp \
     imageeditor.cpp \
-    dialognewimage.cpp
+    dialognewimage.cpp \
+    dialogimport.cpp
 
 HEADERS  += mainwindow.h \
     source/limage/limage.h \
@@ -57,10 +58,12 @@ HEADERS  += mainwindow.h \
     source/limage/limagefactory.h \
     source/limage/standardcolorimage.h \
     imageeditor.h \
-    dialognewimage.h
+    dialognewimage.h \
+    dialogimport.h
 
 FORMS    += mainwindow.ui \
-    dialognewimage.ui
+    dialognewimage.ui \
+    dialogimport.ui
 
 RESOURCES += \
     resources.qrc

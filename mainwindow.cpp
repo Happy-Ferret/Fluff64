@@ -6,16 +6,17 @@
 #include "data.h"
 #include "source/util/util.h"
 #include <QWheelEvent>
+#include "dialognewimage.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    m_work.m_colorList.CreateUI(ui->layoutColors,0);
+   // m_work.m_colorList.CreateUI(ui->layoutColors,0);
     m_work.m_colorList.CreateUI(ui->layoutColorsEdit_3,1);
-    m_work.m_colorList.FillComboBox(ui->cmbForeground);
-    m_work.m_colorList.FillComboBox(ui->cmbBackground);
+    //m_work.m_colorList.FillComboBox(ui->cmbForeground);
+    //m_work.m_colorList.FillComboBox(ui->cmbBackground);
     m_work.m_colorList.FillComboBox(ui->cmbBackgroundMain_3);
     m_work.m_colorList.FillComboBox(ui->cmbBorderMain_3);
     m_toolBox.Initialize(ui->lyToolbox_3);;
@@ -112,69 +113,17 @@ void MainWindow::keyPressEvent(QKeyEvent *e)
 
 void MainWindow::on_actionImport_triggered()
 {
-    QString fileName = QFileDialog::getOpenFileName(this,
-        tr("Open Image"), "", tr("Image Files (*.png *.jpg *.bmp *.jpeg)"));
-
-    m_work.Import(fileName);
-    m_updateThread->UpdateInput();
-    m_work.Blur();
-
-    m_work.Convert();
-    m_updateThread->UpdateOutput();
 
 }
 
 void MainWindow::on_btnConvert_clicked()
 {
-    m_work.Convert();
-    m_updateThread->UpdateOutput();
+    //m_work.Convert();
+    //m_updateThread->UpdateOutput();
 
 }
-
-void MainWindow::on_hsContrast_sliderMoved(int position)
-{
-    m_work.m_converter.m_contrast = (float)position/100.0*4;;
-    m_work.Convert();
-    m_updateThread->UpdateOutput();
-
-}
-
-void MainWindow::on_hsShift_sliderMoved(int position)
-{
-    m_work.m_converter.m_shift = ((float)position/100.0 - 0.5) * 255;;
-    m_work.Convert();
-    m_updateThread->UpdateOutput();
-
-}
-
-
 void MainWindow::Update()
 {
-
-}
-
-
-void MainWindow::on_hsHsv_sliderMoved(int position)
-{
-    m_work.m_converter.m_hsv = ((float)position/100.0) * 1;;
-    m_work.Convert();
-    m_updateThread->UpdateOutput();
-
-}
-
-void MainWindow::on_hsSat_sliderMoved(int position)
-{
-    m_work.m_converter.m_saturation = ((float)position/100.0) * 1;
-    m_work.Convert();
-    m_updateThread->UpdateOutput();
-
-}
-
-void MainWindow::on_hsBlur_sliderMoved(int position)
-{
-    m_work.m_converter.m_blur = ((float)position/100.0) ;
-    m_work.Blur();
-    m_updateThread->UpdateOutput();
 
 }
 
@@ -190,23 +139,12 @@ void MainWindow::on_btnExportAsm_clicked()
     m_work.m_currentImage->m_image->ExportAsm(fileName);
 }
 
-void MainWindow::on_cmbForeground_activated(int index)
-{
-    m_work.m_converter.m_mcImage.setForeground(index);
-    m_updateThread->UpdateOutput();
-}
-
-void MainWindow::on_cmbBackground_activated(int index)
-{
-    m_work.m_converter.m_mcImage.setBackground(index);
-    m_updateThread->UpdateOutput();
-}
-
 void MainWindow::on_pushButton_clicked()
 {
-    m_work.m_currentImage->m_image->CopyFrom(&m_work.m_converter.m_mcImage);
+/*    m_work.m_currentImage->m_image->CopyFrom(&m_work.m_converter.m_mcImage);
     ui->tabWidget->setCurrentIndex(0);
-    m_updateThread->UpdateImage((LImage*)m_work.m_currentImage->m_image);
+    m_updateThread->UpdateImage((LImage*)m_work.m_currentImage->m_image);*/
+
 }
 
 void MainWindow::on_btnLoad_clicked()
@@ -267,7 +205,14 @@ void MainWindow::on_btnExportImage_clicked()
 
 void MainWindow::on_b_clicked()
 {
-    m_work.New(rand()%m_work.m_types.count());
+
+    DialogNewImage* dNewFile = new DialogNewImage(this);
+    dNewFile->Initialize(m_work.getImageTypes());
+    dNewFile->setModal(true);
+    dNewFile->exec();
+    if (dNewFile->retVal!=-1)
+        m_work.New(dNewFile->retVal);
+    delete dNewFile;
 }
 
 void MainWindow::on_lstImages_clicked(const QModelIndex &index)
@@ -275,4 +220,16 @@ void MainWindow::on_lstImages_clicked(const QModelIndex &index)
     m_work.SetImage(index.row());
     ui->lblImageName->setText(m_work.m_currentImage->m_name  + "(" + m_work.m_currentImage->m_imageType->name + ")");
     Data::data.redrawFileList = true;
+}
+
+void MainWindow::on_btnImport_clicked()
+{
+    DialogImport* di = new DialogImport(this);
+    di->Initialize(m_work.m_currentImage->m_imageType->type, &m_work.m_colorList);
+    di->exec();
+    if (di->m_ok) {
+        m_work.m_currentImage->m_image->CopyFrom(di->m_image);
+        Data::data.redrawOutput = true;
+    }
+
 }

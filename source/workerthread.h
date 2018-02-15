@@ -41,8 +41,6 @@ public:
     QPixmap m_pixMapImage;
     bool isPreview;
 
-    void UpdateInput();
-    void UpdateOutput();
     void UpdateDrawing();
     void UpdateMousePosition();
     void UpdatePanning();

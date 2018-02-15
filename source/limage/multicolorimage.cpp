@@ -299,14 +299,7 @@ void PixelChar::set(int x, int y, unsigned char color, unsigned char bitMask, un
                 break;
             }
 
-
-/*        if (c[1]==255) winner=1;
-        else
-        if (c[2]==255) winner=2;
-        else
-        if (c[3]==255) winner=3;
-        else */
-        // No found
+        // not available slots found
         if (winner==254)
         {
             //winner = 3;

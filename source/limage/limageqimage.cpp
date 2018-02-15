@@ -7,6 +7,7 @@
 LImageQImage::LImageQImage()
 {
     Initialize(320,200);
+    m_scale = 1;
     m_fileExtension = "png";
 }
 
@@ -131,10 +132,12 @@ void LImageQImage::Release()
 
 QImage* LImageQImage::Resize(int x, int y, LColorList& lst, float gamma, float shift, float hsvShift, float sat)
 {
+
+    qDebug() << x;
     QImage* other = new QImage(x,y,QImage::Format_ARGB32);
     float aspect = m_qImage->width()/(float)m_qImage->height();
     float m = max(m_qImage->width(), m_qImage->height());
-    float sx = (float)x/m/2.0;
+    float sx = (float)x/m;
     float sy = (float)y/m;//*aspect;
     hsvShift-=0.5;
     sat-=0.5;
@@ -155,19 +158,21 @@ QImage* LImageQImage::Resize(int x, int y, LColorList& lst, float gamma, float s
         aspectX = 1*(1.4);
         aspectY = 1;
     }
+    aspectY = 1/aspect;
     QColor black(0,0,0);
-    for (int i=0;i<x/2;i++)
+    for (int i=0;i<x;i++)
         for (int j=0;j<y;j++) {
             QColor color = black;
 
 
-            int xx = ((i-x/4)*aspectX + x/4)/sx + addx;
+            int xx = ((i-x/2)*aspectX + x/2)/sx + addx;
             int yy = ((j-y/2)*aspectY + y/2)/sy + addy;
 //            int xx = ((i-x/4)*1.4 + x/4)/sx + addx;
 //            int yy = j/sy + addy;
 
             if (xx>=0 && xx<m_qImage->width() && yy>=0 && yy<m_qImage->height())
                 color = QColor(m_qImage->pixel(xx,yy));
+
             QColor org = color;
             //color = color.toHsv();
 
@@ -187,8 +192,7 @@ QImage* LImageQImage::Resize(int x, int y, LColorList& lst, float gamma, float s
             QColor newCol = lst.getClosestColor(Util::toColor(v));
  //           QColor newCol = lst.getClosestColor(org);
 
-            other->setPixel(2*i,j,newCol.rgb());
-            other->setPixel(2*i+1,j,newCol.rgb());
+            other->setPixel(i,j,newCol.rgb());
 
         }
 
@@ -225,4 +229,14 @@ void LImageQImage::ToQImage(LColorList& lst, QImage* img, float zoom, QPoint cen
             img->setPixel(i,j,lst.m_list[col%16].color.rgb());
         }
     //return img;
+}
+
+void LImageQImage::fromQImage(QImage *img, LColorList &lst)
+{
+    for (int i=0;i<m_qImage->width();i++)
+        for (int j=0;j<m_qImage->height();j++) {
+            unsigned char col = lst.getIndex(QColor(img->pixel(i, j)));
+
+            m_qImage->setPixel(i,j,col);
+        }
 }

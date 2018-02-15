@@ -1,20 +1,6 @@
 #include "workerthread.h"
 
 
-void WorkerThread::UpdateInput()
-{
-    return;
-    /*QPixmap p;
-    p.convertFromImage(*m_work.m_input.m_qImage);
-    ui->lblOne->setPixmap(p);*/
-}
-
-void WorkerThread::UpdateOutput()
-{
-    m_work->Convert();
-    m_work->m_converter.m_output.ApplyToLabel(ui->lblTwo);
-}
-
 void WorkerThread::UpdateDrawing()
 {
     if (m_isPanning)
@@ -110,11 +96,11 @@ void WorkerThread::run()
         UpdatePanning();
         UpdateDrawing();
 
-        if (Data::data.redrawInput) {
+        /*if (Data::data.redrawInput) {
             m_work->Convert();
             UpdateOutput();
             Data::data.redrawInput = false;
-        }
+        }*/
         if (Data::data.redrawOutput) {
             LImage* img = m_work->m_currentImage->m_image;
             if (isPreview) {

@@ -38,8 +38,10 @@ public:
 
 };
 
-class LColorList
+class LColorList : public QObject
 {
+    Q_OBJECT
+
 public:
     LColorList();
 
@@ -59,9 +61,16 @@ public:
 
     int getIndex(QColor c);
 
-    void CreateUI(QLayout* ly, int type);
-    void handleButtonImport(int data);
     void handleButtonEdit(int data);
+
+    void CreateUI(QLayout* ly, int type);
+
+public slots:
+    void handleButtonImport(int data);
+
+
+signals:
+    void colorValueChanged();
 
 };
 

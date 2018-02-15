@@ -33,12 +33,8 @@ public:
 class MultiColorImage  : public LImage
 {
 public:
-    unsigned char m_version = 1;
     QString m_ID = "LMC";
-    unsigned char m_bitMask = 0b11;
-    unsigned char m_scale = 2;
-    unsigned char m_noColors = 4;
-    unsigned char m_minCol = 1;
+    unsigned char m_version = 1;
 
 
     MultiColorImage();
@@ -71,7 +67,7 @@ public:
     void Box(int x, int y, unsigned char col, int size);
 */
 //    void ToQImage(LColorList& lst, QImage* img, float zoom = 1, QPoint center = QPoint(160,100));
-    void fromQImage(QImage* img, LColorList& lst);
+    void fromQImage(QImage* img, LColorList& lst) override;
 
     void CopyFrom(LImage* mc) override;
 

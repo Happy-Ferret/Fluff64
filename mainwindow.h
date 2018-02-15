@@ -14,7 +14,7 @@
 #include <source/toolbox.h>
 #include "source/workerthread.h"
 #include "imageeditor.h"
-
+#include "dialogimport.h"
 
 namespace Ui {
     class MainWindow;
@@ -71,22 +71,10 @@ private slots:
 
     void on_btnConvert_clicked();
 
-    void on_hsContrast_sliderMoved(int position);
-
-    void on_hsShift_sliderMoved(int position);
-
-    void on_hsHsv_sliderMoved(int position);
-
-    void on_hsSat_sliderMoved(int position);
-
-    void on_hsBlur_sliderMoved(int position);
 
 
     void on_btnExportAsm_clicked();
 
-    void on_cmbForeground_activated(int index);
-
-    void on_cmbBackground_activated(int index);
 
     void on_pushButton_clicked();
 
@@ -107,6 +95,8 @@ private slots:
     void on_b_clicked();
 
     void on_lstImages_clicked(const QModelIndex &index);
+
+    void on_btnImport_clicked();
 
 private:
     Ui::MainWindow *ui;

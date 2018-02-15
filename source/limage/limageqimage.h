@@ -20,6 +20,7 @@ public:
 
 
     void ToQImage(LColorList& lst, QImage* img, float zoom, QPoint center) override;
+    void fromQImage(QImage* img, LColorList& lst) override;
 
 
     void Release() override;
