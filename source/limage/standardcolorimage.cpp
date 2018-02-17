@@ -11,4 +11,6 @@ StandardColorImage::StandardColorImage()
     m_scale = 1;
     m_minCol = 0;
     Clear();
+    m_type = LImage::Type::HiresBitmap;
+
 }

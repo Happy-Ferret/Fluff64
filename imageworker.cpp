@@ -6,9 +6,9 @@ ImageWorker::ImageWorker()
 {
     m_colorList.InitC64();
 
-    m_types.append(ImageType("Fake C64 png", LImageFactory::Type::QImage));
-    m_types.append(ImageType("C64 MultiColor bitmap", LImageFactory::Type::MultiColorBitmap));
-    m_types.append(ImageType("C64 Hires Bitmap", LImageFactory::Type::HiresBitmap));
+    m_types.append(ImageType("Fake C64 png", LImage::Type::QImageBitmap));
+    m_types.append(ImageType("C64 MultiColor bitmap", LImage::Type::MultiColorBitmap));
+    m_types.append(ImageType("C64 Hires Bitmap", LImage::Type::HiresBitmap));
 
 
     New(0);

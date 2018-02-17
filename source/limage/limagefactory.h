@@ -7,14 +7,13 @@
 
 class LImageFactory {
 public:
-    enum Type { QImage, MultiColorBitmap, HiresBitmap };
 
-    static LImage* Create(Type t) {
-        if (t == Type::QImage)
+    static LImage* Create(LImage::Type t) {
+        if (t == LImage::Type::QImageBitmap)
             return new LImageQImage();
-        if (t == Type::MultiColorBitmap)
+        if (t == LImage::Type::MultiColorBitmap)
             return new MultiColorImage();
-        if (t == Type::HiresBitmap)
+        if (t == LImage::Type::HiresBitmap)
             return new StandardColorImage();
 
         qDebug() << "ERROR: LImageFactory could not find type " << t;

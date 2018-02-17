@@ -16,7 +16,7 @@ class DialogImport : public QDialog
 public:
     explicit DialogImport(QWidget *parent = 0);
     ~DialogImport();
-    void Initialize(LImageFactory::Type imageType, LColorList* lst);
+    void Initialize(LImage::Type imageType, LColorList* lst);
 
     LColorList* m_colorList = nullptr;
 
@@ -32,7 +32,7 @@ public:
     LImage* m_image = nullptr;
 
 
-    LImageFactory::Type m_imageType = LImageFactory::Type::QImage;
+    LImage::Type m_imageType = LImage::Type::QImageBitmap;
 
     void Convert();
     void Blur();

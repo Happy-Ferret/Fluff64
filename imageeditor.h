@@ -9,12 +9,12 @@
 class ImageType {
 public:
     QString name;
-    LImageFactory::Type type;
+    LImage::Type type;
     ImageType() {
 
     }
 
-    ImageType(QString n,LImageFactory::Type t) {
+    ImageType(QString n,LImage::Type t) {
         type = t;
         name = n;
     }

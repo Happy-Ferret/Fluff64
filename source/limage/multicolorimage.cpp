@@ -12,6 +12,8 @@ MultiColorImage::MultiColorImage()
     m_scaleX = 2.5f;
     m_fileExtension = "lmc";
     Clear();
+    m_type = LImage::Type::MultiColorBitmap;
+
 }
 
 void MultiColorImage::setPixel(int x, int y, unsigned int color)
@@ -304,7 +306,7 @@ void PixelChar::set(int x, int y, unsigned char color, unsigned char bitMask, un
         {
             //winner = 3;
             winner = (p[y]>>x) & bitMask;
-            if (winner==0)
+            if (winner==0 && minCol!=0)
                 winner = maxCol-1;
 
         }

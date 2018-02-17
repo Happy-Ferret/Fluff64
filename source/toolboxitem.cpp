@@ -1,7 +1,7 @@
 #include "toolboxitem.h"
 #include <QDebug>
 #include <QPixmap>
-
+#include "source/limage/limagefactory.h"
 ToolboxItem::ToolboxItem()
 {
 
@@ -139,12 +139,21 @@ void Line::Perform(int x, int y, unsigned char color, LImage *img, bool isPrevie
 
 }
 
-/*void CopyStamp::Perform(int x, int y, unsigned char color, LImage *img, bool isPreview, int button)
+void CopyStamp::Perform(int x, int y, unsigned char color, LImage *img, bool isPreview, int button)
 {
+
     if (button==1 && m_status == Status::Idle) {
         m_status = Status::Selecting;
         m_start = QPoint(x,y);
-        m_copy.CopyFrom(*img);
+        if (m_copy==nullptr)
+            m_copy = LImageFactory::Create(img->m_type);
+        // New from source
+        if (m_copy->m_type!=img->m_type) {
+            delete m_copy;
+            m_copy = LImageFactory::Create(img->m_type);
+
+        }
+        m_copy->CopyFrom(img);
     }
 
     unsigned int frameCol = 1;
@@ -173,10 +182,11 @@ void CopyStamp::StampImage(int x, int y, LImage* img)
     int h = abs(m_end.y()-m_start.y());
     for (int i=0;i<w;i++)
         for (int j=0;j<h;j++) {
-            unsigned int col = m_copy.getPixel(m_start.x() + i, m_start.y()+j);
+            unsigned int col = m_copy->getPixel(m_start.x() + i, m_start.y()+j);
             if (col!=img->m_background)
-                img->setPixel(i-w/2+x,j-h/2+y, col);
+                for (int xd=0;xd<m_copy->m_scale;xd++)
+                    img->setPixel(i-w/2+x + xd,j-h/2+y, col);
         }
 }
 
-*/
+

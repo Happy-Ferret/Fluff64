@@ -18,7 +18,7 @@ void Toolbox::Initialize(QLayout* ly)
     m_items.append(new Dither("",":/resources/images/brush_dither.png"));
     m_items.append(new Filler("",":/resources/images/brush_fill.png"));
     m_items.append(new Line("",":/resources/images/brush_line.png"));
-//    m_items.append(new CopyStamp("CS",""));
+    m_items.append(new CopyStamp("CS",""));
 
     m_current = m_items[0];
 

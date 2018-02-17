@@ -90,7 +90,7 @@ public:
     }
 
 };
-/*
+
 class CopyStamp : public ToolboxItem {
 public:
     void Perform(int x, int y, unsigned char color, LImage *img, bool isPreview, int button) override;
@@ -113,6 +113,6 @@ public:
 
 };
 
-*/
+
 
 #endif // TOOLBOXITEM_H

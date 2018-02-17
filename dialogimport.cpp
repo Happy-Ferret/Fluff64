@@ -17,7 +17,7 @@ DialogImport::~DialogImport()
     delete ui;
 }
 
-void DialogImport::Initialize(LImageFactory::Type imageType, LColorList* lst)
+void DialogImport::Initialize(LImage::Type imageType, LColorList* lst)
 {
     m_imageType = imageType;
     m_colorList = lst;

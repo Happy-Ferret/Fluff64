@@ -9,6 +9,7 @@ LImageQImage::LImageQImage()
     Initialize(320,200);
     m_scale = 1;
     m_fileExtension = "png";
+    m_type = LImage::Type::QImageBitmap;
 }
 
 bool LImageQImage::Load(QString filename)
