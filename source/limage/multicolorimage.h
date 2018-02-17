@@ -37,7 +37,7 @@ public:
     unsigned char m_version = 1;
 
 
-    MultiColorImage();
+    MultiColorImage(LColorList::Type t);
     PixelChar m_data[40*25];
     PixelChar& getPixelChar(int x, int y);
     void Clear() override;

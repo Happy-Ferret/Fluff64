@@ -4,19 +4,21 @@
 #include <QString>
 #include <QVector>
 #include "source/limage/limagefactory.h"
-
+#include "source/lcolorlist.h"
 
 class ImageType {
 public:
     QString name;
     LImage::Type type;
+    LColorList::Type colorType;
     ImageType() {
 
     }
 
-    ImageType(QString n,LImage::Type t) {
+    ImageType(QString n,LImage::Type t, LColorList::Type colType) {
         type = t;
         name = n;
+        colorType = colType;
     }
 };
 
@@ -29,7 +31,8 @@ public:
 
     ImageType* m_imageType;
     QString m_name;
-    LColorList* m_colorList = nullptr;
+
+    //LColorList* m_colorList = nullptr;
     void Initialize();
 
     LImage* m_image;

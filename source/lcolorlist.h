@@ -43,15 +43,26 @@ class LColorList : public QObject
     Q_OBJECT
 
 public:
+    enum Type{ C64, C64_ORG, CGA1_LOW, CGA1_HIGH, CGA2_LOW, CGA2_HIGH };
+
+    Type m_type = Type::C64;
     LColorList();
+    ~LColorList();
 
     QVector<LColor> m_list;
     QVector<QPushButton*> m_buttonsImport;
     QVector<QPushButton*> m_buttonsEdit;
 
     Metric* m_metric = nullptr;
+
+    void Initialize(Type t);
+
     void InitC64_org();
     void InitC64();
+    void InitCGA1_LOW();
+    void InitCGA1_HIGH();
+    void InitCGA2_LOW();
+    void InitCGA2_HIGH();
     void UpdateColors();
     QColor getClosestColor(QColor col);
 

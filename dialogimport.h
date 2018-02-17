@@ -16,9 +16,8 @@ class DialogImport : public QDialog
 public:
     explicit DialogImport(QWidget *parent = 0);
     ~DialogImport();
-    void Initialize(LImage::Type imageType, LColorList* lst);
+    void Initialize(LImage::Type imageType, LColorList::Type colorType);
 
-    LColorList* m_colorList = nullptr;
 
     float m_contrast = 1;
     float m_shift = 0;

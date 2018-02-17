@@ -8,13 +8,13 @@
 class LImageFactory {
 public:
 
-    static LImage* Create(LImage::Type t) {
+    static LImage* Create(LImage::Type t, LColorList::Type colorType) {
         if (t == LImage::Type::QImageBitmap)
-            return new LImageQImage();
+            return new LImageQImage(colorType);
         if (t == LImage::Type::MultiColorBitmap)
-            return new MultiColorImage();
+            return new MultiColorImage(colorType);
         if (t == LImage::Type::HiresBitmap)
-            return new StandardColorImage();
+            return new StandardColorImage(colorType);
 
         qDebug() << "ERROR: LImageFactory could not find type " << t;
         return nullptr;

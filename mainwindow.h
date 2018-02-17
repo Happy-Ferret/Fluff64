@@ -43,6 +43,8 @@ public:
     void wheelEvent(QWheelEvent *event);
     void keyPressEvent(QKeyEvent* e);
 
+    void UpdatePalette();
+
     WorkerThread* m_updateThread;
 
    bool m_quit = false;

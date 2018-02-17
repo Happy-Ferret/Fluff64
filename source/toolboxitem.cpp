@@ -146,11 +146,11 @@ void CopyStamp::Perform(int x, int y, unsigned char color, LImage *img, bool isP
         m_status = Status::Selecting;
         m_start = QPoint(x,y);
         if (m_copy==nullptr)
-            m_copy = LImageFactory::Create(img->m_type);
+            m_copy = LImageFactory::Create(img->m_type, img->m_colorList.m_type);
         // New from source
         if (m_copy->m_type!=img->m_type) {
             delete m_copy;
-            m_copy = LImageFactory::Create(img->m_type);
+            m_copy = LImageFactory::Create(img->m_type, img->m_colorList.m_type);
 
         }
         m_copy->CopyFrom(img);

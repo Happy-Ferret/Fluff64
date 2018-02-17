@@ -10,8 +10,8 @@ ImageEdit::ImageEdit(ImageType* t, QString name)
 
 void ImageEdit::Initialize()
 {
-    m_image = LImageFactory::Create(m_imageType->type);
-    m_temp = LImageFactory::Create(m_imageType->type);
+    m_image = LImageFactory::Create(m_imageType->type, m_imageType->colorType);
+    m_temp = LImageFactory::Create(m_imageType->type,m_imageType->colorType);
 }
 
 void ImageEdit::Undo()
@@ -26,7 +26,7 @@ void ImageEdit::Undo()
 
 void ImageEdit::AddUndo()
 {
-    m_undo.append(LImageFactory::Create(m_imageType->type));
+    m_undo.append(LImageFactory::Create(m_imageType->type, m_imageType->colorType));
     m_undo[m_undo.count()-1]->CopyFrom(m_image);
     if (m_undo.count()>m_undoMax) {
         delete m_undo[0];

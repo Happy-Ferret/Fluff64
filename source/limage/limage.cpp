@@ -8,9 +8,9 @@
 #include <QPainter>
 
 
-LImage::LImage()
+LImage::LImage(LColorList::Type t)
 {
-
+    m_colorList.Initialize(t);
 }
 
 

@@ -4,11 +4,15 @@
 
 ImageWorker::ImageWorker()
 {
-    m_colorList.InitC64();
 
-    m_types.append(ImageType("Fake C64 png", LImage::Type::QImageBitmap));
-    m_types.append(ImageType("C64 MultiColor bitmap", LImage::Type::MultiColorBitmap));
-    m_types.append(ImageType("C64 Hires Bitmap", LImage::Type::HiresBitmap));
+    m_types.append(ImageType("Fake C64 png Palette 1", LImage::Type::QImageBitmap, LColorList::Type::C64));
+    m_types.append(ImageType("Fake C64 png Palette 2", LImage::Type::QImageBitmap, LColorList::Type::C64_ORG));
+    m_types.append(ImageType("C64 MultiColor bitmap", LImage::Type::MultiColorBitmap,LColorList::Type::C64));
+    m_types.append(ImageType("C64 Hires Bitmap", LImage::Type::HiresBitmap,LColorList::Type::C64));
+    m_types.append(ImageType("CGA Palette 1 Lo", LImage::Type::QImageBitmap,LColorList::Type::CGA1_LOW));
+    m_types.append(ImageType("CGA Palette 1 Hi", LImage::Type::QImageBitmap,LColorList::Type::CGA1_HIGH));
+    m_types.append(ImageType("CGA Palette 2 Lo", LImage::Type::QImageBitmap,LColorList::Type::CGA2_LOW));
+    m_types.append(ImageType("CGA Palette 2 Hi", LImage::Type::QImageBitmap,LColorList::Type::CGA2_HIGH));
 
 
     New(0);
@@ -43,6 +47,7 @@ QStringList ImageWorker::getImageTypes()
 
 void ImageWorker::New(int type)
 {
+
     m_currentImage = new ImageEdit(&m_types[type], "New Image");
     m_images.append(m_currentImage);
     Data::data.redrawFileList = true;

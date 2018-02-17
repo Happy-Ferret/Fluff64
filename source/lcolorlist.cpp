@@ -2,8 +2,37 @@
 #include <QDebug>
 #include <QPalette>
 #include <QSignalMapper>
+#include "source/util/util.h"
 LColorList::LColorList()
 {
+}
+
+LColorList::~LColorList()
+{
+    if (m_metric)
+        delete m_metric;
+}
+
+void LColorList::Initialize(Type t)
+{
+    m_type = t;
+
+
+    if (m_type == Type::C64)
+        InitC64();
+    if (m_type == Type::C64_ORG)
+        InitC64_org();
+    if (m_type == Type::CGA1_HIGH)
+        InitCGA1_HIGH();
+    if (m_type == Type::CGA1_LOW)
+        InitCGA1_LOW();
+    if (m_type == Type::CGA2_HIGH)
+        InitCGA2_HIGH();
+    if (m_type == Type::CGA2_LOW)
+        InitCGA2_LOW();
+
+
+    m_metric = new LinearMetric();
 
 }
 
@@ -27,7 +56,6 @@ void LColorList::InitC64_org()
     m_list.append(LColor(QColor(0,136,255),""));
     m_list.append(LColor(QColor(187,187,198),""));
 
-    m_metric = new LinearMetric();
 }
 
 void LColorList::InitC64()
@@ -52,7 +80,40 @@ void LColorList::InitC64()
 
     m_background = m_list[0];
 
-    m_metric = new LinearMetric();
+}
+
+void LColorList::InitCGA1_LOW()
+{
+    m_list.clear();
+    m_list.append(LColor(QColor(0,0,0),"Black"));
+    m_list.append(LColor(QColor(0,0xaa,0xaa),"Cyan"));
+    m_list.append(LColor(QColor(0xaa,0x00,0xaa),"Magenta"));
+    m_list.append(LColor(QColor(0xaa,0xaa,0xaa),"Light gray"));
+}
+void LColorList::InitCGA1_HIGH()
+{
+    m_list.clear();
+    m_list.append(LColor(QColor(0,0,0),"Black"));
+    m_list.append(LColor(QColor(0x55,0xff,0xff),"Cyan"));
+    m_list.append(LColor(QColor(0xff,0x55,0xff),"Magenta"));
+    m_list.append(LColor(QColor(0xff,0xff,0xff),"Light gray"));
+}
+
+void LColorList::InitCGA2_LOW()
+{
+    m_list.clear();
+    m_list.append(LColor(QColor(0,0,0),"Black"));
+    m_list.append(LColor(QColor(0,0xaa,0x00),"Green"));
+    m_list.append(LColor(QColor(0xaa,0x00,0x00),"Red"));
+    m_list.append(LColor(QColor(0xaa,0x55,0x00),"Brown"));
+}
+void LColorList::InitCGA2_HIGH()
+{
+    m_list.clear();
+    m_list.append(LColor(QColor(0,0,0),"Black"));
+    m_list.append(LColor(QColor(0x55,0xff,0x55),"Green"));
+    m_list.append(LColor(QColor(0xff,0x55,0x55),"Red"));
+    m_list.append(LColor(QColor(0xff,0xff,0x55),"Brown"));
 }
 
 QColor LColorList::getClosestColor(QColor col)
@@ -102,6 +163,11 @@ int LColorList::getIndex(QColor c)
 
 void LColorList::CreateUI(QLayout* ly, int type)
 {
+
+    Util::clearLayout(ly, true);
+
+    m_buttonsEdit.clear();
+    m_buttonsImport.clear();
 //    m_buttons.clear();
     for(int j=0; j<m_list.count(); j++)
     {
@@ -113,6 +179,7 @@ void LColorList::CreateUI(QLayout* ly, int type)
         QString txtCol = QString::number(m_list[j].color.red()) + ", ";
         txtCol += QString::number(m_list[j].color.green()) + ", ";
         txtCol += QString::number(m_list[j].color.blue());
+
         b->setStyleSheet("background-color: rgb("+txtCol + "); color: rgb(0, 0, 0)");
         b->setPalette(p);
         b->setMaximumWidth(40);

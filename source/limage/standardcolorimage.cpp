@@ -1,6 +1,6 @@
 #include "standardcolorimage.h"
 
-StandardColorImage::StandardColorImage()
+StandardColorImage::StandardColorImage(LColorList::Type t) : MultiColorImage(t)
 {
     m_width = 320;
     m_height = 200;

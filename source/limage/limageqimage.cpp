@@ -4,7 +4,7 @@
 #include <QPainter>
 #include "source/util/util.h"
 
-LImageQImage::LImageQImage()
+LImageQImage::LImageQImage(LColorList::Type t)  : LImage(t)
 {
     Initialize(320,200);
     m_scale = 1;
@@ -19,6 +19,7 @@ bool LImageQImage::Load(QString filename)
     return m_qImage->load(filename);
 
 }
+
 
 void LImageQImage::Initialize(int width, int height)
 {

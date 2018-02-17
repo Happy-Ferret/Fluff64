@@ -6,7 +6,8 @@
 
 class LImageQImage : public LImage {
 public:
-    LImageQImage();
+    LImageQImage() {}
+    LImageQImage(LColorList::Type t);
     QImage* m_qImage = nullptr;
 
 

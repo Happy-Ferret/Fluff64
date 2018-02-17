@@ -15,7 +15,8 @@ class LImage
 public:
     enum Type { QImageBitmap, MultiColorBitmap, HiresBitmap };
 
-    LImage();
+    LImage() {}
+    LImage(LColorList::Type t);
     ~LImage() {
         Release();
     }
@@ -32,6 +33,8 @@ public:
     unsigned char m_scale = 2;
     unsigned char m_noColors = 4;
     unsigned char m_minCol = 1;
+
+    LColorList m_colorList;
 
 
     virtual void Initialize(int width, int height) = 0;

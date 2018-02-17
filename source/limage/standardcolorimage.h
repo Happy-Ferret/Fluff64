@@ -6,7 +6,7 @@
 class StandardColorImage : public MultiColorImage
 {
 public:
-    StandardColorImage();
+    StandardColorImage(LColorList::Type t);
 };
 
 #endif // STANDARDCOLORIMAGE_H

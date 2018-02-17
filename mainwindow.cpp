@@ -14,13 +14,8 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
    // m_work.m_colorList.CreateUI(ui->layoutColors,0);
-    m_work.m_colorList.CreateUI(ui->layoutColorsEdit_3,1);
-    //m_work.m_colorList.FillComboBox(ui->cmbForeground);
-    //m_work.m_colorList.FillComboBox(ui->cmbBackground);
-    m_work.m_colorList.FillComboBox(ui->cmbBackgroundMain_3);
-    m_work.m_colorList.FillComboBox(ui->cmbBorderMain_3);
     m_toolBox.Initialize(ui->lyToolbox_3);;
-
+    UpdatePalette();
     m_grid.Initialize(320*2,200*2);
     m_grid.CreateGrid(40,25,m_gridColor,4, 1, QPoint(0,0));
 
@@ -107,6 +102,18 @@ void MainWindow::keyPressEvent(QKeyEvent *e)
        ui->lblGrid->setVisible(ui->chkGrid->isChecked());
     }
 
+
+}
+
+void MainWindow::UpdatePalette()
+{
+    if (m_work.m_currentImage==nullptr)
+        return;
+    LColorList* l = &m_work.m_currentImage->m_image->m_colorList;
+
+    l->CreateUI(ui->layoutColorsEdit_3,1);
+    l->FillComboBox(ui->cmbBackgroundMain_3);
+    l->FillComboBox(ui->cmbBorderMain_3);
 
 }
 
@@ -206,12 +213,18 @@ void MainWindow::on_btnExportImage_clicked()
 void MainWindow::on_b_clicked()
 {
 
+
     DialogNewImage* dNewFile = new DialogNewImage(this);
     dNewFile->Initialize(m_work.getImageTypes());
     dNewFile->setModal(true);
     dNewFile->exec();
     if (dNewFile->retVal!=-1)
         m_work.New(dNewFile->retVal);
+
+
+
+    UpdatePalette();
+
     delete dNewFile;
 }
 
@@ -220,12 +233,13 @@ void MainWindow::on_lstImages_clicked(const QModelIndex &index)
     m_work.SetImage(index.row());
     ui->lblImageName->setText(m_work.m_currentImage->m_name  + "(" + m_work.m_currentImage->m_imageType->name + ")");
     Data::data.redrawFileList = true;
+    UpdatePalette();
 }
 
 void MainWindow::on_btnImport_clicked()
 {
     DialogImport* di = new DialogImport(this);
-    di->Initialize(m_work.m_currentImage->m_imageType->type, &m_work.m_colorList);
+    di->Initialize(m_work.m_currentImage->m_imageType->type, m_work.m_currentImage->m_image->m_colorList.m_type);
     di->exec();
     if (di->m_ok) {
         m_work.m_currentImage->m_image->CopyFrom(di->m_image);

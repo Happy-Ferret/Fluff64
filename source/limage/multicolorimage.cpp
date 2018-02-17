@@ -5,7 +5,7 @@
 #include "source/limage/standardcolorimage.h"
 #include <typeinfo>
 
-MultiColorImage::MultiColorImage()
+MultiColorImage::MultiColorImage(LColorList::Type t) : LImage(t)
 {
     m_width = 160;
     m_height = 200;

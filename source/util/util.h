@@ -18,6 +18,9 @@
 #include <QTextStream>
 #include <QDebug>
 #include <QColor>
+#include <QLayout>
+#include <QLayoutItem>
+#include <QWidget>
 
 //#include "random.h"
 
@@ -71,6 +74,21 @@ public:
 
     static QVector3D floor(const QVector3D v) {
         return QVector3D( max(0.0f, v.x()), max(0.0f,v.y()), max(0.0f,v.z())  );
+    }
+
+    static void clearLayout(QLayout* layout, bool deleteWidgets = true)
+    {
+        while (QLayoutItem* item = layout->takeAt(0))
+        {
+            if (deleteWidgets)
+            {
+                if (QWidget* widget = item->widget())
+                    widget->deleteLater();
+            }
+            if (QLayout* childLayout = item->layout())
+                clearLayout(childLayout, deleteWidgets);
+            delete item;
+        }
     }
 
     static bool IntersectSphere(QVector3D o, QVector3D d, QVector3D r,QVector3D& isp1,QVector3D& isp2, double& t0, double& t1) {

@@ -77,7 +77,7 @@ void WorkerThread::UpdateImage(LImage *mc)
 
    //m_tmpImage->fill(QColor(255,0,0,255));
 
-    mc->ToQImage(m_work->m_colorList, m_tmpImage, m_zoom, m_zoomCenter);
+    mc->ToQImage(m_work->m_currentImage->m_image->m_colorList, m_tmpImage, m_zoom, m_zoomCenter);
     m_pixMapImage.convertFromImage(*m_tmpImage);
     emit updateImageSignal();
     //ui->lblImage->setPixmap(m_pixMapImage);

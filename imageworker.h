@@ -21,7 +21,7 @@ public:
 
     //ImageEdit m_editor = ImageEdit(imageType);
 
-    LColorList m_colorList;
+    //LColorList m_colorList;
 
     ImageEdit* m_currentImage;// = ImageEdit(LImageFactory::HiresBitmap);
     QVector<ImageEdit*> m_images;
