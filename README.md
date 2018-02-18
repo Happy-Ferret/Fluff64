@@ -29,11 +29,14 @@ Currently supports:
   
  - To do:
     - Export to a common Fluff64 format
-    - Export HiRes assembler
-    - C64 character mode with automatic assembly of chars
+    - Export HiRes assembler
+    - C64 character mode with automatic assembly of chars
     - Export above mode with side scroller
     - Music overlay
     - Demo effects templates
     - Sprite editor and exporter
     - Level designer
+    - Website
+    - Auto downloader (copy from Nutil)
+    
     
