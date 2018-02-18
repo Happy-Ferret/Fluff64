@@ -27,8 +27,7 @@ Currently supports:
     - Panning
     - Zoom anywhere
   
-  
-  To do:
+ - To do:
     - Export to a common Fluff64 format
     - Export HiRes assembler
     - C64 character mode with automatic assembly of chars
