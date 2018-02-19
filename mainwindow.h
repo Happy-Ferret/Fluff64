@@ -6,7 +6,7 @@
 #include <QString>
 #include <QPixmap>
 #include <QFileDialog>
-#include "data.h"
+#include "source/data.h"
 #include <QThread>
 #include <thread>
 #include <QLayout>

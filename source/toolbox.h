@@ -15,7 +15,6 @@ public:
     QVector<ToolboxItem*> m_items;
     QVector<QPushButton*> m_buttons;
 
-    ToolBox();
 
     void Initialize(QLayout* layout);
 

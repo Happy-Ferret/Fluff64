@@ -6,9 +6,6 @@ Toolbox::Toolbox()
 
 }
 
-Toolbox::ToolBox()
-{
-}
 
 void Toolbox::Initialize(QLayout* ly)
 {

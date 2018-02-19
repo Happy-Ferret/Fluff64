@@ -4,7 +4,7 @@
 #include <QVector>
 
 #include "source/limage/limageqimage.h"
-#include "source/lcolorlist.h"
+#include "source//limage/lcolorlist.h"
 #include "source/limage/multicolorimage.h"
 #include "source/limage/limagefactory.h"
 #include "imageeditor.h"

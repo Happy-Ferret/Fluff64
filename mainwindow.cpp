@@ -3,7 +3,7 @@
 
 #include <QDebug>
 #include <QThread>
-#include "data.h"
+#include "source/data.h"
 #include "source/util/util.h"
 #include <QWheelEvent>
 #include "dialognewimage.h"

@@ -4,7 +4,7 @@
 #include <QString>
 #include <QVector>
 #include "source/limage/limagefactory.h"
-#include "source/lcolorlist.h"
+#include "source/limage/lcolorlist.h"
 
 class ImageType {
 public:

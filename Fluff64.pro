@@ -27,41 +27,36 @@ LIBS += -fopenmp
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    source/limage/limage.cpp \
     imageworker.cpp \
-    source/lcolorlist.cpp \
-    source/util/util.cpp \
-    data.cpp \
+    #source/lcolorlist.cpp \
     source/toolbox.cpp \
     source/toolboxitem.cpp \
     source/workerthread.cpp \
-    source/limage/limageqimage.cpp \
-    source/limage/multicolorimage.cpp \
-    source/limage/limagefactory.cpp \
-    source/limage/standardcolorimage.cpp \
+#    source/limage/limage.cpp \
+    #source/limage/limageqimage.cpp \
+    #source/limage/multicolorimage.cpp \
+    #source/limage/limagefactory.cpp \
+    #source/limage/standardcolorimage.cpp \
     imageeditor.cpp \
     dialognewimage.cpp \
     dialogimport.cpp \
-    source/limage/limageio.cpp
+#    source/limage/limageio.cpp
 
 HEADERS  += mainwindow.h \
-    source/limage/limage.h \
     imageworker.h \
-    source/lcolorlist.h \
-    source/util/random.h \
-    source/util/util.h \
-    data.h \
+    #source/lcolorlist.h \
     source/toolbox.h \
     source/toolboxitem.h \
     source/workerthread.h \
-    source/limage/limageqimage.h \
-    source/limage/multicolorimage.h \
-    source/limage/limagefactory.h \
-    source/limage/standardcolorimage.h \
+#    source/limage/limage.h \
+    #source/limage/limageqimage.h \
+    #source/limage/multicolorimage.h \
+    #source/limage/limagefactory.h \
+    #source/limage/standardcolorimage.h \
     imageeditor.h \
     dialognewimage.h \
     dialogimport.h \
-    source/limage/limageio.h
+ #   source/limage/limageio.h
 
 FORMS    += mainwindow.ui \
     dialognewimage.ui \
@@ -69,3 +64,22 @@ FORMS    += mainwindow.ui \
 
 RESOURCES += \
     resources.qrc
+
+
+#LELIB INCLUDES
+
+ win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../LeLib/release/ -llelib
+ else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../LeLib/debug/ -llelib
+ else:symbian: LIBS += -llelib
+ else:unix: LIBS += -L$$OUT_PWD/../LeLib/debug/ -llelib
+
+ INCLUDEPATH += $$PWD/../lelib/
+ DEPENDPATH += $$PWD/../lelib/
+
+ win32:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../LeLib/release/lelib.lib
+ else:win32:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../lelib/debug/lelib.lib
+ else:unix:!symbian: PRE_TARGETDEPS += $$OUT_PWD/../projects/lelib/liblelib.a
+
+#LELIB INCLUDES ENDS
+
+
