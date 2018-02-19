@@ -16,9 +16,10 @@ public:
     void setPixel(int x, int y, unsigned int color) override;
     unsigned int getPixel(int x, int y) override;
 
-    void Save(QString filename) override;
-    bool Load(QString filename) override;
+    void SaveBin(QFile &f) override;
+    void LoadBin(QFile &f) override;
 
+    void LoadQImage(QString filename);
 
     void ToQImage(LColorList& lst, QImage* img, float zoom, QPoint center) override;
     void fromQImage(QImage* img, LColorList& lst) override;

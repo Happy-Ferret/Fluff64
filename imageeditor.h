@@ -27,6 +27,7 @@ public:
 class ImageEdit {
 public:
     ImageEdit(ImageType* t, QString name);
+    ImageEdit(LImage* image, ImageType* it,QString name);
 
 
     ImageType* m_imageType;

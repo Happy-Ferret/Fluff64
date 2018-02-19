@@ -13,6 +13,34 @@ LImage::LImage(LColorList::Type t)
     m_colorList.Initialize(t);
 }
 
+unsigned char LImage::TypeToChar(LImage::Type t)
+{
+    if (t==QImageBitmap)
+        return 0;
+    if (t==MultiColorBitmap)
+        return 1;
+    if (t==HiresBitmap)
+        return 2;
+
+    return 255;
+}
+
+LImage::Type LImage::CharToType(unsigned char c)
+{
+    if (c==0)
+        return QImageBitmap;
+    if (c==1)
+        return MultiColorBitmap;
+    if (c==2)
+        return HiresBitmap;
+
+
+    return NotSupported;
+
+}
+
+
+
 
 
 void LImage::drawLine(float x0, float y0, float x1, float y1, unsigned int col, int size)

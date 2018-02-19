@@ -8,15 +8,40 @@ LImageQImage::LImageQImage(LColorList::Type t)  : LImage(t)
 {
     Initialize(320,200);
     m_scale = 1;
-    m_fileExtension = "png";
     m_type = LImage::Type::QImageBitmap;
 }
 
-bool LImageQImage::Load(QString filename)
+void LImageQImage::LoadBin(QFile& file)
 {
+    m_width = 320;
+    m_height = 200;
+    m_qImage = new QImage(m_width, m_height, QImage::Format_ARGB32);
+    unsigned char *data = new unsigned char[m_width*m_height];
+    file.read((char*)data, m_width*m_height);
+    for (int i=0;i<m_width;i++)
+        for (int j=0;j<m_height;j++) {
+           setPixel(i,j, data[i+j*m_width]);
+        }
+    delete data;
+}
+
+void LImageQImage::LoadQImage(QString filename)
+{
+    Release();
     m_qImage = new QImage();
-    m_fileExtension = "png";
-    return m_qImage->load(filename);
+    m_qImage->load(filename);
+}
+
+void LImageQImage::SaveBin(QFile& file)
+{
+    unsigned char *data = new unsigned char[m_width*m_height];
+    for (int i=0;i<m_qImage->width();i++)
+        for (int j=0;j<m_qImage->height();j++) {
+            unsigned char val = getPixel(i,j);
+            data[(i+j*m_qImage->width())] = val;
+        }
+    file.write((char*)data, m_width*m_height);
+    delete data;
 
 }
 
@@ -30,16 +55,9 @@ void LImageQImage::Initialize(int width, int height)
     m_height = height;
 
     m_qImage = new QImage(width, height, QImage::Format_ARGB32);
-    m_fileExtension = "png";
 
 }
 
-void LImageQImage::Save(QString filename)
-{
-    if (m_qImage==nullptr)
-        return;
-    m_qImage->save(filename);
-}
 
 QImage* LImageQImage::ApplyEffectToImage(QImage& src, QGraphicsBlurEffect *effect)
 {

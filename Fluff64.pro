@@ -41,7 +41,8 @@ SOURCES += main.cpp\
     source/limage/standardcolorimage.cpp \
     imageeditor.cpp \
     dialognewimage.cpp \
-    dialogimport.cpp
+    dialogimport.cpp \
+    source/limage/limageio.cpp
 
 HEADERS  += mainwindow.h \
     source/limage/limage.h \
@@ -59,7 +60,8 @@ HEADERS  += mainwindow.h \
     source/limage/standardcolorimage.h \
     imageeditor.h \
     dialognewimage.h \
-    dialogimport.h
+    dialogimport.h \
+    source/limage/limageio.h
 
 FORMS    += mainwindow.ui \
     dialognewimage.ui \

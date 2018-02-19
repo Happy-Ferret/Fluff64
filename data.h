@@ -6,7 +6,7 @@ class Data
 {
 public:
     Data();
-
+    float version = 0.01;
     bool redrawOutput=false;
     bool redrawInput=false;
     bool redrawFileList = false;

@@ -26,11 +26,15 @@ public:
     ImageEdit* m_currentImage;// = ImageEdit(LImageFactory::HiresBitmap);
     QVector<ImageEdit*> m_images;
     QVector<ImageType> m_types;
+
+    ImageType* findType(LImage::Type imageType, LColorList::Type colType);
+
     void UpdateListView(QListView* lst);
 
     QStringList getImageTypes();
 
     void New(int type);
+    void New(LImage* image);
     void SetImage(int cur);
 
 //    void Load(QString filename);

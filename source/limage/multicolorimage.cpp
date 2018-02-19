@@ -10,7 +10,6 @@ MultiColorImage::MultiColorImage(LColorList::Type t) : LImage(t)
     m_width = 160;
     m_height = 200;
     m_scaleX = 2.5f;
-    m_fileExtension = "lmc";
     Clear();
     m_type = LImage::Type::MultiColorBitmap;
 
@@ -67,46 +66,20 @@ void MultiColorImage::Reorganize()
         m_data[i].Reorganize(m_bitMask, m_scale, m_minCol, m_noColors);
 }
 
-void MultiColorImage::Save(QString filename)
+void MultiColorImage::SaveBin(QFile& file)
 {
-    QString headerID = m_ID;// + m_version;
-    QByteArray array = headerID.toLocal8Bit();
-    char* header = array.data();
+    file.write( ( char * )( &m_background ),  1 );
+    file.write( ( char * )( &m_border ), 1 );
+    file.write( ( char * )( &m_data ),  25*40*12 );
 
-    QFile file( filename);
-    if( file.open( QFile::WriteOnly ) ) {
-        file.write( ( char * )( header ), 3 );
-        file.write( ( char * )( &m_version ),1 );
-        file.write( ( char * )( &m_background ),  1 );
-        file.write( ( char * )( &m_border ), 1 );
-        file.write( ( char * )( &m_data ),  25*40*12 );
-
-    }
-    file.close();
 }
 
-bool MultiColorImage::Load(QString filename)
+void MultiColorImage::LoadBin(QFile& file)
 {
-    QString headerID = m_ID;
-    QFile file( filename);
-    if( file.open( QFile::ReadOnly ) ) {
-        char header [6];
-        file.read( ( char * )( header ), 3);
-        file.read( ( char * )( &m_version ),1 );
-        QString head = "";
-        for (int i=0;i<3;i++) {
-            head +=header[i];
-        }
-        if (head!=headerID) {
-            qDebug() << "Incorrect file type, not LMC";
-            return false;
-        }
-        file.read( ( char * )( &m_background ),1 );
-        file.read( ( char * )( &m_border ), 1);
-        file.read( ( char * )( &m_data ),  25*40*12 );
-    }
+    file.read( ( char * )( &m_background ),1 );
+    file.read( ( char * )( &m_border ), 1);
+    file.read( ( char * )( &m_data ),  25*40*12 );
 
-    return true;
 }
 
 void MultiColorImage::fromQImage(QImage *img, LColorList &lst)
@@ -217,7 +190,7 @@ void MultiColorImage::ExportAsm(QString filename)
     {
         QString str = "   byte ";
         for (int x=0;x<40;x++) {
-           str = str +  m_data[x + y*40].colorMapToAssembler();
+           str = str +  m_data[x + y*40].colorMapToAssembler(1,2);
             if (x!=39)
                 str = str + ", ";
         }
@@ -346,11 +319,11 @@ QString PixelChar::bitmapToAssembler()
     return s;
 }
 
-QString PixelChar::colorMapToAssembler()
+QString PixelChar::colorMapToAssembler(int i, int j)
 {
-    if (c[1]==255) c[1] = 0;
-    if (c[2]==255) c[2] = 0;
-    return QString(QString::number(c[1] | c[2]<<4));
+    if (c[i]==255) c[i] = 0;
+    if (c[j]==255) c[j] = 0;
+    return QString(QString::number(c[i] | c[j]<<4));
 }
 
 QString PixelChar::colorToAssembler()

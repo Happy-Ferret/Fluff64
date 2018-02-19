@@ -7,10 +7,48 @@ LColorList::LColorList()
 {
 }
 
+
 LColorList::~LColorList()
 {
     if (m_metric)
         delete m_metric;
+}
+
+unsigned char LColorList::TypeToChar(LColorList::Type t)
+{
+  if (t==C64)
+      return 0;
+  if (t==C64_ORG)
+      return 1;
+  if (t==CGA1_LOW)
+      return 2;
+  if (t==CGA1_HIGH)
+      return 3;
+  if (t==CGA2_LOW)
+      return 4;
+  if (t==CGA2_HIGH)
+      return 5;
+
+  return 255;
+}
+
+LColorList::Type LColorList::CharToType(unsigned char c)
+{
+    if (c==0)
+        return C64;
+    if (c==1)
+        return C64_ORG;
+    if (c==2)
+        return CGA1_LOW;
+    if (c==3)
+        return CGA1_HIGH;
+    if (c==4)
+        return CGA2_LOW;
+    if (c==5)
+        return CGA2_HIGH;
+
+    return UNSUPPORTED;
+
 }
 
 void LColorList::Initialize(Type t)

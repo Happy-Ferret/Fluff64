@@ -8,6 +8,15 @@ ImageEdit::ImageEdit(ImageType* t, QString name)
     Initialize();
 }
 
+ImageEdit::ImageEdit(LImage* image, ImageType* it, QString name)
+{
+    m_imageType = it;
+    m_name = name;
+    m_image = image;
+    m_temp = LImageFactory::Create(m_imageType->type,m_imageType->colorType);
+
+}
+
 void ImageEdit::Initialize()
 {
     m_image = LImageFactory::Create(m_imageType->type, m_imageType->colorType);

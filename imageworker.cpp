@@ -25,6 +25,16 @@ ImageWorker::~ImageWorker()
     m_images.clear();
 }
 
+ImageType *ImageWorker::findType(LImage::Type imageType, LColorList::Type colType)
+{
+    for (int i=0;i<m_types.count();i++) {
+        ImageType* it=&m_types[i];
+        if (it->colorType==colType && it->type == imageType)
+            return it;
+    }
+    return nullptr;
+}
+
 void ImageWorker::UpdateListView(QListView *lst)
 {
     QStandardItemModel *model = new QStandardItemModel( m_images.count(), 1, nullptr);
@@ -45,10 +55,21 @@ QStringList ImageWorker::getImageTypes()
     return l;
 }
 
-void ImageWorker::New(int type)
+void ImageWorker::New(LImage *image)
 {
+    ImageType* imageType = findType(image->m_type, image->m_colorList.m_type);
+    if (imageType==nullptr)
+        qDebug() << "WTF NULLPTR";
 
-    m_currentImage = new ImageEdit(&m_types[type], "New Image");
+    m_currentImage = new ImageEdit(image, imageType, "New Image");
+    //m_currentImage = new ImageEdit(imageType, "New Image");
+    m_images.append(m_currentImage);
+    Data::data.redrawFileList = true;
+}
+
+void ImageWorker::New(int image)
+{
+    m_currentImage = new ImageEdit(&m_types[image], "New Image");
     m_images.append(m_currentImage);
     Data::data.redrawFileList = true;
 }

@@ -86,7 +86,7 @@ void DialogImport::on_btnImport_clicked()
     QString fileName = QFileDialog::getOpenFileName(this,
         tr("Open Image"), "", tr("Image Files (*.png *.jpg *.bmp *.jpeg)"));
 
-    m_input.Load(fileName);
+    m_input.LoadQImage(fileName);
     Blur();
 
     UpdateOutput();

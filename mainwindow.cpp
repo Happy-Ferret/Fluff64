@@ -7,6 +7,7 @@
 #include "source/util/util.h"
 #include <QWheelEvent>
 #include "dialognewimage.h"
+#include "source/limage/limageio.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -156,24 +157,33 @@ void MainWindow::on_pushButton_clicked()
 
 void MainWindow::on_btnLoad_clicked()
 {
+    QString f = "Image Files (*." + LImageIO::m_fileExtension + ")";
     QString filename = QFileDialog::getOpenFileName(this,
-        tr("Open LMC image"), "", tr("Image Files (*.lmc)"));
+        tr("Open Image"), "", f);
     if (filename=="")
         return;
-    m_work.m_currentImage->m_image->Load(filename);
-    m_updateThread->UpdateImage(m_work.m_currentImage->m_image);
 
+    LImage* img = LImageIO::Load(filename);
+
+    m_work.New(img);
+
+    Data::data.redrawFileList = true;
+    Data::data.Redraw();
+    UpdatePalette();
+
+//    m_updateThread->UpdateImage(m_work.m_currentImage->m_image);
+    //delete img;
 
 }
 
 void MainWindow::on_btnSave_clicked()
 {
     QString filename = QFileDialog::getSaveFileName(this,
-        tr("Save LMC image"), "", tr("Image Files (*.lmc)"));
+        tr("Save Image"), "", ("Image Files (*." + LImageIO::m_fileExtension + ")"));
     if (filename=="")
         return;
 
-    m_work.m_currentImage->m_image->Save(filename);
+    LImageIO::Save(filename,m_work.m_currentImage->m_image);
 
 }
 

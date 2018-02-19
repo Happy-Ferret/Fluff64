@@ -8,12 +8,13 @@
 #include <QGraphicsEffect>
 #include <QGraphicsBlurEffect>
 #include <QPoint>
+#include <QFile>
 #include <QDebug>
 
 class LImage
 {
 public:
-    enum Type { QImageBitmap, MultiColorBitmap, HiresBitmap };
+    enum Type { QImageBitmap, MultiColorBitmap, HiresBitmap, NotSupported };
 
     LImage() {}
     LImage(LColorList::Type t);
@@ -21,7 +22,10 @@ public:
         Release();
     }
 
-    QString m_fileExtension="nonono";
+
+    static unsigned char TypeToChar(Type t);
+    static Type CharToType(unsigned char c);
+
 
     int m_width;
     int m_height;
@@ -42,8 +46,11 @@ public:
     virtual void setPixel(int x, int y, unsigned int color) = 0;
     virtual unsigned int getPixel(int x, int y) = 0;
 
-    virtual void Save(QString filename) = 0;
-    virtual bool Load(QString filename) = 0;
+
+
+    virtual void SaveBin(QFile &file) = 0;
+    virtual void LoadBin(QFile &file) = 0;
+
 
     virtual void Release() {}
 

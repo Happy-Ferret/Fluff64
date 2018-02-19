@@ -17,7 +17,7 @@ public:
     void set(int x, int y, unsigned char color, unsigned char bitMask, unsigned char maxCol, unsigned char minCol);
     void Clear(unsigned char background);
     QString bitmapToAssembler();
-    QString colorMapToAssembler();
+    QString colorMapToAssembler(int i, int j);
     QString colorToAssembler();
     void Reorganize(unsigned char bitMask, unsigned char Scale,unsigned char minCol, unsigned char maxCol);
     int Count(unsigned int col, unsigned char bitMask, unsigned char Scale);
@@ -33,8 +33,6 @@ public:
 class MultiColorImage  : public LImage
 {
 public:
-    QString m_ID = "LMC";
-    unsigned char m_version = 1;
 
 
     MultiColorImage(LColorList::Type t);
@@ -49,8 +47,9 @@ public:
 
     void Reorganize();
 
-    void Save(QString filename) override;
-    bool Load(QString filename) override;
+    void SaveBin(QFile& f) override;
+    void LoadBin(QFile& f) override;
+
     void Initialize(int width, int height) override {}
 
     void setForeground(unsigned int col) override;
