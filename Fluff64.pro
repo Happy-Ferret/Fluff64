@@ -82,4 +82,18 @@ RESOURCES += \
 
 #LELIB INCLUDES ENDS
 
+#CONFIG+=USE_LIBTIFF
+#DEFINES += USE_LIBTIFF
 
+# TIFF INCLUDES
+
+USE_LIBTIFF {
+
+LIBS += -L$$OUT_PWD/../LeLib/lib/ -llibtiff
+
+INCLUDEPATH += $$PWD/../Nutil/lib/libtiff
+INCLUDEPATH += $$PWD/../Nutil/lib
+DEPENDPATH += $$PWD/../Nutil/lib/libtiff
+
+}
+# TIFF END INCLUDES

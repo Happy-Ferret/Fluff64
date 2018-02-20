@@ -32,6 +32,7 @@ public:
 
     ImageType* m_imageType;
     QString m_name;
+    QString m_fileName;
 
     //LColorList* m_colorList = nullptr;
     void Initialize();
@@ -41,6 +42,7 @@ public:
     QVector<LImage*> m_undo;
     void Undo();
     void AddUndo();
+    void setName();
     const int m_undoMax = 10;
 
 

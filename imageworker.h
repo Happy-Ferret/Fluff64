@@ -34,7 +34,7 @@ public:
     QStringList getImageTypes();
 
     void New(int type);
-    void New(LImage* image);
+    void New(LImage* image, QString name);
     void SetImage(int cur);
 
 //    void Load(QString filename);

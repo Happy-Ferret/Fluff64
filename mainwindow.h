@@ -100,6 +100,10 @@ private slots:
 
     void on_btnImport_clicked();
 
+    void on_btnTiff_clicked();
+
+    void on_btnSaveAs_clicked();
+
 private:
     Ui::MainWindow *ui;
 };

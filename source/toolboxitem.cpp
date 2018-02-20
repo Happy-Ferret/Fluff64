@@ -19,7 +19,6 @@ ToolboxItem::ToolboxItem(QString name, QString imagefile)
     m_imageFilename = imagefile;
     if (m_imageFilename!="") {
         m_image.load(m_imageFilename);
-        qDebug() << m_image.width();
         m_icon.addPixmap( QPixmap::fromImage(m_image) );
     }
 

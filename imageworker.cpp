@@ -13,6 +13,7 @@ ImageWorker::ImageWorker()
     m_types.append(ImageType("CGA Palette 1 Hi", LImage::Type::QImageBitmap,LColorList::Type::CGA1_HIGH));
     m_types.append(ImageType("CGA Palette 2 Lo", LImage::Type::QImageBitmap,LColorList::Type::CGA2_LOW));
     m_types.append(ImageType("CGA Palette 2 Hi", LImage::Type::QImageBitmap,LColorList::Type::CGA2_HIGH));
+    m_types.append(ImageType("TIFF", LImage::Type::Tiff,LColorList::Type::TIFF));
 
 
     New(0);
@@ -32,7 +33,7 @@ ImageType *ImageWorker::findType(LImage::Type imageType, LColorList::Type colTyp
         if (it->colorType==colType && it->type == imageType)
             return it;
     }
-    return nullptr;
+    return nullptr;//&m_types[0];
 }
 
 void ImageWorker::UpdateListView(QListView *lst)
@@ -55,22 +56,28 @@ QStringList ImageWorker::getImageTypes()
     return l;
 }
 
-void ImageWorker::New(LImage *image)
+void ImageWorker::New(LImage *image, QString name)
 {
     ImageType* imageType = findType(image->m_type, image->m_colorList.m_type);
-    if (imageType==nullptr)
-        qDebug() << "WTF NULLPTR";
 
-    m_currentImage = new ImageEdit(image, imageType, "New Image");
+    if (imageType == nullptr) {
+        qDebug() << "WTF NULLPTR imagetype ";
+        return;
+    }
+
+    m_currentImage = new ImageEdit(image, imageType, name);
     //m_currentImage = new ImageEdit(imageType, "New Image");
     m_images.append(m_currentImage);
     Data::data.redrawFileList = true;
+    Data::data.Redraw();
 }
 
 void ImageWorker::New(int image)
 {
     m_currentImage = new ImageEdit(&m_types[image], "New Image");
     m_images.append(m_currentImage);
+    m_currentImage->m_fileName="";
+
     Data::data.redrawFileList = true;
 }
 

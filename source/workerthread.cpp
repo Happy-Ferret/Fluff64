@@ -8,7 +8,11 @@ void WorkerThread::UpdateDrawing()
 
     m_work->m_currentImage->m_temp->CopyFrom(m_work->m_currentImage->m_image);
 
+    if ((abs(m_prevPos.x()-m_currentPos.x())<1) && (abs(m_prevPos.y()-m_currentPos.y()))<1)
+        return;
+
     QPoint pos = (m_currentPos-m_zoomCenter)*m_zoom + m_zoomCenter ;
+
 
 
     if (pos.x()>=0 && pos.x()<m_work->m_currentImage->m_image->m_width &&
@@ -72,13 +76,26 @@ void WorkerThread::UpdatePanning()
 
 void WorkerThread::UpdateImage(LImage *mc)
 {
-    if (m_tmpImage == nullptr)
-        m_tmpImage = new QImage(320,200,QImage::Format_ARGB32);
+    if (m_tmpImage == nullptr) {
+        m_tmpImage = new QImage(mc->m_width,mc->m_height,QImage::Format_ARGB32);
+    }
 
+    if (m_tmpImage->width()!=mc->m_width || m_tmpImage->height()!=mc->m_height) {
+        delete m_tmpImage;
+        m_tmpImage = new QImage(mc->m_width,mc->m_height,QImage::Format_ARGB32);
+
+    }
    //m_tmpImage->fill(QColor(255,0,0,255));
+
+    //qDebug() << "Updating image "<< m_work->m_currentImage;
+//    qDebug() << "ToQImage";
 
     mc->ToQImage(m_work->m_currentImage->m_image->m_colorList, m_tmpImage, m_zoom, m_zoomCenter);
     m_pixMapImage.convertFromImage(*m_tmpImage);
+    ui->lblImageName->setText(m_work->m_currentImage->m_name  + "(" + m_work->m_currentImage->m_imageType->name + ")");
+
+
+//    qDebug() << "Emit " << rand()%100;
     emit updateImageSignal();
     //ui->lblImage->setPixmap(m_pixMapImage);
 }
@@ -102,13 +119,11 @@ void WorkerThread::run()
             Data::data.redrawInput = false;
         }*/
         if (Data::data.redrawOutput) {
+//            qDebug() << "Redraw" << rand()%100;
             LImage* img = m_work->m_currentImage->m_image;
             if (isPreview) {
                 img = m_work->m_currentImage->m_temp;
-
             }
-
-
             UpdateImage(img);
             Data::data.redrawOutput = false;
 

@@ -36,6 +36,9 @@ MainWindow::MainWindow(QWidget *parent) :
     m_updateThread->start();
 
 
+#ifndef USE_LIBTIFF
+    ui->btnTiff->setVisible(false);
+#endif
 //    m_updateThread->join();
 //    m_updateThread->
 }
@@ -165,7 +168,7 @@ void MainWindow::on_btnLoad_clicked()
 
     LImage* img = LImageIO::Load(filename);
 
-    m_work.New(img);
+    m_work.New(img, filename);
 
     Data::data.redrawFileList = true;
     Data::data.Redraw();
@@ -178,8 +181,11 @@ void MainWindow::on_btnLoad_clicked()
 
 void MainWindow::on_btnSave_clicked()
 {
-    QString filename = QFileDialog::getSaveFileName(this,
-        tr("Save Image"), "", ("Image Files (*." + LImageIO::m_fileExtension + ")"));
+    QString filename = m_work.m_currentImage->m_fileName;
+
+    if (filename=="")
+        filename = QFileDialog::getSaveFileName(this,
+                                                tr("Save Image"), "", ("Image Files (*." + LImageIO::m_fileExtension + ")"));
     if (filename=="")
         return;
 
@@ -228,8 +234,9 @@ void MainWindow::on_b_clicked()
     dNewFile->Initialize(m_work.getImageTypes());
     dNewFile->setModal(true);
     dNewFile->exec();
-    if (dNewFile->retVal!=-1)
+    if (dNewFile->retVal!=-1) {
         m_work.New(dNewFile->retVal);
+    }
 
 
 
@@ -241,7 +248,6 @@ void MainWindow::on_b_clicked()
 void MainWindow::on_lstImages_clicked(const QModelIndex &index)
 {
     m_work.SetImage(index.row());
-    ui->lblImageName->setText(m_work.m_currentImage->m_name  + "(" + m_work.m_currentImage->m_imageType->name + ")");
     Data::data.redrawFileList = true;
     UpdatePalette();
 }
@@ -255,5 +261,38 @@ void MainWindow::on_btnImport_clicked()
         m_work.m_currentImage->m_image->CopyFrom(di->m_image);
         Data::data.redrawOutput = true;
     }
+
+}
+
+void MainWindow::on_btnTiff_clicked()
+{
+    QString fileName = QFileDialog::getOpenFileName(this,
+        tr("Open Tiled Tiff"), "", tr("Image Files (*.tif *.tiff )"));
+
+    if (fileName == "")
+        return;
+
+
+    LImageTiff *tif = (LImageTiff*)LImageFactory::Create(LImage::Tiff, LColorList::TIFF);
+    tif->Initialize(640,480);
+    tif->LoadTiff(fileName);
+//    tif->m_type = LImage::Tiff;
+    m_work.New(tif, fileName);
+    Data::data.redrawFileList = true;
+    Data::data.Redraw();
+    UpdatePalette();
+
+}
+
+void MainWindow::on_btnSaveAs_clicked()
+{
+
+    QString filename = QFileDialog::getSaveFileName(this,
+                                                tr("Save Image"), "", ("Image Files (*." + LImageIO::m_fileExtension + ")"));
+    if (filename=="")
+        return;
+    m_work.m_currentImage->m_fileName  =filename;
+
+    LImageIO::Save(filename,m_work.m_currentImage->m_image);
 
 }
