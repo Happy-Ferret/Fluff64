@@ -65,7 +65,7 @@ void WorkerThread::UpdatePanning()
         m_zoomCenter+=(QPoint)delta*0.5;
 //        qDebug() << delta;
         m_isPanning = true;
-        Data::data.redrawOutput = true;
+        Data::data.Redraw();
     }
 
 

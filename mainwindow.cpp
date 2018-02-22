@@ -93,6 +93,7 @@ void MainWindow::wheelEvent(QWheelEvent *event)
         m_toolBox.m_current->m_size = max(m_toolBox.m_current->m_size,1.0f);
         m_toolBox.m_current->m_size = min(m_toolBox.m_current->m_size,50.0f);
     }
+    Data::data.redrawOutput = true;
 
 }
 
