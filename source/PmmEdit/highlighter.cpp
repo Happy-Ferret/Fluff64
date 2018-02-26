@@ -1,6 +1,6 @@
 #include "highlighter.h"
 #include "source/token.h"
-
+#include <QDebug>
 
 Highlighter::Highlighter(QTextDocument *parent)
     : QSyntaxHighlighter(parent)
@@ -22,6 +22,7 @@ Highlighter::Highlighter(QTextDocument *parent)
                     << "\\bvoid\\b" << "\\bvolatile\\b" << "\\bbool\\b" << "\\bprogram\\b"
                     << "\\bprocedure\\b" << "\\bfor\\b";*/
     for (int i=0;i<33;i++) {
+        //qDebug() << QString::number(i) << TokenType::types[i].toLower();
         QString s = "\\b" + TokenType::types[i].toLower() + "\\b";
         keywordPatterns<<s;
     }

@@ -5,8 +5,7 @@
 #-------------------------------------------------
 
 QT       += core gui
-
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+QT += widgets
 
 
 TARGET = Fluff64
@@ -43,6 +42,7 @@ SOURCES += main.cpp\
     dialogimport.cpp \
     source/PmmEdit/highlighter.cpp\
 # PMM
+    ..\Pmm\source\data_pmm.cpp \
     ..\Pmm\source\token.cpp \
     ..\Pmm\source\lexer.cpp \
     ..\Pmm\source\syntax.cpp \
@@ -51,7 +51,6 @@ SOURCES += main.cpp\
     ..\Pmm\source\symboltable.cpp \
     ..\Pmm\source\errorhandler.cpp \
     ..\Pmm\source\pvar.cpp \
-    ..\Pmm\source\data_pmm.cpp \
     ..\Pmm\source\parser.cpp \
     ..\Pmm\source/ast/node.cpp \
     ..\Pmm\source/ast/nodebinop.cpp \
@@ -82,6 +81,7 @@ HEADERS  += mainwindow.h \
     dialogimport.h \
     source/PmmEdit/highlighter.h \
 # PMM
+    ..\Pmm\source\data_pmm.h \
     ..\Pmm\source\token.h \
     ..\Pmm\source\lexer.h \
     ..\Pmm\source\syntax.h \
@@ -90,7 +90,6 @@ HEADERS  += mainwindow.h \
     ..\Pmm\source\symboltable.h \
     ..\Pmm\source\errorhandler.h \
     ..\Pmm\source\pvar.h \
-    ..\Pmm\source\data_pmm.h \
     ..\Pmm\source\parser.h \
     ..\Pmm\source/ast/node.h \
     ..\Pmm\source/ast/nodebinop.h \
@@ -135,19 +134,19 @@ win32-g++ {
  else:unix: LIBS += -L$$OUT_PWD/../LeLib/debug/ -llelib
 
  win32:CONFIG(release, debug|release): PRE_TARGETDEPS += $$PWD/../LeLib/release/release/liblelib.a
- else:win32:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$PWD/../lelib/debug/lelib.lib
+ else:win32:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$PWD/../lelib/debug/deblelib.lib
  else:unix:!symbian: PRE_TARGETDEPS += $$OUT_PWD/../projects/lelib/liblelib.a
 
 }
 win32-msvc*{
 
- win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../LeLib/release/ -llelib
- else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../LeLib/debug/ -llelib
+ win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../LeLib/release/release/ -llelib
+ else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../LeLib/debug/debug/ -llelib
  else:symbian: LIBS += -llelib
  else:unix: LIBS += -L$$OUT_PWD/../LeLib/debug/ -llelib
 
- win32:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../LeLib/release/lelib.lib
- else:win32:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../lelib/debug/lelib.lib
+ win32:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../LeLib/release/release/lelib.lib
+ else:win32:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../lelib/debug/debug/lelib.lib
  else:unix:!symbian: PRE_TARGETDEPS += $$OUT_PWD/../projects/lelib/liblelib.a
 
 }
