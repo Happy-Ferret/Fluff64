@@ -15,9 +15,10 @@
 #include "source/workerthread.h"
 #include "imageeditor.h"
 #include "dialogimport.h"
+#include "source/PmmEdit/highlighter.h"
 
 namespace Ui {
-    class MainWindow;
+class MainWindow;
 }
 
 
@@ -42,16 +43,20 @@ public:
     void mouseReleaseEvent(QMouseEvent *e) override;
     void wheelEvent(QWheelEvent *event);
     void keyPressEvent(QKeyEvent* e);
-
+    void keyReleaseEvent(QKeyEvent *e);
     void UpdatePalette();
 
     WorkerThread* m_updateThread;
 
-   bool m_quit = false;
+    bool m_quit = false;
+
+    void setupEditor();
+    Highlighter* highlighter;
+    void Build();
 
 public slots:
-   void Update();
-//   void OnQuit();
+    void Update();
+    //   void OnQuit();
 
     void updateImage() {
         ui->lblImage->setPixmap(m_updateThread->m_pixMapImage);
@@ -62,6 +67,7 @@ public slots:
         }
 
     }
+
 
 
 signals:
@@ -103,6 +109,8 @@ private slots:
     void on_btnTiff_clicked();
 
     void on_btnSaveAs_clicked();
+
+    void on_btnBuild_clicked();
 
 private:
     Ui::MainWindow *ui;

@@ -39,7 +39,7 @@ void DialogImport::Convert()
 {
 //    qDebug()<< "Type" << m_imageType;
     m_output.Release();
-    m_output.m_qImage = m_work.Resize(m_image->m_width, m_image->m_height, m_image->m_colorList, m_contrast, m_shift, m_hsv, m_saturation);
+    m_output.m_qImage = m_work.Resize(m_image->m_width, m_image->m_height, m_image->m_colorList, m_contrast, m_shift, m_hsv, m_saturation, m_scale);
     m_image->Clear();
     m_image->fromQImage(m_output.m_qImage, m_image->m_colorList);
 

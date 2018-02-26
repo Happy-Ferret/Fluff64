@@ -9,6 +9,10 @@
 #include "dialognewimage.h"
 #include "source/limage/limageio.h"
 
+#include "source/errorhandler.h"
+#include "source/parser.h"
+#include "source/interpreter.h"
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -34,6 +38,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(qApp, SIGNAL(aboutToQuit()), m_updateThread, SLOT(OnQuit()));
 
     m_updateThread->start();
+
+    setupEditor();
 
 
 #ifndef USE_LIBTIFF
@@ -94,19 +100,42 @@ void MainWindow::wheelEvent(QWheelEvent *event)
         m_toolBox.m_current->m_size = min(m_toolBox.m_current->m_size,50.0f);
     }
     Data::data.redrawOutput = true;
+    Data::data.forceRedraw = true;
 
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *e)
 {
+//    qDebug() << (QApplication::keyboardModifiers() & Qt::ShiftModifier) << " + "  << rand()%100;
+    if (e->key()==Qt::Key_Shift) {
+        m_toolBox.m_current->m_type = 1;
+        Data::data.redrawOutput = true;
+        Data::data.forceRedraw = true;
+    }
+
     if (e->key()==Qt::Key_Z && QApplication::keyboardModifiers() & Qt::ControlModifier) {
         m_work.m_currentImage->Undo();
+
     }
     if (e->key() == Qt::Key_Z  && !(QApplication::keyboardModifiers() & Qt::ControlModifier)) {
        ui->chkGrid->setChecked(!ui->chkGrid->isChecked());
        ui->lblGrid->setVisible(ui->chkGrid->isChecked());
-    }
 
+    }
+    Data::data.forceRedraw = true;
+    Data::data.Redraw();
+
+
+
+}
+
+void MainWindow::keyReleaseEvent(QKeyEvent *e)
+{
+    if (e->key()==Qt::Key_Shift) {
+        m_toolBox.m_current->m_type = 0;
+        Data::data.redrawOutput = true;
+        Data::data.forceRedraw = true;
+    }
 
 }
 
@@ -139,13 +168,49 @@ void MainWindow::Update()
 
 }
 
+void MainWindow::MainWindow::setupEditor()
+{
+//    return;
+    QFont font;
+    font.setFamily("Courier");
+    font.setFixedPitch(true);
+    font.setPointSize(12);
+
+
+    //editor = new QTextEdit;
+    ui->txtEditor->setFont(font);
+    ui->txtEditor->setTextColor(QColor(220,210,190));
+    highlighter = new Highlighter(ui->txtEditor->document());
+
+    QFile file("C:\\Users\\leuat\\OneDrive\\Documents\\GitHub\\pmm\\pmm\\test.pmm");
+    if (file.open(QFile::ReadOnly | QFile::Text))
+        ui->txtEditor->setPlainText(file.readAll());
+}
+
+void MainWindow::Build()
+{
+    QString text = ui->txtEditor->toPlainText();
+    ErrorHandler::e.m_level = ErrorHandler::e.ERROR_ONLY;
+    ErrorHandler::e.m_teOut = "";
+    ErrorHandler::e.exitOnError = false;
+    QStringList lst = text.split("\n");
+    text = text.replace("\n","");
+//    SymbolTable::isInitialized = true;
+
+    Lexer lexer = Lexer(text, lst);
+    Parser parser = Parser(lexer);
+    Interpreter interpreter = Interpreter(parser);
+    interpreter.Interpret();
+    ui->txtOutput->setText(ErrorHandler::e.m_teOut);
+}
+
 
 void MainWindow::on_btnExportAsm_clicked()
 {
 
     QString fileName = QFileDialog::getSaveFileName(this,
-          tr("Export Multicolor Assembler image"), "",
-          tr("Asm (*.asm);"));
+                                                    tr("Export Multicolor Assembler image"), "",
+                                                    tr("Asm (*.asm);"));
 
 
     m_work.m_currentImage->m_image->ExportAsm(fileName);
@@ -153,7 +218,7 @@ void MainWindow::on_btnExportAsm_clicked()
 
 void MainWindow::on_pushButton_clicked()
 {
-/*    m_work.m_currentImage->m_image->CopyFrom(&m_work.m_converter.m_mcImage);
+    /*    m_work.m_currentImage->m_image->CopyFrom(&m_work.m_converter.m_mcImage);
     ui->tabWidget->setCurrentIndex(0);
     m_updateThread->UpdateImage((LImage*)m_work.m_currentImage->m_image);*/
 
@@ -296,4 +361,9 @@ void MainWindow::on_btnSaveAs_clicked()
 
     LImageIO::Save(filename,m_work.m_currentImage->m_image);
 
+}
+
+void MainWindow::on_btnBuild_clicked()
+{
+    Build();
 }

@@ -6,11 +6,15 @@ void WorkerThread::UpdateDrawing()
     if (m_isPanning)
         return;
 
+
+
     m_work->m_currentImage->m_temp->CopyFrom(m_work->m_currentImage->m_image);
 
+
+    if (!Data::data.forceRedraw)
     if ((abs(m_prevPos.x()-m_currentPos.x())<1) && (abs(m_prevPos.y()-m_currentPos.y()))<1)
         return;
-
+    Data::data.forceRedraw = false;
     QPoint pos = (m_currentPos-m_zoomCenter)*m_zoom + m_zoomCenter ;
 
 
@@ -66,6 +70,7 @@ void WorkerThread::UpdatePanning()
 //        qDebug() << delta;
         m_isPanning = true;
         Data::data.Redraw();
+        Data::data.forceRedraw = true;
     }
 
 
@@ -129,14 +134,11 @@ void WorkerThread::run()
 
         }
         int newShift = 0;
-        if (QApplication::keyboardModifiers() & Qt::ShiftModifier)
-            newShift = 1;
+//        if (QApplication::keyboardModifiers() & Qt::ShiftModifier)
+//            newShift = 1;
 
-        if (newShift!=m_toolBox->m_current->m_type) {
-            m_toolBox->m_current->m_type = newShift;
-            Data::data.redrawOutput = true;
+//        qDebug() << (QApplication::keyboardModifiers() & Qt::ShiftModifier) << " + "  << rand()%100;
 
-        }
 
 
 

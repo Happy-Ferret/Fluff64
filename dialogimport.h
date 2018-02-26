@@ -24,6 +24,8 @@ public:
     float m_hsv = 0.5;
     float m_saturation = 0.5;
     float m_blur = 0;
+    QPointF m_scale = QPointF(1,1);
+
 
     LImageQImage m_input;
     LImageQImage m_work;

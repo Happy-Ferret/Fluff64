@@ -8,6 +8,7 @@ QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
+
 TARGET = Fluff64
 TEMPLATE = app
 
@@ -34,35 +35,80 @@ win32-msvc*{
 SOURCES += main.cpp\
         mainwindow.cpp \
     imageworker.cpp \
-    #source/lcolorlist.cpp \
     source/toolbox.cpp \
     source/toolboxitem.cpp \
     source/workerthread.cpp \
-#    source/limage/limage.cpp \
-    #source/limage/limageqimage.cpp \
-    #source/limage/multicolorimage.cpp \
-    #source/limage/limagefactory.cpp \
-    #source/limage/standardcolorimage.cpp \
     imageeditor.cpp \
     dialognewimage.cpp \
     dialogimport.cpp \
-#    source/limage/limageio.cpp
+    source/PmmEdit/highlighter.cpp\
+# PMM
+    ..\Pmm\source\token.cpp \
+    ..\Pmm\source\lexer.cpp \
+    ..\Pmm\source\syntax.cpp \
+    ..\Pmm\source\ast\ast.cpp \
+    ..\Pmm\source\interpreter.cpp \
+    ..\Pmm\source\symboltable.cpp \
+    ..\Pmm\source\errorhandler.cpp \
+    ..\Pmm\source\pvar.cpp \
+    ..\Pmm\source\data_pmm.cpp \
+    ..\Pmm\source\parser.cpp \
+    ..\Pmm\source/ast/node.cpp \
+    ..\Pmm\source/ast/nodebinop.cpp \
+    ..\Pmm\source/ast/nodenumber.cpp \
+    ..\Pmm\source/ast/nodestring.cpp \
+    ..\Pmm\source/ast/nodeunaryop.cpp \
+    ..\Pmm\source/ast/nodecompound.cpp \
+    ..\Pmm\source/ast/nodevar.cpp \
+    ..\Pmm\source/ast/nodeassign.cpp \
+    ..\Pmm\source/ast/nodevardecl.cpp \
+    ..\Pmm\source/ast/nodeblock.cpp \
+    ..\Pmm\source/ast/nodeprogram.cpp \
+    ..\Pmm\source/ast/nodevartype.cpp \
+    ..\Pmm\source/ast/nodeproceduredecl.cpp \
+    ..\Pmm\source/ast/nodeprocedure.cpp \
+    ..\Pmm\source/ast/nodeconditional.cpp \
+    ..\Pmm\source/ast/nodeforloop.cpp \
+    ..\Pmm\source/ast/nodebuiltinmethod.cpp
+
 
 HEADERS  += mainwindow.h \
     imageworker.h \
-    #source/lcolorlist.h \
     source/toolbox.h \
     source/toolboxitem.h \
     source/workerthread.h \
-#    source/limage/limage.h \
-    #source/limage/limageqimage.h \
-    #source/limage/multicolorimage.h \
-    #source/limage/limagefactory.h \
-    #source/limage/standardcolorimage.h \
     imageeditor.h \
     dialognewimage.h \
     dialogimport.h \
- #   source/limage/limageio.h
+    source/PmmEdit/highlighter.h \
+# PMM
+    ..\Pmm\source\token.h \
+    ..\Pmm\source\lexer.h \
+    ..\Pmm\source\syntax.h \
+    ..\Pmm\source\ast\ast.h \
+    ..\Pmm\source\interpreter.h \
+    ..\Pmm\source\symboltable.h \
+    ..\Pmm\source\errorhandler.h \
+    ..\Pmm\source\pvar.h \
+    ..\Pmm\source\data_pmm.h \
+    ..\Pmm\source\parser.h \
+    ..\Pmm\source/ast/node.h \
+    ..\Pmm\source/ast/nodebinop.h \
+    ..\Pmm\source/ast/nodenumber.h \
+    ..\Pmm\source/ast/nodestring.h \
+    ..\Pmm\source/ast/nodeunaryop.h \
+    ..\Pmm\source/ast/nodecompound.h \
+    ..\Pmm\source/ast/nodevar.h \
+    ..\Pmm\source/ast/nodeassign.h \
+    ..\Pmm\source/ast/nodevardecl.h \
+    ..\Pmm\source/ast/nodeblock.h \
+    ..\Pmm\source/ast/nodeprogram.h \
+    ..\Pmm\source/ast/nodevartype.h \
+    ..\Pmm\source/ast/nodeproceduredecl.h \
+    ..\Pmm\source/ast/nodeprocedure.h \
+    ..\Pmm\source/ast/nodeconditional.h \
+    ..\Pmm\source/ast/nodeforloop.h \
+    ..\Pmm\source/ast/nodebuiltinmethod.h
 
 FORMS    += mainwindow.ui \
     dialognewimage.ui \
@@ -76,6 +122,11 @@ RESOURCES += \
 
 INCLUDEPATH += $$PWD/../lelib/
 DEPENDPATH += $$PWD/../lelib/
+
+
+INCLUDEPATH += $$PWD/../pmm/
+DEPENDPATH += $$PWD/../pmm/
+
 
 win32-g++ {
  win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../LeLib/release/release/ -llelib
