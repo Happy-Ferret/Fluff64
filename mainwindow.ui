@@ -324,6 +324,19 @@
        <string>Build</string>
       </property>
      </widget>
+     <widget class="QPushButton" name="btnBuild_2">
+      <property name="geometry">
+       <rect>
+        <x>200</x>
+        <y>470</y>
+        <width>151</width>
+        <height>28</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Run</string>
+      </property>
+     </widget>
     </widget>
    </widget>
    <widget class="QListView" name="lstImages">

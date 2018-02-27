@@ -3,6 +3,7 @@
 
 #include <QDebug>
 #include <QThread>
+#include <QProcess>
 #include "source/data.h"
 #include "source/util/util.h"
 #include <QWheelEvent>
@@ -40,6 +41,11 @@ MainWindow::MainWindow(QWidget *parent) :
     m_updateThread->start();
 
     setupEditor();
+
+    m_iniFile.Load("fluff64.ini");
+
+
+    qDebug() <<m_iniFile.getString("emulator");
 
 
 #ifndef USE_LIBTIFF
@@ -182,7 +188,7 @@ void MainWindow::MainWindow::setupEditor()
     ui->txtEditor->setTextColor(QColor(220,210,190));
     highlighter = new Highlighter(ui->txtEditor->document());
 
-    QFile file("C:\\Users\\leuat\\OneDrive\\Documents\\GitHub\\pmm\\pmm\\test.pmm");
+    QFile file("C:\\Users\\leuat\\Documents\\GitHub\\pmm\\pmm\\test.pmm");
     if (file.open(QFile::ReadOnly | QFile::Text))
         ui->txtEditor->setPlainText(file.readAll());
 }
@@ -366,4 +372,16 @@ void MainWindow::on_btnSaveAs_clicked()
 void MainWindow::on_btnBuild_clicked()
 {
     Build();
+}
+
+void MainWindow::on_btnBuild_2_clicked()
+{
+    QProcess process;
+    QString name = "test";
+
+    process.start(m_iniFile.getString("dasm"), QStringList()<<(name+".asm") << ("-o"+name+".prg"));
+    process.waitForFinished();
+    process.startDetached(m_iniFile.getString("emulator"), QStringList() << (name+".prg"));
+    QString output(process.readAllStandardOutput());
+    qDebug() << output;
 }

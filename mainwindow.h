@@ -16,6 +16,7 @@
 #include "imageeditor.h"
 #include "dialogimport.h"
 #include "source/PmmEdit/highlighter.h"
+#include "source/util/cinifile.h"
 
 namespace Ui {
 class MainWindow;
@@ -34,6 +35,7 @@ public:
     ~MainWindow();
     ImageWorker m_work;
     Toolbox m_toolBox;
+    CIniFile m_iniFile;
 
     LImageQImage m_grid;
     QColor m_gridColor = QColor(64,128,128,128);
@@ -111,6 +113,8 @@ private slots:
     void on_btnSaveAs_clicked();
 
     void on_btnBuild_clicked();
+
+    void on_btnBuild_2_clicked();
 
 private:
     Ui::MainWindow *ui;
