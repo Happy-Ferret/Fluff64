@@ -188,7 +188,7 @@ void MainWindow::MainWindow::setupEditor()
     ui->txtEditor->setTextColor(QColor(220,210,190));
     highlighter = new Highlighter(ui->txtEditor->document());
 
-    QFile file("C:\\Users\\leuat\\Documents\\GitHub\\pmm\\pmm\\test.pmm");
+    QFile file("C:\\Users\\leuat\\OneDrive\\Documents\\GitHub\\pmm\\pmm\\test2.pmm");
     if (file.open(QFile::ReadOnly | QFile::Text))
         ui->txtEditor->setPlainText(file.readAll());
 }
@@ -206,8 +206,16 @@ void MainWindow::Build()
     Lexer lexer = Lexer(text, lst);
     Parser parser = Parser(lexer);
     Interpreter interpreter = Interpreter(parser);
+    interpreter.Parse();
     interpreter.Interpret();
     ui->txtOutput->setText(ErrorHandler::e.m_teOut);
+
+    interpreter.Build(Interpreter::PASCAL);
+    interpreter.SaveBuild(m_outputFilename+".pmm");
+
+    interpreter.Build(Interpreter::MOS6502);
+    interpreter.SaveBuild(m_outputFilename+".asm");
+
 }
 
 
@@ -377,7 +385,7 @@ void MainWindow::on_btnBuild_clicked()
 void MainWindow::on_btnBuild_2_clicked()
 {
     QProcess process;
-    QString name = "test";
+    QString name = m_outputFilename;
 
     process.start(m_iniFile.getString("dasm"), QStringList()<<(name+".asm") << ("-o"+name+".prg"));
     process.waitForFinished();

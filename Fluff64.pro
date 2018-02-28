@@ -68,7 +68,10 @@ SOURCES += main.cpp\
     ..\Pmm\source/ast/nodeprocedure.cpp \
     ..\Pmm\source/ast/nodeconditional.cpp \
     ..\Pmm\source/ast/nodeforloop.cpp \
-    ..\Pmm\source/ast/nodebuiltinmethod.cpp
+    ..\Pmm\source/ast/nodebuiltinmethod.cpp \
+    ..\Pmm\source/Assembler/assembler.cpp\
+    ..\Pmm\source/Assembler/mos6502.cpp\
+    ..\Pmm\source/Assembler/asmpascal.cpp
 
 
 HEADERS  += mainwindow.h \
@@ -107,7 +110,10 @@ HEADERS  += mainwindow.h \
     ..\Pmm\source/ast/nodeprocedure.h \
     ..\Pmm\source/ast/nodeconditional.h \
     ..\Pmm\source/ast/nodeforloop.h \
-    ..\Pmm\source/ast/nodebuiltinmethod.h
+    ..\Pmm\source/ast/nodebuiltinmethod.h\
+    ..\Pmm\source/Assembler/assembler.h\
+    ..\Pmm\source/Assembler/mos6502.h\
+    ..\Pmm\source/Assembler/asmpascal.h
 
 FORMS    += mainwindow.ui \
     dialognewimage.ui \
