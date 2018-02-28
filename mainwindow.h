@@ -39,7 +39,7 @@ public:
     QString m_outputFilename = "program";
     LImageQImage m_grid;
     QColor m_gridColor = QColor(64,128,128,128);
-
+    QString m_currentSourceFile;
 
     void mousePressEvent(QMouseEvent *e) override;
     void mouseReleaseEvent(QMouseEvent *e) override;
@@ -115,6 +115,8 @@ private slots:
     void on_btnBuild_clicked();
 
     void on_btnBuild_2_clicked();
+
+    void on_btnSave_2_clicked();
 
 private:
     Ui::MainWindow *ui;

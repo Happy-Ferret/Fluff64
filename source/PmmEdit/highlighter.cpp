@@ -1,6 +1,10 @@
 #include "highlighter.h"
 #include "source/token.h"
+#include "source/symboltable.h"
+#include "source/syntax.h"
+
 #include <QDebug>
+
 
 Highlighter::Highlighter(QTextDocument *parent)
     : QSyntaxHighlighter(parent)
@@ -10,17 +14,7 @@ Highlighter::Highlighter(QTextDocument *parent)
     keywordFormat.setForeground(QColor(128,200,255));
     keywordFormat.setFontWeight(QFont::Bold);
     QStringList keywordPatterns;
-    /*keywordPatterns << "\\bchar\\b" << "\\bclass\\b" << "\\bconst\\b"
-                    << "\\bdouble\\b" << "\\benum\\b" << "\\bexplicit\\b"
-                    << "\\bfriend\\b" << "\\binline\\b" << "\\bint\\b"
-                    << "\\blong\\b" << "\\bnamespace\\b" << "\\boperator\\b"
-                    << "\\bprivate\\b" << "\\bprotected\\b" << "\\bpublic\\b"
-                    << "\\bshort\\b" << "\\bsignals\\b" << "\\bsigned\\b"
-                    << "\\bslots\\b" << "\\bstatic\\b" << "\\bstruct\\b"
-                    << "\\btemplate\\b" << "\\btypedef\\b" << "\\btypename\\b"
-                    << "\\bunion\\b" << "\\bunsigned\\b" << "\\bvirtual\\b"
-                    << "\\bvoid\\b" << "\\bvolatile\\b" << "\\bbool\\b" << "\\bprogram\\b"
-                    << "\\bprocedure\\b" << "\\bfor\\b";*/
+
     for (int i=0;i<33;i++) {
         //qDebug() << QString::number(i) << TokenType::types[i].toLower();
         QString s = "\\b" + TokenType::types[i].toLower() + "\\b";
@@ -33,6 +27,48 @@ Highlighter::Highlighter(QTextDocument *parent)
         highlightingRules.append(rule);
     }
 
+
+    builtinFunctionFormat.setForeground(QColor(255,200,50));
+    builtinFunctionFormat.setFontWeight(QFont::Bold);
+    keywordPatterns.clear();
+
+    for (QString k: Syntax::s.builtInFunctions.keys()) {
+        //qDebug() << QString::number(i) << TokenType::types[i].toLower();
+        QString name = Syntax::s.builtInFunctions[k].m_name;
+        QString s = "\\b" + name.toLower() + "\\b";
+        keywordPatterns<<s;
+    }
+
+    foreach (const QString &pattern, keywordPatterns) {
+        rule.pattern = QRegularExpression(pattern,QRegularExpression::CaseInsensitiveOption);
+        rule.format = builtinFunctionFormat;
+        highlightingRules.append(rule);
+    }
+
+    /* CONSTANTS */
+
+    SymbolTable::Initialize();
+
+    constantsFormat.setForeground(QColor(50,200,100));
+    constantsFormat.setFontWeight(QFont::Normal);
+    keywordPatterns.clear();
+
+    for (QString k: SymbolTable::m_constants.keys()) {
+        //qDebug() << QString::number(i) << TokenType::types[i].toLower();
+        QString s = "\\b" + k.toLower() + "\\b";
+        keywordPatterns<<s;
+    }
+
+    foreach (const QString &pattern, keywordPatterns) {
+        rule.pattern = QRegularExpression(pattern,QRegularExpression::CaseInsensitiveOption);
+        rule.format = constantsFormat;
+        highlightingRules.append(rule);
+    }
+
+
+
+
+
     classFormat.setFontWeight(QFont::Bold);
     classFormat.setForeground(Qt::green);
     rule.pattern = QRegularExpression("\\bQ[A-Za-z]+\\b",QRegularExpression::CaseInsensitiveOption);
@@ -44,12 +80,12 @@ Highlighter::Highlighter(QTextDocument *parent)
     rule.format = quotationFormat;
     highlightingRules.append(rule);
 
-    functionFormat.setFontItalic(true);
+/*    functionFormat.setFontItalic(true);
     functionFormat.setForeground(QColor(200,255, 100));
     rule.pattern = QRegularExpression("\\b[A-Za-z0-9_]+(?=\\()");
     rule.format = functionFormat;
     highlightingRules.append(rule);
-
+*/
 /*    singleLineCommentFormat.setForeground(Qt::red);
     rule.pattern = QRegularExpression("{[^\n]*");
     rule.format = singleLineCommentFormat;

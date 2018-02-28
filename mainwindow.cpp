@@ -45,7 +45,6 @@ MainWindow::MainWindow(QWidget *parent) :
     m_iniFile.Load("fluff64.ini");
 
 
-    qDebug() <<m_iniFile.getString("emulator");
 
 
 #ifndef USE_LIBTIFF
@@ -188,7 +187,10 @@ void MainWindow::MainWindow::setupEditor()
     ui->txtEditor->setTextColor(QColor(220,210,190));
     highlighter = new Highlighter(ui->txtEditor->document());
 
-    QFile file("C:\\Users\\leuat\\OneDrive\\Documents\\GitHub\\pmm\\pmm\\test2.pmm");
+
+    m_currentSourceFile = "C:\\Users\\leuat\\OneDrive\\Documents\\GitHub\\pmm\\pmm\\test2.pmm";
+
+    QFile file(m_currentSourceFile);
     if (file.open(QFile::ReadOnly | QFile::Text))
         ui->txtEditor->setPlainText(file.readAll());
 }
@@ -207,14 +209,15 @@ void MainWindow::Build()
     Parser parser = Parser(lexer);
     Interpreter interpreter = Interpreter(parser);
     interpreter.Parse();
-    interpreter.Interpret();
-    ui->txtOutput->setText(ErrorHandler::e.m_teOut);
+//    interpreter.Interpret();
 
-    interpreter.Build(Interpreter::PASCAL);
-    interpreter.SaveBuild(m_outputFilename+".pmm");
+    //interpreter.Build(Interpreter::PASCAL);
+    //interpreter.SaveBuild(m_outputFilename+".pmm");
 
     interpreter.Build(Interpreter::MOS6502);
     interpreter.SaveBuild(m_outputFilename+".asm");
+
+    ui->txtOutput->setText(ErrorHandler::e.m_teOut);
 
 }
 
@@ -392,4 +395,19 @@ void MainWindow::on_btnBuild_2_clicked()
     process.startDetached(m_iniFile.getString("emulator"), QStringList() << (name+".prg"));
     QString output(process.readAllStandardOutput());
     qDebug() << output;
+}
+
+void MainWindow::on_btnSave_2_clicked()
+{
+    qDebug() << "Saving";
+    if (QFile::exists(m_currentSourceFile))
+        QFile::remove(m_currentSourceFile);
+    QString txt = ui->txtEditor->document()->toPlainText();
+    QFile file(m_currentSourceFile);
+    if (file.open(QIODevice::ReadWrite))
+    {
+        QTextStream stream(&file);
+        stream << txt;
+    }
+    file.close();
 }

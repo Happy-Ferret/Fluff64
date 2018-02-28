@@ -34,6 +34,8 @@ private:
     QTextCharFormat multiLineCommentFormat;
     QTextCharFormat quotationFormat;
     QTextCharFormat functionFormat;
+    QTextCharFormat builtinFunctionFormat;
+    QTextCharFormat constantsFormat;
 };
 
 #endif // HIGHLIGHTER_H
