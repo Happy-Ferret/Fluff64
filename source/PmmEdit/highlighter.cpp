@@ -15,9 +15,9 @@ Highlighter::Highlighter(QTextDocument *parent)
     keywordFormat.setFontWeight(QFont::Bold);
     QStringList keywordPatterns;
 
-    for (int i=0;i<33;i++) {
+    for (Token t: Syntax::s.reservedWords) {
         //qDebug() << QString::number(i) << TokenType::types[i].toLower();
-        QString s = "\\b" + TokenType::types[i].toLower() + "\\b";
+        QString s = "\\b" + t.m_value.toLower() + "\\b";
         keywordPatterns<<s;
     }
 
