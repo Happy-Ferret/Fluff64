@@ -188,7 +188,7 @@ void MainWindow::MainWindow::setupEditor()
     highlighter = new Highlighter(ui->txtEditor->document());
 
 
-    m_currentSourceFile = "C:\\Users\\leuat\\OneDrive\\Documents\\GitHub\\pmm\\pmm\\test2.pmm";
+    m_currentSourceFile = "C:\\Users\\leuat\\Documents\\GitHub\\pmm\\pmm\\test2.pmm";
 
     QFile file(m_currentSourceFile);
     if (file.open(QFile::ReadOnly | QFile::Text))
