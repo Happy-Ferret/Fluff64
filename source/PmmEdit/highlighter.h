@@ -30,6 +30,9 @@ private:
 
     QTextCharFormat keywordFormat;
     QTextCharFormat classFormat;
+    QTextCharFormat numberFormat;
+    QTextCharFormat addressFormat;
+    QTextCharFormat symbolsFormat;
     QTextCharFormat singleLineCommentFormat;
     QTextCharFormat multiLineCommentFormat;
     QTextCharFormat quotationFormat;

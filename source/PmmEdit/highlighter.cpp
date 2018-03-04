@@ -66,6 +66,24 @@ Highlighter::Highlighter(QTextDocument *parent)
     }
 
 
+    addressFormat.setFontWeight(QFont::Normal);
+    addressFormat.setForeground(QColor(255,150,170));
+    rule.pattern = QRegularExpression("(?!#)(\\\$[0-9a-f]+)|\\b[0-9]+\\b",QRegularExpression::CaseInsensitiveOption);
+    rule.format = addressFormat;
+    highlightingRules.append(rule);
+
+
+    numberFormat.setFontWeight(QFont::Normal);
+    numberFormat.setForeground(QColor(180,140,255));
+    rule.pattern = QRegularExpression("#[0-9a-f#\\\$%]+",QRegularExpression::CaseInsensitiveOption);
+    rule.format = numberFormat;
+    highlightingRules.append(rule);
+
+    symbolsFormat.setFontWeight(QFont::Normal);
+    symbolsFormat.setForeground(QColor(120,140,160));
+    rule.pattern = QRegularExpression("[\\\+\\\-:=\\\/\\\*\\\(\\\)\\\<\\\>\\\[\\\]]",QRegularExpression::CaseInsensitiveOption);
+    rule.format = symbolsFormat;
+    highlightingRules.append(rule);
 
 
 
@@ -74,6 +92,9 @@ Highlighter::Highlighter(QTextDocument *parent)
     rule.pattern = QRegularExpression("\\bQ[A-Za-z]+\\b",QRegularExpression::CaseInsensitiveOption);
     rule.format = classFormat;
     highlightingRules.append(rule);
+
+
+
 
     quotationFormat.setForeground(QColor(255,128,40));
     rule.pattern = QRegularExpression("\".*\"");
@@ -86,10 +107,10 @@ Highlighter::Highlighter(QTextDocument *parent)
     rule.format = functionFormat;
     highlightingRules.append(rule);
 */
-/*    singleLineCommentFormat.setForeground(Qt::red);
-    rule.pattern = QRegularExpression("{[^\n]*");
+    singleLineCommentFormat.setForeground(Qt::red);
+    rule.pattern = QRegularExpression("//[^\n]*");
     rule.format = singleLineCommentFormat;
-    highlightingRules.append(rule);*/
+    highlightingRules.append(rule);
 
 
     multiLineCommentFormat.setForeground(QColor(128,128,128));

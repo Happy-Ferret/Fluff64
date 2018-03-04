@@ -44,6 +44,9 @@ public:
     QString m_currentSourceFile;
     CodeEditor m_codeEditor;
     QFileSystemModel *fileSystemModel;
+    int m_searchFromPos = 0;
+    int m_currentFromPos = 0;
+    void SearchInSource();
 
     void mousePressEvent(QMouseEvent *e) override;
     void mouseReleaseEvent(QMouseEvent *e) override;
@@ -61,6 +64,7 @@ public:
     Highlighter* highlighter;
     void Build();
     void Run();
+
 
 public slots:
     void Update();
@@ -125,6 +129,10 @@ private slots:
     void on_btnSave_2_clicked();
 
     void on_treeFiles_doubleClicked(const QModelIndex &index);
+
+    void on_leSearch_textChanged();
+
+    void on_leSearch_returnPressed();
 
 private:
     Ui::MainWindow *ui;

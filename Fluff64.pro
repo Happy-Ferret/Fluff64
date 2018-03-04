@@ -68,6 +68,7 @@ SOURCES += main.cpp\
     ..\Pmm\source/ast/nodeproceduredecl.cpp \
     ..\Pmm\source/ast/nodeprocedure.cpp \
     ..\Pmm\source/ast/nodeconditional.cpp \
+    ..\Pmm\source/ast/nodeasm.cpp \
     ..\Pmm\source/ast/nodewhileloop.cpp \
     ..\Pmm\source/ast/nodeforloop.cpp \
     ..\Pmm\source/ast/nodebuiltinmethod.cpp \
@@ -108,6 +109,7 @@ HEADERS  += mainwindow.h \
     ..\Pmm\source/ast/nodeassign.h \
     ..\Pmm\source/ast/nodevardecl.h \
     ..\Pmm\source/ast/nodeblock.h \
+    ..\Pmm\source/ast/nodeasm.h \
     ..\Pmm\source/ast/nodeprogram.h \
     ..\Pmm\source/ast/nodevartype.h \
     ..\Pmm\source/ast/nodeproceduredecl.h \

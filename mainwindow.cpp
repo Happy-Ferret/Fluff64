@@ -4,6 +4,7 @@
 #include <QDebug>
 #include <QThread>
 #include <QProcess>
+#include <QElapsedTimer>
 #include <QTextCursor>
 #include <QFontMetrics>
 #include "source/data.h"
@@ -66,6 +67,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+
 void MainWindow::mousePressEvent(QMouseEvent *e)
 {
     if(e->buttons() == Qt::RightButton)
@@ -121,6 +123,19 @@ void MainWindow::keyPressEvent(QKeyEvent *e)
         Data::data.redrawOutput = true;
         Data::data.forceRedraw = true;
     }
+
+    if (e->key()==Qt::Key_F && QApplication::keyboardModifiers() & Qt::ControlModifier) {
+        if (ui->leSearch->hasFocus()) {
+            m_searchFromPos=m_currentFromPos+1;
+            SearchInSource();
+        }
+        else {
+            ui->leSearch->setText("");
+            ui->leSearch->setFocus();
+            m_searchFromPos = 0;
+        }
+    }
+
 
     if (e->key()==Qt::Key_Z && QApplication::keyboardModifiers() & Qt::ControlModifier) {
         m_work.m_currentImage->Undo();
@@ -243,6 +258,8 @@ void MainWindow::Build()
  //   text = text.replace("\n","");
 //    SymbolTable::isInitialized = true;
 
+    QElapsedTimer timer;
+    timer.start();
     Lexer lexer = Lexer(text, lst);
     Parser parser = Parser(lexer);
     Interpreter interpreter = Interpreter(parser);
@@ -254,14 +271,21 @@ void MainWindow::Build()
 
     if (interpreter.Build(Interpreter::MOS6502)) {
         interpreter.SaveBuild(m_outputFilename+".asm");
-        QString text ="Fluff64 Rascal Build OK.\n";
-        text+="**** DASM output:\n\n";
+        QString text ="Build <b>Successful</b>!<br>";
+        text+="Compiled " + QString::number(parser.m_lexer.m_lines.count()) +" of Rascal to ";
+        text+=QString::number(interpreter.m_assembler->m_source.count()) + " lines of DASM assembler<br>";
+        text+="Time: " + Util::MilisecondToString(timer.elapsed())+"<br>";
+        text+="**** DASM output:<br>";
         QProcess process;
         QString name = m_outputFilename;
 
         process.start(m_iniFile.getString("dasm"), QStringList()<<(name+".asm") << ("-o"+name+".prg"));
         process.waitForFinished();
         QString output(process.readAllStandardOutput());
+        QString size = QString::number(QFile("program.prg").size());
+
+        output +="<br>Assembled file size: <b>" + size + "</b> bytes";
+
         ui->txtOutput->setText(text + output);
     }
     else {
@@ -473,4 +497,23 @@ void MainWindow::on_treeFiles_doubleClicked(const QModelIndex &index)
     //qDebug() << index.data().toString();
     LoadRasFile(index.data().toString());
     m_iniFile.setString("current_file", index.data().toString());
+}
+
+void MainWindow::on_leSearch_textChanged()
+{
+    QString i;
+    SearchInSource();
+}
+
+void MainWindow::SearchInSource()
+{
+    m_currentFromPos = ui->txtEditor->document()->toPlainText().toLower().indexOf(ui->leSearch->text().toLower(), m_searchFromPos);
+    QTextCursor cursor(ui->txtEditor->document()->findBlock(m_currentFromPos));
+    ui->txtEditor->setTextCursor(cursor);
+}
+
+
+void MainWindow::on_leSearch_returnPressed()
+{
+    ui->txtEditor->setFocus();
 }
