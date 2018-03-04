@@ -4,6 +4,7 @@
 #include <QDebug>
 #include <QThread>
 #include <QProcess>
+#include <QFontMetrics>
 #include "source/data.h"
 #include "source/util/util.h"
 #include <QWheelEvent>
@@ -40,9 +41,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
     m_updateThread->start();
 
+    m_iniFile.Load("fluff64.ini");
     setupEditor();
 
-    m_iniFile.Load("fluff64.ini");
+    if (m_iniFile.getString("current_file")!="")
+        LoadRasFile(m_iniFile.getString("current_file"));
 
 
 
@@ -127,6 +130,16 @@ void MainWindow::keyPressEvent(QKeyEvent *e)
        ui->lblGrid->setVisible(ui->chkGrid->isChecked());
 
     }
+    if (e->key() == Qt::Key_S &&  (QApplication::keyboardModifiers() & Qt::ControlModifier)) {
+        on_btnSave_2_clicked();
+    }
+    if (e->key() == Qt::Key_B &&  (QApplication::keyboardModifiers() & Qt::ControlModifier)) {
+        Build();
+    }
+    if (e->key() == Qt::Key_R &&  (QApplication::keyboardModifiers() & Qt::ControlModifier)) {
+        Build();
+        Run();
+    }
     Data::data.forceRedraw = true;
     Data::data.Redraw();
 
@@ -156,6 +169,17 @@ void MainWindow::UpdatePalette()
 
 }
 
+void MainWindow::LoadRasFile(QString fileName)
+{
+    m_currentSourceFile = m_iniFile.getString("project_path") + "/" + fileName;
+
+    QFile file(m_currentSourceFile);
+    if (file.open(QFile::ReadOnly | QFile::Text))
+        ui->txtEditor->setPlainText(file.readAll());
+
+
+}
+
 
 void MainWindow::on_actionImport_triggered()
 {
@@ -182,17 +206,30 @@ void MainWindow::MainWindow::setupEditor()
     font.setPointSize(12);
 
 
-    //editor = new QTextEdit;
+    // Set up file system model
+    fileSystemModel = new QFileSystemModel(this);
+    QString rootPath= m_iniFile.getString("project_path");
+    fileSystemModel->setReadOnly(true);
+    fileSystemModel->setRootPath(rootPath);
+    fileSystemModel->setFilter(QDir::NoDotAndDotDot |
+                            QDir::AllDirs |QDir::AllEntries);
+    //fileSystemModel->setNameFilters(QStringList() << "*.ras");
+    ui->treeFiles->setModel(fileSystemModel);
+    ui->treeFiles->setRootIndex(fileSystemModel->index(rootPath));
+    ui->treeFiles->hideColumn(1);
+    ui->treeFiles->hideColumn(2);
+    ui->treeFiles->hideColumn(3);
+
+//    ui->txtEditor = &m_codeEditor;
+
     ui->txtEditor->setFont(font);
-    ui->txtEditor->setTextColor(QColor(220,210,190));
+    //ui->txtEditor->setTextColor(QColor(220,210,190));
     highlighter = new Highlighter(ui->txtEditor->document());
 
+    QFontMetrics metrics(font);
+    ui->txtEditor->setTabStopWidth(m_iniFile.getInt("tab_size") * metrics.width(' '));
 
-    m_currentSourceFile = "C:\\Users\\leuat\\Documents\\GitHub\\pmm\\pmm\\test2.pmm";
 
-    QFile file(m_currentSourceFile);
-    if (file.open(QFile::ReadOnly | QFile::Text))
-        ui->txtEditor->setPlainText(file.readAll());
 }
 
 void MainWindow::Build()
@@ -214,10 +251,22 @@ void MainWindow::Build()
     //interpreter.Build(Interpreter::PASCAL);
     //interpreter.SaveBuild(m_outputFilename+".pmm");
 
-    interpreter.Build(Interpreter::MOS6502);
-    interpreter.SaveBuild(m_outputFilename+".asm");
+    if (interpreter.Build(Interpreter::MOS6502)) {
+        interpreter.SaveBuild(m_outputFilename+".asm");
+        QString text ="Fluff64 Rascal Build OK.\n";
+        text+="**** DASM output:\n\n";
+        QProcess process;
+        QString name = m_outputFilename;
 
-    ui->txtOutput->setText(ErrorHandler::e.m_teOut);
+        process.start(m_iniFile.getString("dasm"), QStringList()<<(name+".asm") << ("-o"+name+".prg"));
+        process.waitForFinished();
+        QString output(process.readAllStandardOutput());
+        ui->txtOutput->setText(text + output);
+    }
+    else {
+        ui->txtOutput->setText(ErrorHandler::e.m_teOut);
+    }
+
 
 }
 
@@ -387,19 +436,20 @@ void MainWindow::on_btnBuild_clicked()
 
 void MainWindow::on_btnBuild_2_clicked()
 {
-    QProcess process;
-    QString name = m_outputFilename;
+    Run();
+}
 
-    process.start(m_iniFile.getString("dasm"), QStringList()<<(name+".asm") << ("-o"+name+".prg"));
+void MainWindow::Run() {
+    QProcess process;
     process.waitForFinished();
-    process.startDetached(m_iniFile.getString("emulator"), QStringList() << (name+".prg"));
+    process.startDetached(m_iniFile.getString("emulator"), QStringList() << (m_outputFilename+".prg"));
     QString output(process.readAllStandardOutput());
     qDebug() << output;
+
 }
 
 void MainWindow::on_btnSave_2_clicked()
 {
-    qDebug() << "Saving";
     if (QFile::exists(m_currentSourceFile))
         QFile::remove(m_currentSourceFile);
     QString txt = ui->txtEditor->document()->toPlainText();
@@ -410,4 +460,13 @@ void MainWindow::on_btnSave_2_clicked()
         stream << txt;
     }
     file.close();
+    m_iniFile.Save("fluff64.ini");
+}
+
+void MainWindow::on_treeFiles_doubleClicked(const QModelIndex &index)
+{
+    //qDebug() << ui->treeFiles->model()->index()
+    //qDebug() << index.data().toString();
+    LoadRasFile(index.data().toString());
+    m_iniFile.setString("current_file", index.data().toString());
 }

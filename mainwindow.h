@@ -9,6 +9,7 @@
 #include "source/data.h"
 #include <QThread>
 #include <thread>
+#include <QFileSystemModel>
 #include <QLayout>
 #include <QPointF>
 #include <source/toolbox.h>
@@ -16,6 +17,7 @@
 #include "imageeditor.h"
 #include "dialogimport.h"
 #include "source/PmmEdit/highlighter.h"
+#include "source/PmmEdit/codeeditor.h"
 #include "source/util/cinifile.h"
 
 namespace Ui {
@@ -40,6 +42,8 @@ public:
     LImageQImage m_grid;
     QColor m_gridColor = QColor(64,128,128,128);
     QString m_currentSourceFile;
+    CodeEditor m_codeEditor;
+    QFileSystemModel *fileSystemModel;
 
     void mousePressEvent(QMouseEvent *e) override;
     void mouseReleaseEvent(QMouseEvent *e) override;
@@ -47,6 +51,7 @@ public:
     void keyPressEvent(QKeyEvent* e);
     void keyReleaseEvent(QKeyEvent *e);
     void UpdatePalette();
+    void LoadRasFile(QString fileName);
 
     WorkerThread* m_updateThread;
 
@@ -55,6 +60,7 @@ public:
     void setupEditor();
     Highlighter* highlighter;
     void Build();
+    void Run();
 
 public slots:
     void Update();
@@ -117,6 +123,8 @@ private slots:
     void on_btnBuild_2_clicked();
 
     void on_btnSave_2_clicked();
+
+    void on_treeFiles_doubleClicked(const QModelIndex &index);
 
 private:
     Ui::MainWindow *ui;

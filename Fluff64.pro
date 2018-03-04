@@ -59,6 +59,7 @@ SOURCES += main.cpp\
     ..\Pmm\source/ast/nodeunaryop.cpp \
     ..\Pmm\source/ast/nodecompound.cpp \
     ..\Pmm\source/ast/nodevar.cpp \
+    ..\Pmm\source/ast/nodevararray.cpp \
     ..\Pmm\source/ast/nodeassign.cpp \
     ..\Pmm\source/ast/nodevardecl.cpp \
     ..\Pmm\source/ast/nodeblock.cpp \
@@ -72,7 +73,8 @@ SOURCES += main.cpp\
     ..\Pmm\source/ast/nodebuiltinmethod.cpp \
     ..\Pmm\source/Assembler/assembler.cpp\
     ..\Pmm\source/Assembler/mos6502.cpp\
-    ..\Pmm\source/Assembler/asmpascal.cpp
+    ..\Pmm\source/Assembler/asmpascal.cpp \
+    source/PmmEdit/codeeditor.cpp
 
 
 HEADERS  += mainwindow.h \
@@ -102,6 +104,7 @@ HEADERS  += mainwindow.h \
     ..\Pmm\source/ast/nodeunaryop.h \
     ..\Pmm\source/ast/nodecompound.h \
     ..\Pmm\source/ast/nodevar.h \
+    ..\Pmm\source/ast/nodevararray.h \
     ..\Pmm\source/ast/nodeassign.h \
     ..\Pmm\source/ast/nodevardecl.h \
     ..\Pmm\source/ast/nodeblock.h \
@@ -115,7 +118,8 @@ HEADERS  += mainwindow.h \
     ..\Pmm\source/ast/nodebuiltinmethod.h\
     ..\Pmm\source/Assembler/assembler.h\
     ..\Pmm\source/Assembler/mos6502.h\
-    ..\Pmm\source/Assembler/asmpascal.h
+    ..\Pmm\source/Assembler/asmpascal.h \
+    source/PmmEdit/codeeditor.h
 
 FORMS    += mainwindow.ui \
     dialognewimage.ui \
@@ -163,8 +167,8 @@ win32-msvc*{
 
 #LELIB INCLUDES ENDS
 
-CONFIG+=USE_LIBTIFF
-DEFINES += USE_LIBTIFF
+#CONFIG+=USE_LIBTIFF
+#DEFINES += USE_LIBTIFF
 
 # TIFF INCLUDES
 

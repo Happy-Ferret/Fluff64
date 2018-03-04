@@ -91,10 +91,11 @@ Highlighter::Highlighter(QTextDocument *parent)
     rule.format = singleLineCommentFormat;
     highlightingRules.append(rule);*/
 
+
     multiLineCommentFormat.setForeground(QColor(128,128,128));
 
-    commentStartExpression = QRegularExpression("\\{");
-    commentEndExpression = QRegularExpression("\\}");
+    commentStartExpression = QRegularExpression("/\\*");
+    commentEndExpression = QRegularExpression("\\*/");
 
 
 }

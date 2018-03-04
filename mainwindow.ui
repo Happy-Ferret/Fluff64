@@ -20,9 +20,9 @@
    <widget class="QTabWidget" name="tabWidget">
     <property name="geometry">
      <rect>
-      <x>120</x>
+      <x>20</x>
       <y>40</y>
-      <width>1261</width>
+      <width>1361</width>
       <height>781</height>
      </rect>
     </property>
@@ -36,9 +36,9 @@
      <widget class="QGroupBox" name="groupBox_4">
       <property name="geometry">
        <rect>
-        <x>10</x>
+        <x>120</x>
         <y>10</y>
-        <width>891</width>
+        <width>781</width>
         <height>721</height>
        </rect>
       </property>
@@ -278,6 +278,16 @@
        </property>
       </widget>
      </widget>
+     <widget class="QListView" name="lstImages">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>10</y>
+        <width>111</width>
+        <height>331</height>
+       </rect>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="tab_2">
      <attribute name="title">
@@ -286,18 +296,8 @@
     </widget>
     <widget class="QWidget" name="tab_3">
      <attribute name="title">
-      <string>Pascal--</string>
+      <string>Rascal</string>
      </attribute>
-     <widget class="QTextEdit" name="txtEditor">
-      <property name="geometry">
-       <rect>
-        <x>20</x>
-        <y>20</y>
-        <width>1221</width>
-        <height>431</height>
-       </rect>
-      </property>
-     </widget>
      <widget class="QTextEdit" name="txtOutput">
       <property name="geometry">
        <rect>
@@ -350,17 +350,25 @@
        <string>Save</string>
       </property>
      </widget>
+     <widget class="QWidget" name="horizontalLayoutWidget">
+      <property name="geometry">
+       <rect>
+        <x>9</x>
+        <y>9</y>
+        <width>1321</width>
+        <height>441</height>
+       </rect>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,2">
+       <item>
+        <widget class="QTreeView" name="treeFiles"/>
+       </item>
+       <item>
+        <widget class="CodeEditor" name="txtEditor"/>
+       </item>
+      </layout>
+     </widget>
     </widget>
-   </widget>
-   <widget class="QListView" name="lstImages">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>41</y>
-      <width>111</width>
-      <height>331</height>
-     </rect>
-    </property>
    </widget>
    <widget class="QLabel" name="lblImageName">
     <property name="geometry">
@@ -420,6 +428,13 @@
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>CodeEditor</class>
+   <extends>QPlainTextEdit</extends>
+   <header>source\PmmEdit\codeeditor.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
