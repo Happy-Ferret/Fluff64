@@ -107,7 +107,7 @@ Highlighter::Highlighter(QTextDocument *parent)
     rule.format = functionFormat;
     highlightingRules.append(rule);
 */
-    singleLineCommentFormat.setForeground(Qt::red);
+    singleLineCommentFormat.setForeground(QColor(128,128,128));
     rule.pattern = QRegularExpression("//[^\n]*");
     rule.format = singleLineCommentFormat;
     highlightingRules.append(rule);
