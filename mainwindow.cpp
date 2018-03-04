@@ -4,6 +4,7 @@
 #include <QDebug>
 #include <QThread>
 #include <QProcess>
+#include <QTextCursor>
 #include <QFontMetrics>
 #include "source/data.h"
 #include "source/util/util.h"
@@ -239,7 +240,7 @@ void MainWindow::Build()
     ErrorHandler::e.m_teOut = "";
     ErrorHandler::e.exitOnError = false;
     QStringList lst = text.split("\n");
-    text = text.replace("\n","");
+ //   text = text.replace("\n","");
 //    SymbolTable::isInitialized = true;
 
     Lexer lexer = Lexer(text, lst);
@@ -265,8 +266,11 @@ void MainWindow::Build()
     }
     else {
         ui->txtOutput->setText(ErrorHandler::e.m_teOut);
-    }
+        int ln = Pmm::Data::d.lineNumber;
+        QTextCursor cursor(ui->txtEditor->document()->findBlockByLineNumber(ln));
+        ui->txtEditor->setTextCursor(cursor);
 
+    }
 
 }
 
