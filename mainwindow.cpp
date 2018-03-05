@@ -225,6 +225,7 @@ void MainWindow::MainWindow::setupEditor()
     // Set up file system model
     fileSystemModel = new QFileSystemModel(this);
     QString rootPath= m_iniFile.getString("project_path");
+    qDebug() << rootPath;
     fileSystemModel->setReadOnly(true);
     fileSystemModel->setRootPath(rootPath);
     fileSystemModel->setFilter(QDir::NoDotAndDotDot |

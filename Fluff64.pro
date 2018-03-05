@@ -41,6 +41,7 @@ SOURCES += main.cpp\
     dialognewimage.cpp \
     dialogimport.cpp \
     source/PmmEdit/highlighter.cpp\
+    source/PmmEdit/codeeditor.cpp\
 # PMM
     ..\Pmm\source\data_pmm.cpp \
     ..\Pmm\source\token.cpp \
@@ -75,7 +76,6 @@ SOURCES += main.cpp\
     ..\Pmm\source/Assembler/assembler.cpp\
     ..\Pmm\source/Assembler/mos6502.cpp\
     ..\Pmm\source/Assembler/asmpascal.cpp \
-    source/PmmEdit/codeeditor.cpp
 
 
 HEADERS  += mainwindow.h \
@@ -169,8 +169,8 @@ win32-msvc*{
 
 #LELIB INCLUDES ENDS
 
-#CONFIG+=USE_LIBTIFF
-#DEFINES += USE_LIBTIFF
+CONFIG+=USE_LIBTIFF
+DEFINES += USE_LIBTIFF
 
 # TIFF INCLUDES
 
