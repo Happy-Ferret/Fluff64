@@ -67,6 +67,7 @@ public:
     void Build();
     void Run();
 
+    void RefreshFileList();
 
 public slots:
     void Update();
@@ -135,6 +136,10 @@ private slots:
     void on_leSearch_textChanged();
 
     void on_leSearch_returnPressed();
+
+    void on_actionNew_triggered();
+
+
 
 private:
     Ui::MainWindow *ui;

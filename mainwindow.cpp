@@ -126,16 +126,19 @@ void MainWindow::keyPressEvent(QKeyEvent *e)
         Data::data.forceRedraw = true;
     }
 
+/*    if (e->key() == Qt::Key_Enter && ui->leSearch->hasFocus()) {
+        m_searchFromPos=m_currentFromPos+1;
+        SearchInSource();
+    }*/
+
+    if (e->key() == Qt::Key_Escape && ui->leSearch->hasFocus()) {
+        ui->txtEditor->setFocus();
+    }
+
     if (e->key()==Qt::Key_F && QApplication::keyboardModifiers() & Qt::ControlModifier) {
-        if (ui->leSearch->hasFocus()) {
-            m_searchFromPos=m_currentFromPos+1;
-            SearchInSource();
-        }
-        else {
             ui->leSearch->setText("");
             ui->leSearch->setFocus();
             m_searchFromPos = 0;
-        }
     }
 
 
@@ -246,17 +249,7 @@ void MainWindow::MainWindow::setupEditor()
 
 
     // Set up file system model
-    fileSystemModel = new QFileSystemModel(this);
-    QString rootPath= m_iniFile.getString("project_path");
-    qDebug() << rootPath;
-    fileSystemModel->setReadOnly(true);
-    fileSystemModel->setRootPath(rootPath);
-    fileSystemModel->setFilter(QDir::NoDotAndDotDot |
-                            QDir::AllDirs |QDir::AllEntries);
-    fileSystemModel->setNameFilters(QStringList() << "*.ras" << "*.asm" << "*.txt" << "*.prg");
-    fileSystemModel->setNameFilterDisables(false);
-    ui->treeFiles->setModel(fileSystemModel);
-    ui->treeFiles->setRootIndex(fileSystemModel->index(rootPath));
+    RefreshFileList();
     ui->treeFiles->hideColumn(1);
     ui->treeFiles->hideColumn(2);
     ui->treeFiles->hideColumn(3);
@@ -511,6 +504,21 @@ void MainWindow::Run() {
     ExecutePrg(filename);
 }
 
+void MainWindow::RefreshFileList()
+{
+    fileSystemModel = new QFileSystemModel(this);
+    QString rootPath= m_iniFile.getString("project_path");
+    fileSystemModel->setReadOnly(true);
+    fileSystemModel->setRootPath(rootPath);
+    fileSystemModel->setFilter(QDir::NoDotAndDotDot |
+                            QDir::AllDirs |QDir::AllEntries);
+    fileSystemModel->setNameFilters(QStringList() << "*.ras" << "*.asm" << "*.txt" << "*.prg");
+    fileSystemModel->setNameFilterDisables(false);
+    ui->treeFiles->setModel(fileSystemModel);
+    ui->treeFiles->setRootIndex(fileSystemModel->index(rootPath));
+
+}
+
 void MainWindow::on_btnSave_2_clicked()
 {
     if (QFile::exists(m_currentSourceFile))
@@ -528,10 +536,28 @@ void MainWindow::on_btnSave_2_clicked()
 
 void MainWindow::on_treeFiles_doubleClicked(const QModelIndex &index)
 {
+    // Find file in path.. ugh
+    QString path = "";
+    QStringList pathSplit = m_iniFile.getString("project_path").toLower().split("/");
+    QString test = pathSplit.last();
+    if (test=="")
+        test = pathSplit[pathSplit.count()-2];
+
+    QModelIndex cur = index.parent();
+    while (cur.data().toString()!=test) {
+
+        path=cur.data().toString() + "/" + path;
+        cur = cur.parent();
+    }
+
+
+    // Finally load file!
     QString file = index.data().toString();
     if (file.toLower().endsWith(".ras") || file.toLower().endsWith(".asm")
             || file.toLower().endsWith(".inc")) {
-        LoadRasFile(file);
+
+
+        LoadRasFile(path + file);
     }
     if (file.toLower().endsWith(".prg")) {
         ExecutePrg(m_iniFile.getString("project_path")+"/" + file);
@@ -555,5 +581,43 @@ void MainWindow::SearchInSource()
 
 void MainWindow::on_leSearch_returnPressed()
 {
-    ui->txtEditor->setFocus();
+    m_searchFromPos=m_currentFromPos+1;
+    SearchInSource();
+
+}
+
+void MainWindow::on_actionNew_triggered()
+{
+    // New .RAS file
+
+    QFileDialog dialog;
+    dialog.setFileMode(QFileDialog::AnyFile);
+    QString f = "Ras Files (*.ras)";
+    QString filename = dialog.getSaveFileName(NULL, "Create New File",m_iniFile.getString("project_path"),f);
+
+    if (filename=="")
+        return;
+    QString orgFile;
+    //filename = filename.split("/").last();
+    filename = filename.toLower().remove(m_iniFile.getString("project_path").toLower());
+
+    //qDebug() << filename;
+    QString fn = m_iniFile.getString("project_path") + filename;
+    if (QFile::exists(fn))
+        QFile::remove(fn);
+    QFile file(fn);
+    qDebug() << "creating new file: " + fn;
+    if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        QTextStream s(&file);
+        s<< "program spankme;\n";
+        s<< "var  \n";
+        s<< "   index: byte; \n";
+        s<< "begin\n\n";
+        s<< "end.\n";
+        qDebug() << "Done writing;";
+    }
+
+    file.close();
+    LoadRasFile(filename);
+    RefreshFileList();
 }
