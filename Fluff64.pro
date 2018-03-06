@@ -53,6 +53,7 @@ SOURCES += main.cpp\
     ..\Pmm\source\errorhandler.cpp \
     ..\Pmm\source\pvar.cpp \
     ..\Pmm\source\parser.cpp \
+    ..\Pmm\source/misc/sidfile.cpp \
     ..\Pmm\source/ast/node.cpp \
     ..\Pmm\source/ast/nodebinop.cpp \
     ..\Pmm\source/ast/nodenumber.cpp \
@@ -98,6 +99,7 @@ HEADERS  += mainwindow.h \
     ..\Pmm\source\errorhandler.h \
     ..\Pmm\source\pvar.h \
     ..\Pmm\source\parser.h \
+    ..\Pmm\source/misc/sidfile.h \
     ..\Pmm\source/ast/node.h \
     ..\Pmm\source/ast/nodebinop.h \
     ..\Pmm\source/ast/nodenumber.h \
@@ -178,9 +180,9 @@ USE_LIBTIFF {
 
 LIBS += -L$$OUT_PWD/../LeLib/lib/ -llibtiff
 
-INCLUDEPATH += $$PWD/../Nutil/lib/libtiff
-INCLUDEPATH += $$PWD/../Nutil/lib
-DEPENDPATH += $$PWD/../Nutil/lib/libtiff
+INCLUDEPATH += $$PWD/../LeLib/lib/libtiff
+INCLUDEPATH += $$PWD/../LeLib/lib
+DEPENDPATH += $$PWD/../LeLib/lib/libtiff
 
 }
 # TIFF END INCLUDES

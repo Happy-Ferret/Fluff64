@@ -5,7 +5,6 @@
 int main(int argc, char *argv[])
 {
 
-    qDebug() << "WTF";
 
     QApplication a(argc, argv);
     a.setStyle(QStyleFactory::create("Fusion"));

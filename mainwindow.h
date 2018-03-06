@@ -38,7 +38,6 @@ public:
     ImageWorker m_work;
     Toolbox m_toolBox;
     CIniFile m_iniFile;
-    QString m_outputFilename = "program";
     LImageQImage m_grid;
     QColor m_gridColor = QColor(64,128,128,128);
     QString m_currentSourceFile;
@@ -46,6 +45,7 @@ public:
     QFileSystemModel *fileSystemModel;
     int m_searchFromPos = 0;
     int m_currentFromPos = 0;
+    bool m_buildSuccess = false;
     void SearchInSource();
 
     void mousePressEvent(QMouseEvent *e) override;
@@ -55,6 +55,8 @@ public:
     void keyReleaseEvent(QKeyEvent *e);
     void UpdatePalette();
     void LoadRasFile(QString fileName);
+    void ExecutePrg(QString fileName);
+    void SetLights();
 
     WorkerThread* m_updateThread;
 

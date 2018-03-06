@@ -43,6 +43,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     m_updateThread->start();
 
+    ui->centralWidget->setLayout(new QGridLayout());
+
     m_iniFile.Load("fluff64.ini");
     setupEditor();
 
@@ -193,7 +195,28 @@ void MainWindow::LoadRasFile(QString fileName)
     if (file.open(QFile::ReadOnly | QFile::Text))
         ui->txtEditor->setPlainText(file.readAll());
 
+    m_iniFile.setString("current_file", fileName);
+    m_buildSuccess = false;
+    SetLights();
 
+}
+
+void MainWindow::ExecutePrg(QString fileName)
+{
+    QProcess process;
+    process.waitForFinished();
+    process.startDetached(m_iniFile.getString("emulator"), QStringList() << fileName);
+    QString output(process.readAllStandardOutput());
+    qDebug() << output;
+
+}
+
+void MainWindow::SetLights()
+{
+    if (!m_buildSuccess)
+        ui->lblLight->setStyleSheet("QLabel { background-color : red; color : blue; }");
+    else
+        ui->lblLight->setStyleSheet("QLabel { background-color : green; color : blue; }");
 }
 
 
@@ -230,7 +253,8 @@ void MainWindow::MainWindow::setupEditor()
     fileSystemModel->setRootPath(rootPath);
     fileSystemModel->setFilter(QDir::NoDotAndDotDot |
                             QDir::AllDirs |QDir::AllEntries);
-    //fileSystemModel->setNameFilters(QStringList() << "*.ras");
+    fileSystemModel->setNameFilters(QStringList() << "*.ras" << "*.asm" << "*.txt" << "*.prg");
+    fileSystemModel->setNameFilterDisables(false);
     ui->treeFiles->setModel(fileSystemModel);
     ui->treeFiles->setRootIndex(fileSystemModel->index(rootPath));
     ui->treeFiles->hideColumn(1);
@@ -251,6 +275,13 @@ void MainWindow::MainWindow::setupEditor()
 
 void MainWindow::Build()
 {
+    if (!m_currentSourceFile.toLower().endsWith(".ras")) {
+        ui->txtOutput->setText("Turbo Rascal SE can only compile .ras files");
+        m_buildSuccess = false;
+        return;
+    }
+
+
     QString text = ui->txtEditor->toPlainText();
     ErrorHandler::e.m_level = ErrorHandler::e.ERROR_ONLY;
     ErrorHandler::e.m_teOut = "";
@@ -261,42 +292,46 @@ void MainWindow::Build()
 
     QElapsedTimer timer;
     timer.start();
-    Lexer lexer = Lexer(text, lst);
-    Parser parser = Parser(lexer);
-    Interpreter interpreter = Interpreter(parser);
+    Lexer lexer = Lexer(text, lst, m_iniFile.getString("project_path"));
+    Parser parser = Parser(&lexer);
+    Interpreter interpreter = Interpreter(&parser);
     interpreter.Parse();
 //    interpreter.Interpret();
 
     //interpreter.Build(Interpreter::PASCAL);
     //interpreter.SaveBuild(m_outputFilename+".pmm");
 
-    if (interpreter.Build(Interpreter::MOS6502)) {
-        interpreter.SaveBuild(m_outputFilename+".asm");
-        QString text ="Build <b>Successful</b>!<br>";
-        text+="Compiled " + QString::number(parser.m_lexer.m_lines.count()) +" of Rascal to ";
+    QString path = m_iniFile.getString("project_path") + "/";
+    QString filename = m_currentSourceFile.split(".")[0];
+
+    if (interpreter.Build(Interpreter::MOS6502, path)) {
+        interpreter.SaveBuild(filename + ".asm");
+        QString text ="Build <b><font color=\"#90FF90\">Successful</font>!</b><br>";
+        text+="Assembler file saved to : <b>" + filename+".asm</b><br>";
+        text+="Compiled " + QString::number(parser.m_lexer->m_lines.count()) +" of Rascal to ";
         text+=QString::number(interpreter.m_assembler->m_source.count()) + " lines of DASM assembler<br>";
         text+="Time: " + Util::MilisecondToString(timer.elapsed())+"<br>";
         text+="**** DASM output:<br>";
         QProcess process;
-        QString name = m_outputFilename;
-
-        process.start(m_iniFile.getString("dasm"), QStringList()<<(name+".asm") << ("-o"+name+".prg"));
+        process.start(m_iniFile.getString("dasm"), QStringList()<<(filename +".asm") << ("-o"+filename+".prg"));
         process.waitForFinished();
         QString output(process.readAllStandardOutput());
-        QString size = QString::number(QFile("program.prg").size());
+        QString size = QString::number(QFile(filename+".prg").size());
 
         output +="<br>Assembled file size: <b>" + size + "</b> bytes";
 
         ui->txtOutput->setText(text + output);
+        m_buildSuccess = true;
     }
     else {
         ui->txtOutput->setText(ErrorHandler::e.m_teOut);
         int ln = Pmm::Data::d.lineNumber;
-        QTextCursor cursor(ui->txtEditor->document()->findBlockByLineNumber(ln));
+        QTextCursor cursor(ui->txtEditor->document()->findBlockByLineNumber(ln-1));
         ui->txtEditor->setTextCursor(cursor);
+        m_buildSuccess = false;
 
     }
-
+    SetLights();
 }
 
 
@@ -469,12 +504,11 @@ void MainWindow::on_btnBuild_2_clicked()
 }
 
 void MainWindow::Run() {
-    QProcess process;
-    process.waitForFinished();
-    process.startDetached(m_iniFile.getString("emulator"), QStringList() << (m_outputFilename+".prg"));
-    QString output(process.readAllStandardOutput());
-    qDebug() << output;
+    if (!m_buildSuccess)
+        return;
+    QString filename = m_currentSourceFile.split(".")[0] + ".prg";
 
+    ExecutePrg(filename);
 }
 
 void MainWindow::on_btnSave_2_clicked()
@@ -494,10 +528,15 @@ void MainWindow::on_btnSave_2_clicked()
 
 void MainWindow::on_treeFiles_doubleClicked(const QModelIndex &index)
 {
-    //qDebug() << ui->treeFiles->model()->index()
-    //qDebug() << index.data().toString();
-    LoadRasFile(index.data().toString());
-    m_iniFile.setString("current_file", index.data().toString());
+    QString file = index.data().toString();
+    if (file.toLower().endsWith(".ras") || file.toLower().endsWith(".asm")
+            || file.toLower().endsWith(".inc")) {
+        LoadRasFile(file);
+    }
+    if (file.toLower().endsWith(".prg")) {
+        ExecutePrg(m_iniFile.getString("project_path")+"/" + file);
+    }
+
 }
 
 void MainWindow::on_leSearch_textChanged()
