@@ -6,21 +6,15 @@ void WorkerThread::UpdateDrawing()
     if (m_isPanning)
         return;
 
-
-
-    m_work->m_currentImage->m_temp->CopyFrom(m_work->m_currentImage->m_image);
-
-
     if (!Data::data.forceRedraw)
     if ((abs(m_prevPos.x()-m_currentPos.x())<1) && (abs(m_prevPos.y()-m_currentPos.y()))<1)
         return;
     Data::data.forceRedraw = false;
     QPoint pos = (m_currentPos-m_zoomCenter)*m_zoom + m_zoomCenter ;
 
-
-
     if (pos.x()>=0 && pos.x()<m_work->m_currentImage->m_image->m_width &&
        pos.y()>=0 && pos.y()<m_work->m_currentImage->m_image->m_height) {
+        m_work->m_currentImage->m_temp->CopyFrom(m_work->m_currentImage->m_image);
 
         LImage* img = (LImage*)m_work->m_currentImage->m_image;
         isPreview = false;
@@ -114,6 +108,13 @@ void WorkerThread::run()
 {
     while (!m_quit) {
 
+        if (!ui->tabWidget->currentIndex()==1) {
+            QThread::msleep(5);
+
+            continue;
+        }
+
+
         UpdateMousePosition();
         UpdatePanning();
         UpdateDrawing();
@@ -124,6 +125,7 @@ void WorkerThread::run()
             Data::data.redrawInput = false;
         }*/
         if (Data::data.redrawOutput) {
+
 //            qDebug() << "Redraw" << rand()%100;
             LImage* img = m_work->m_currentImage->m_image;
             if (isPreview) {
@@ -142,7 +144,7 @@ void WorkerThread::run()
 
 
 
-        QThread::msleep(2);
+        QThread::msleep(5);
     }
 
 }

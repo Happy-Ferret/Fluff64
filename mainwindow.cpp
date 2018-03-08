@@ -46,6 +46,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->centralWidget->setLayout(new QGridLayout());
 
     m_iniFile.Load("fluff64.ini");
+    m_iniFile.setString("project_path", m_iniFile.getString("project_path").replace("\\","/"));
     setupEditor();
 
     if (m_iniFile.getString("current_file")!="")
@@ -538,16 +539,21 @@ void MainWindow::on_treeFiles_doubleClicked(const QModelIndex &index)
 {
     // Find file in path.. ugh
     QString path = "";
-    QStringList pathSplit = m_iniFile.getString("project_path").toLower().split("/");
+    QStringList pathSplit = m_iniFile.getString("project_path").toLower().replace("\\", "/").split("/");
     QString test = pathSplit.last();
     if (test=="")
         test = pathSplit[pathSplit.count()-2];
 
     QModelIndex cur = index.parent();
-    while (cur.data().toString()!=test) {
+    int cnt=0;
+    while (cur.data().toString().toLower()!=test) {
 
         path=cur.data().toString() + "/" + path;
         cur = cur.parent();
+        qDebug() << path;
+        qDebug() << "test: " << test;
+        if (cnt++>20)
+            return;
     }
 
 
