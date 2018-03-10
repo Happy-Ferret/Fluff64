@@ -334,10 +334,18 @@ void MainWindow::on_btnExportAsm_clicked()
 
     QString fileName = QFileDialog::getSaveFileName(this,
                                                     tr("Export Multicolor Assembler image"), "",
-                                                    tr("Asm (*.asm);"));
+                                                    tr("Bin (*.bin);"));
 
 
-    m_work.m_currentImage->m_image->ExportAsm(fileName);
+//    m_work.m_currentImage->m_image->ExportAsm(fileName);
+    MultiColorImage* mi = (MultiColorImage*)dynamic_cast<MultiColorImage*>(m_work.m_currentImage->m_image);
+
+    if (mi==nullptr)
+        return;
+
+    fileName.remove(".bin");
+
+    mi->ExportRasBin(fileName, "");
 }
 
 void MainWindow::on_pushButton_clicked()
@@ -513,7 +521,7 @@ void MainWindow::RefreshFileList()
     fileSystemModel->setRootPath(rootPath);
     fileSystemModel->setFilter(QDir::NoDotAndDotDot |
                             QDir::AllDirs |QDir::AllEntries);
-    fileSystemModel->setNameFilters(QStringList() << "*.ras" << "*.asm" << "*.txt" << "*.prg");
+    fileSystemModel->setNameFilters(QStringList() << "*.ras" << "*.asm" << "*.txt" << "*.prg" << "*.inc");
     fileSystemModel->setNameFilterDisables(false);
     ui->treeFiles->setModel(fileSystemModel);
     ui->treeFiles->setRootIndex(fileSystemModel->index(rootPath));
@@ -626,4 +634,21 @@ void MainWindow::on_actionNew_triggered()
     file.close();
     LoadRasFile(filename);
     RefreshFileList();
+}
+
+void MainWindow::on_btnExpChar_clicked()
+{
+    if (m_work.m_currentImage->m_imageType->type==LImage::Type::HiresBitmap ||
+        m_work.m_currentImage->m_imageType->type==LImage::Type::MultiColorBitmap
+            )
+    {
+        MultiColorImage* img = (MultiColorImage*)m_work.m_currentImage->m_image;
+        img->CalculateCharIndices();
+        qDebug() <<"Number of chars: " <<img->m_organized.count();
+        QString filename = m_iniFile.getString("project_path") + "/testchar.inc";
+        img->SaveCharRascal(filename,"test");
+        RefreshFileList();
+    }
+
+
 }

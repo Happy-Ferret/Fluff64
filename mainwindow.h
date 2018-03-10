@@ -141,6 +141,8 @@ private slots:
 
 
 
+    void on_btnExpChar_clicked();
+
 private:
     Ui::MainWindow *ui;
 };

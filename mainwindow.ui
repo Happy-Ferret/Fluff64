@@ -248,14 +248,7 @@
             <height>221</height>
            </rect>
           </property>
-          <layout class="QGridLayout" name="gridLayout" rowstretch="0,0,0,0,0,0" columnstretch="0,0" rowminimumheight="0,0,0,0,0,0" columnminimumwidth="0,0">
-           <item row="4" column="0">
-            <widget class="QPushButton" name="btnExportAsm">
-             <property name="text">
-              <string>Export Asm</string>
-             </property>
-            </widget>
-           </item>
+          <layout class="QGridLayout" name="gridLayout" rowstretch="0,0,0,0,0,0" columnstretch="0,0">
            <item row="5" column="0">
             <widget class="QPushButton" name="btnExportImage">
              <property name="text">
@@ -263,10 +256,10 @@
              </property>
             </widget>
            </item>
-           <item row="1" column="0">
-            <widget class="QPushButton" name="btnLoad">
+           <item row="4" column="0">
+            <widget class="QPushButton" name="btnExportAsm">
              <property name="text">
-              <string>Load</string>
+              <string>Export Asm</string>
              </property>
             </widget>
            </item>
@@ -277,10 +270,10 @@
              </property>
             </widget>
            </item>
-           <item row="2" column="1">
-            <widget class="QPushButton" name="b">
+           <item row="1" column="0">
+            <widget class="QPushButton" name="btnLoad">
              <property name="text">
-              <string>New</string>
+              <string>Load</string>
              </property>
             </widget>
            </item>
@@ -288,6 +281,13 @@
             <widget class="QPushButton" name="btnImport">
              <property name="text">
               <string>Import</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QPushButton" name="b">
+             <property name="text">
+              <string>New</string>
              </property>
             </widget>
            </item>
@@ -309,6 +309,13 @@
             <widget class="QPushButton" name="btnTiff">
              <property name="text">
               <string>Load Tiff</string>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="1">
+            <widget class="QPushButton" name="btnExpChar">
+             <property name="text">
+              <string>Export Char</string>
              </property>
             </widget>
            </item>
