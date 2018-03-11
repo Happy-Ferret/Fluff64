@@ -77,6 +77,7 @@ SOURCES += main.cpp\
     ..\Pmm\source/Assembler/assembler.cpp\
     ..\Pmm\source/Assembler/mos6502.cpp\
     ..\Pmm\source/Assembler/asmpascal.cpp \
+    ../Pmm/source/ast/nodebinaryclause.cpp
 
 
 HEADERS  += mainwindow.h \
@@ -123,7 +124,8 @@ HEADERS  += mainwindow.h \
     ..\Pmm\source/Assembler/assembler.h\
     ..\Pmm\source/Assembler/mos6502.h\
     ..\Pmm\source/Assembler/asmpascal.h \
-    source/PmmEdit/codeeditor.h
+    source/PmmEdit/codeeditor.h \
+    ../Pmm/source/ast/nodebinaryclause.h
 
 FORMS    += mainwindow.ui \
     dialognewimage.ui \

@@ -558,8 +558,6 @@ void MainWindow::on_treeFiles_doubleClicked(const QModelIndex &index)
 
         path=cur.data().toString() + "/" + path;
         cur = cur.parent();
-        qDebug() << path;
-        qDebug() << "test: " << test;
         if (cnt++>20)
             return;
     }
