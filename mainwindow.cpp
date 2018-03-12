@@ -650,3 +650,8 @@ void MainWindow::on_btnExpChar_clicked()
 
 
 }
+
+void MainWindow::on_leSearch_textChanged(const QString &arg1)
+{
+    SearchInSource();
+}

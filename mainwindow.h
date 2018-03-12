@@ -143,6 +143,8 @@ private slots:
 
     void on_btnExpChar_clicked();
 
+    void on_leSearch_textChanged(const QString &arg1);
+
 private:
     Ui::MainWindow *ui;
 };
