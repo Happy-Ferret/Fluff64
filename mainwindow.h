@@ -145,6 +145,10 @@ private slots:
 
     void on_leSearch_textChanged(const QString &arg1);
 
+    void on_btnImportBin_clicked();
+
+    void on_btnExportBin_clicked();
+
 private:
     Ui::MainWindow *ui;
 };

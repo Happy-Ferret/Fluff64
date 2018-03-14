@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1351</width>
-    <height>864</height>
+    <width>3000</width>
+    <height>1500</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>Turbo Rascal Syntax error, &quot;;&quot; expected but &quot;BEGIN&quot; Version 0.01</string>
@@ -47,7 +53,7 @@
          </sizepolicy>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>1</number>
         </property>
         <widget class="QWidget" name="tab_3">
          <property name="sizePolicy">
@@ -244,29 +250,36 @@
            <rect>
             <x>990</x>
             <y>500</y>
-            <width>195</width>
+            <width>231</width>
             <height>221</height>
            </rect>
           </property>
-          <layout class="QGridLayout" name="gridLayout" rowstretch="0,0,0,0,0,0" columnstretch="0,0">
-           <item row="5" column="0">
+          <layout class="QGridLayout" name="gridLayout" rowstretch="0,0,0,0,0,0,0" columnstretch="0,0">
+           <item row="6" column="0">
             <widget class="QPushButton" name="btnExportImage">
              <property name="text">
               <string>Export image</string>
              </property>
             </widget>
            </item>
-           <item row="4" column="0">
+           <item row="5" column="0">
             <widget class="QPushButton" name="btnExportAsm">
              <property name="text">
               <string>Export Asm</string>
              </property>
             </widget>
            </item>
-           <item row="2" column="0">
-            <widget class="QPushButton" name="btnSave">
+           <item row="1" column="1">
+            <widget class="QPushButton" name="btnImport">
              <property name="text">
-              <string>Save</string>
+              <string>Import image</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="0">
+            <widget class="QPushButton" name="btnSaveAs">
+             <property name="text">
+              <string>Save As</string>
              </property>
             </widget>
            </item>
@@ -277,45 +290,52 @@
              </property>
             </widget>
            </item>
-           <item row="1" column="1">
-            <widget class="QPushButton" name="btnImport">
+           <item row="3" column="0">
+            <widget class="QPushButton" name="btnSave">
              <property name="text">
-              <string>Import</string>
+              <string>Save</string>
              </property>
             </widget>
            </item>
-           <item row="2" column="1">
+           <item row="3" column="1">
             <widget class="QPushButton" name="b">
              <property name="text">
               <string>New</string>
              </property>
             </widget>
            </item>
-           <item row="3" column="0">
-            <widget class="QPushButton" name="btnSaveAs">
+           <item row="6" column="1">
+            <widget class="QPushButton" name="btnExpChar">
              <property name="text">
-              <string>Save As</string>
+              <string>Export Char</string>
              </property>
             </widget>
            </item>
-           <item row="3" column="1">
-            <widget class="QPushButton" name="btnNew">
-             <property name="text">
-              <string>Clear</string>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="1">
+           <item row="5" column="1">
             <widget class="QPushButton" name="btnTiff">
              <property name="text">
               <string>Load Tiff</string>
              </property>
             </widget>
            </item>
-           <item row="5" column="1">
-            <widget class="QPushButton" name="btnExpChar">
+           <item row="4" column="1">
+            <widget class="QPushButton" name="btnNew">
              <property name="text">
-              <string>Export Char</string>
+              <string>Clear</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QPushButton" name="btnImportBin">
+             <property name="text">
+              <string>Import bin</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QPushButton" name="btnExportBin">
+             <property name="text">
+              <string>Export bin</string>
              </property>
             </widget>
            </item>
@@ -431,7 +451,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1351</width>
+     <width>3000</width>
      <height>26</height>
     </rect>
    </property>

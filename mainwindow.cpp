@@ -655,3 +655,49 @@ void MainWindow::on_leSearch_textChanged(const QString &arg1)
 {
     SearchInSource();
 }
+
+void MainWindow::on_btnImportBin_clicked()
+{
+    QString f = "Binary Files ( *.bin )";
+    QString filename = QFileDialog::getOpenFileName(this,
+        tr("Import binary file"), "", f);
+    if (filename=="")
+        return;
+
+
+    QFile file(filename);
+    file.open(QIODevice::ReadOnly);
+    m_work.m_currentImage->m_image->ImportBin(file);
+    file.close();
+
+    Data::data.redrawFileList = true;
+    Data::data.Redraw();
+    UpdatePalette();
+
+}
+
+void MainWindow::on_btnExportBin_clicked()
+{
+    QString fileName = QFileDialog::getSaveFileName(this,
+                                                    tr("Export binary file"), "",
+                                                    tr("Bin (*.bin);"));
+
+
+//    m_work.m_currentImage->m_image->ExportAsm(fileName);
+//    MultiColorImage* mi = (MultiColorImage*)dynamic_cast<MultiColorImage*>(m_work.m_currentImage->m_image);
+
+/*    if (mi==nullptr)
+        return;
+*/
+    if (QFile::exists(fileName))
+        QFile::remove(fileName);
+    QFile file(fileName);
+    file.open(QIODevice::WriteOnly);
+    m_work.m_currentImage->m_image->ExportBin(file);
+    file.close();
+
+  //  fileName.remove(".bin");
+
+//    mi->ExportRasBin(fileName, "");
+
+}
