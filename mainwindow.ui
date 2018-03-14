@@ -221,35 +221,11 @@
            </layout>
           </widget>
          </widget>
-         <widget class="QGroupBox" name="groupBox_3">
-          <property name="geometry">
-           <rect>
-            <x>910</x>
-            <y>20</y>
-            <width>151</width>
-            <height>431</height>
-           </rect>
-          </property>
-          <property name="title">
-           <string>Toolbox</string>
-          </property>
-          <widget class="QWidget" name="gridLayoutWidget_5">
-           <property name="geometry">
-            <rect>
-             <x>9</x>
-             <y>19</y>
-             <width>131</width>
-             <height>401</height>
-            </rect>
-           </property>
-           <layout class="QGridLayout" name="lyToolbox_3"/>
-          </widget>
-         </widget>
          <widget class="QWidget" name="gridLayoutWidget_7">
           <property name="geometry">
            <rect>
-            <x>990</x>
-            <y>500</y>
+            <x>910</x>
+            <y>740</y>
             <width>231</width>
             <height>221</height>
            </rect>
@@ -341,76 +317,6 @@
            </item>
           </layout>
          </widget>
-         <widget class="QGroupBox" name="groupBox_5">
-          <property name="geometry">
-           <rect>
-            <x>1060</x>
-            <y>20</y>
-            <width>191</width>
-            <height>431</height>
-           </rect>
-          </property>
-          <property name="title">
-           <string>Colors</string>
-          </property>
-          <widget class="QWidget" name="gridLayoutWidget_6">
-           <property name="geometry">
-            <rect>
-             <x>9</x>
-             <y>19</y>
-             <width>71</width>
-             <height>401</height>
-            </rect>
-           </property>
-           <layout class="QGridLayout" name="layoutColorsEdit_3"/>
-          </widget>
-          <widget class="QComboBox" name="cmbBackgroundMain_3">
-           <property name="geometry">
-            <rect>
-             <x>90</x>
-             <y>40</y>
-             <width>61</width>
-             <height>41</height>
-            </rect>
-           </property>
-          </widget>
-          <widget class="QComboBox" name="cmbBorderMain_3">
-           <property name="geometry">
-            <rect>
-             <x>90</x>
-             <y>120</y>
-             <width>61</width>
-             <height>41</height>
-            </rect>
-           </property>
-          </widget>
-          <widget class="QLabel" name="label_10">
-           <property name="geometry">
-            <rect>
-             <x>90</x>
-             <y>10</y>
-             <width>81</width>
-             <height>16</height>
-            </rect>
-           </property>
-           <property name="text">
-            <string>Background</string>
-           </property>
-          </widget>
-          <widget class="QLabel" name="label_11">
-           <property name="geometry">
-            <rect>
-             <x>90</x>
-             <y>90</y>
-             <width>55</width>
-             <height>16</height>
-            </rect>
-           </property>
-           <property name="text">
-            <string>Border</string>
-           </property>
-          </widget>
-         </widget>
          <widget class="QListView" name="lstImages">
           <property name="geometry">
            <rect>
@@ -438,6 +344,152 @@
           <property name="text">
            <string>Image Name</string>
           </property>
+         </widget>
+         <widget class="QTabWidget" name="tabWidget_2">
+          <property name="geometry">
+           <rect>
+            <x>920</x>
+            <y>60</y>
+            <width>401</width>
+            <height>611</height>
+           </rect>
+          </property>
+          <property name="currentIndex">
+           <number>1</number>
+          </property>
+          <widget class="QWidget" name="tab_2">
+           <attribute name="title">
+            <string>Toolbox</string>
+           </attribute>
+           <widget class="QGroupBox" name="groupBox_3">
+            <property name="geometry">
+             <rect>
+              <x>10</x>
+              <y>0</y>
+              <width>151</width>
+              <height>571</height>
+             </rect>
+            </property>
+            <property name="title">
+             <string>Toolbox</string>
+            </property>
+            <widget class="QWidget" name="gridLayoutWidget_5">
+             <property name="geometry">
+              <rect>
+               <x>9</x>
+               <y>19</y>
+               <width>131</width>
+               <height>541</height>
+              </rect>
+             </property>
+             <layout class="QGridLayout" name="lyToolbox_3"/>
+            </widget>
+           </widget>
+          </widget>
+          <widget class="QWidget" name="tab_4">
+           <attribute name="title">
+            <string>Colors</string>
+           </attribute>
+           <widget class="QGroupBox" name="groupBox_5">
+            <property name="geometry">
+             <rect>
+              <x>10</x>
+              <y>10</y>
+              <width>191</width>
+              <height>431</height>
+             </rect>
+            </property>
+            <property name="title">
+             <string>Colors</string>
+            </property>
+            <widget class="QWidget" name="gridLayoutWidget_6">
+             <property name="geometry">
+              <rect>
+               <x>9</x>
+               <y>19</y>
+               <width>71</width>
+               <height>401</height>
+              </rect>
+             </property>
+             <layout class="QGridLayout" name="layoutColorsEdit_3"/>
+            </widget>
+            <widget class="QComboBox" name="cmbBackgroundMain_3">
+             <property name="geometry">
+              <rect>
+               <x>90</x>
+               <y>40</y>
+               <width>61</width>
+               <height>41</height>
+              </rect>
+             </property>
+            </widget>
+            <widget class="QComboBox" name="cmbBorderMain_3">
+             <property name="geometry">
+              <rect>
+               <x>90</x>
+               <y>120</y>
+               <width>61</width>
+               <height>41</height>
+              </rect>
+             </property>
+            </widget>
+            <widget class="QLabel" name="label_10">
+             <property name="geometry">
+              <rect>
+               <x>90</x>
+               <y>10</y>
+               <width>81</width>
+               <height>16</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>Background</string>
+             </property>
+            </widget>
+            <widget class="QLabel" name="label_11">
+             <property name="geometry">
+              <rect>
+               <x>90</x>
+               <y>90</y>
+               <width>55</width>
+               <height>16</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>Border</string>
+             </property>
+            </widget>
+           </widget>
+          </widget>
+          <widget class="QWidget" name="tab_5">
+           <attribute name="title">
+            <string>Charmap</string>
+           </attribute>
+           <widget class="QPushButton" name="btnLoadCharmap">
+            <property name="geometry">
+             <rect>
+              <x>30</x>
+              <y>30</y>
+              <width>111</width>
+              <height>28</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Load Charmap</string>
+            </property>
+           </widget>
+           <widget class="QWidget" name="gridLayoutWidget">
+            <property name="geometry">
+             <rect>
+              <x>30</x>
+              <y>90</y>
+              <width>351</width>
+              <height>371</height>
+             </rect>
+            </property>
+            <layout class="QGridLayout" name="gridLayoutCharmap"/>
+           </widget>
+          </widget>
          </widget>
         </widget>
        </widget>

@@ -333,7 +333,7 @@ void MainWindow::on_btnExportAsm_clicked()
 {
 
     QString fileName = QFileDialog::getSaveFileName(this,
-                                                    tr("Export Multicolor Assembler image"), "",
+                                                    tr("Export Multicolor Assembler image"), m_iniFile.getString("project_path"),
                                                     tr("Bin (*.bin);"));
 
 
@@ -360,7 +360,7 @@ void MainWindow::on_btnLoad_clicked()
 {
     QString f = "Image Files (*." + LImageIO::m_fileExtension + ")";
     QString filename = QFileDialog::getOpenFileName(this,
-        tr("Open Image"), "", f);
+        tr("Open Image"), m_iniFile.getString("project_path"), f);
     if (filename=="")
         return;
 
@@ -383,7 +383,7 @@ void MainWindow::on_btnSave_clicked()
 
     if (filename=="")
         filename = QFileDialog::getSaveFileName(this,
-                                                tr("Save Image"), "", ("Image Files (*." + LImageIO::m_fileExtension + ")"));
+                                                tr("Save Image"), m_iniFile.getString("project_path"), ("Image Files (*." + LImageIO::m_fileExtension + ")"));
     if (filename=="")
         return;
 
@@ -414,7 +414,7 @@ void MainWindow::on_btnNew_clicked()
 void MainWindow::on_btnExportImage_clicked()
 {
     QString fileName = QFileDialog::getSaveFileName(this,
-        tr("Save Image"), "", tr("Image Files (*.png *.jpg *.bmp )"));
+        tr("Save Image"), m_iniFile.getString("project_path"), tr("Image Files (*.png *.jpg *.bmp )"));
 
     if (fileName == "")
         return;
@@ -465,7 +465,7 @@ void MainWindow::on_btnImport_clicked()
 void MainWindow::on_btnTiff_clicked()
 {
     QString fileName = QFileDialog::getOpenFileName(this,
-        tr("Open Tiled Tiff"), "", tr("Image Files (*.tif *.tiff )"));
+        tr("Open Tiled Tiff"), m_iniFile.getString("project_path"), tr("Image Files (*.tif *.tiff )"));
 
     if (fileName == "")
         return;
@@ -486,7 +486,7 @@ void MainWindow::on_btnSaveAs_clicked()
 {
 
     QString filename = QFileDialog::getSaveFileName(this,
-                                                tr("Save Image"), "", ("Image Files (*." + LImageIO::m_fileExtension + ")"));
+                                                tr("Save Image"), m_iniFile.getString("project_path"), ("Image Files (*." + LImageIO::m_fileExtension + ")"));
     if (filename=="")
         return;
     m_work.m_currentImage->m_fileName  =filename;
@@ -660,7 +660,7 @@ void MainWindow::on_btnImportBin_clicked()
 {
     QString f = "Binary Files ( *.bin )";
     QString filename = QFileDialog::getOpenFileName(this,
-        tr("Import binary file"), "", f);
+        tr("Import binary file"), m_iniFile.getString("project_path"), f);
     if (filename=="")
         return;
 
@@ -679,7 +679,7 @@ void MainWindow::on_btnImportBin_clicked()
 void MainWindow::on_btnExportBin_clicked()
 {
     QString fileName = QFileDialog::getSaveFileName(this,
-                                                    tr("Export binary file"), "",
+                                                    tr("Export binary file"), m_iniFile.getString("project_path"),
                                                     tr("Bin (*.bin);"));
 
 
@@ -700,4 +700,12 @@ void MainWindow::on_btnExportBin_clicked()
 
 //    mi->ExportRasBin(fileName, "");
 
+}
+
+void MainWindow::on_tabWidget_2_currentChanged(int index)
+{
+    if (index==1)
+        m_work.m_currentImage->m_image->SetCurrentType(LImage::WriteType::Color);
+    if (index==2)
+        m_work.m_currentImage->m_image->SetCurrentType(LImage::WriteType::Character);
 }

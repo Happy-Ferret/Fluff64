@@ -149,6 +149,8 @@ private slots:
 
     void on_btnExportBin_clicked();
 
+    void on_tabWidget_2_currentChanged(int index);
+
 private:
     Ui::MainWindow *ui;
 };
