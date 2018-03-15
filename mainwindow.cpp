@@ -189,6 +189,17 @@ void MainWindow::UpdatePalette()
     l->FillComboBox(ui->cmbBackgroundMain_3);
     l->FillComboBox(ui->cmbBorderMain_3);
 
+    if (m_work.m_currentImage==nullptr)
+        return;
+
+    if (m_work.m_currentImage->m_image==nullptr)
+        return;
+
+    l->FillComboBox(ui->cmbMC1);
+    ui->cmbMC1->setCurrentIndex(m_work.m_currentImage->m_image->m_extraCols[1]);
+    l->FillComboBox(ui->cmbMC2);
+    ui->cmbMC2->setCurrentIndex(m_work.m_currentImage->m_image->m_extraCols[2]);
+
 }
 
 void MainWindow::LoadRasFile(QString fileName)
@@ -528,6 +539,52 @@ void MainWindow::RefreshFileList()
 
 }
 
+void MainWindow::updateCharSet()
+{
+    C64FullScreenChar* ch = dynamic_cast<C64FullScreenChar*>(m_work.m_currentImage->m_image);
+    if (ch==nullptr)
+        return;
+
+    QVector<QPixmap> maps;
+    if (ch->m_charset==nullptr)
+        return;
+    ch->m_charset->ToQPixMaps(maps);
+
+
+    int cnt = 0;
+    ui->lstCharMap->setViewMode(QListView::IconMode);
+
+    for (QPixmap& p: maps) {
+        QListWidgetItem *itm = ui->lstCharMap->item(cnt);
+        if (itm == nullptr) {
+            itm = new QListWidgetItem(QIcon(p) , nullptr, ui->lstCharMap);
+            ui->lstCharMap->addItem(itm);
+
+        }
+        QIcon ic(p);
+
+        itm->setIcon(ic);
+        itm->setData(Qt::UserRole, cnt);
+        cnt++;
+
+    }
+
+    ui->lstCharMap->setIconSize(QSize(32,32));
+
+}
+
+void MainWindow::SetMCColors()
+{
+    int a = ui->cmbMC1->currentIndex();
+    int b = ui->cmbMC2->currentIndex();
+
+    m_work.m_currentImage->m_image->SetColor(a, 1);
+    m_work.m_currentImage->m_image->SetColor(b, 2);
+
+    updateCharSet();
+}
+
+
 void MainWindow::on_btnSave_2_clicked()
 {
     if (QFile::exists(m_currentSourceFile))
@@ -706,6 +763,47 @@ void MainWindow::on_tabWidget_2_currentChanged(int index)
 {
     if (index==1)
         m_work.m_currentImage->m_image->SetCurrentType(LImage::WriteType::Color);
-    if (index==2)
-        m_work.m_currentImage->m_image->SetCurrentType(LImage::WriteType::Character);
+//    if (index==2)
+//        m_work.m_currentImage->m_image->SetCurrentType(LImage::WriteType::Character);
+}
+
+void MainWindow::on_btnLoadCharmap_clicked()
+{
+    C64FullScreenChar* charImage = dynamic_cast<C64FullScreenChar*>(m_work.m_currentImage->m_image);
+    if (charImage==nullptr)
+        return;
+
+    QString fileName = QFileDialog::getOpenFileName(this,
+        tr("Open Character map"), m_iniFile.getString("project_path"), tr("Binary Files (*.bin )"));
+
+    if (fileName == "")
+        return;
+
+    QFile f(fileName);
+    f.open(QIODevice::ReadOnly);
+    charImage->m_charset = new CharsetImage(charImage->m_colorList.m_type);
+    charImage->m_charset->ImportBin(f);
+    f.close();
+
+    updateCharSet();
+
+}
+
+void MainWindow::on_lstCharMap_currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous)
+{
+    int idx = current->data(Qt::UserRole).toInt();
+    m_work.m_currentImage->m_image->SetCurrentType(LImage::WriteType::Character);
+    Data::data.currentColor = idx;
+    qDebug() << idx;
+
+}
+
+void MainWindow::on_cmbMC1_currentIndexChanged(int index)
+{
+    SetMCColors();
+}
+
+void MainWindow::on_cmbMC2_currentIndexChanged(int index)
+{
+    SetMCColors();
 }

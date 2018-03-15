@@ -68,7 +68,9 @@ public:
     void Run();
 
     void RefreshFileList();
+    void updateCharSet();
 
+    void SetMCColors();
 public slots:
     void Update();
     //   void OnQuit();
@@ -150,6 +152,14 @@ private slots:
     void on_btnExportBin_clicked();
 
     void on_tabWidget_2_currentChanged(int index);
+
+    void on_btnLoadCharmap_clicked();
+
+    void on_lstCharMap_currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous);
+
+    void on_cmbMC1_currentIndexChanged(int index);
+
+    void on_cmbMC2_currentIndexChanged(int index);
 
 private:
     Ui::MainWindow *ui;
