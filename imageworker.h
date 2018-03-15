@@ -33,7 +33,7 @@ public:
 
     QStringList getImageTypes();
 
-    void New(int type);
+    void New(int type, CharmapGlobalData gd);
     void New(LImage* image, QString name);
     void SetImage(int cur);
 

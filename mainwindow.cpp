@@ -444,7 +444,8 @@ void MainWindow::on_b_clicked()
     dNewFile->setModal(true);
     dNewFile->exec();
     if (dNewFile->retVal!=-1) {
-        m_work.New(dNewFile->retVal);
+        m_work.New(dNewFile->retVal, dNewFile->m_meta);
+
     }
 
 
@@ -541,14 +542,20 @@ void MainWindow::RefreshFileList()
 
 void MainWindow::updateCharSet()
 {
+    CharsetImage* charmap = nullptr;
     C64FullScreenChar* ch = dynamic_cast<C64FullScreenChar*>(m_work.m_currentImage->m_image);
-    if (ch==nullptr)
+    if (ch!=nullptr)
+        charmap = ch->m_charset;
+
+    ImageLevelEditor* le = dynamic_cast<ImageLevelEditor*>(m_work.m_currentImage->m_image);
+    if (le!=nullptr)
+        charmap = le->m_charset;
+
+    if (charmap == nullptr)
         return;
 
     QVector<QPixmap> maps;
-    if (ch->m_charset==nullptr)
-        return;
-    ch->m_charset->ToQPixMaps(maps);
+    charmap->ToQPixMaps(maps);
 
 
     int cnt = 0;
@@ -582,6 +589,40 @@ void MainWindow::SetMCColors()
     m_work.m_currentImage->m_image->SetColor(b, 2);
 
     updateCharSet();
+}
+
+void MainWindow::UpdateLevels()
+{
+    ImageLevelEditor* le = dynamic_cast<ImageLevelEditor*>(m_work.m_currentImage->m_image);
+    if (le==nullptr)
+        return;
+
+    QVector<QPixmap> icons = le->CreateIcons();
+
+
+    Util::clearLayout(ui->gridLevels);
+
+    for (int i=0;i<le->m_meta.m_sizex;i++)
+        for (int j=0;j<le->m_meta.m_sizey;j++) {
+            QPushButton* l = new QPushButton();
+            l->setText("");
+            QIcon icon(icons[i + j*le->m_meta.m_sizex]);
+            l->setIcon(icon);
+            //l->setScaledContents(true);
+            l->setIconSize(QSize(64,64));
+            ui->gridLevels->addWidget(l, i,j);
+
+            QObject::connect( l, &QPushButton::clicked,  [=](){
+                le->SetLevel(QPoint(j,i));
+                Data::data.Redraw();
+            }
+
+            );
+
+        }
+
+
+
 }
 
 
@@ -763,6 +804,8 @@ void MainWindow::on_tabWidget_2_currentChanged(int index)
 {
     if (index==1)
         m_work.m_currentImage->m_image->SetCurrentType(LImage::WriteType::Color);
+    if (index==3)
+        UpdateLevels();
 //    if (index==2)
 //        m_work.m_currentImage->m_image->SetCurrentType(LImage::WriteType::Character);
 }
@@ -770,8 +813,12 @@ void MainWindow::on_tabWidget_2_currentChanged(int index)
 void MainWindow::on_btnLoadCharmap_clicked()
 {
     C64FullScreenChar* charImage = dynamic_cast<C64FullScreenChar*>(m_work.m_currentImage->m_image);
-    if (charImage==nullptr)
+
+    ImageLevelEditor* editor = dynamic_cast<ImageLevelEditor*>(m_work.m_currentImage->m_image);
+
+    if (editor==nullptr && charImage==nullptr)
         return;
+
 
     QString fileName = QFileDialog::getOpenFileName(this,
         tr("Open Character map"), m_iniFile.getString("project_path"), tr("Binary Files (*.bin )"));
@@ -781,8 +828,14 @@ void MainWindow::on_btnLoadCharmap_clicked()
 
     QFile f(fileName);
     f.open(QIODevice::ReadOnly);
-    charImage->m_charset = new CharsetImage(charImage->m_colorList.m_type);
-    charImage->m_charset->ImportBin(f);
+    if (editor!=nullptr) {
+        editor->m_charset = new CharsetImage(editor->m_colorList.m_type);
+        editor->m_charset->ImportBin(f);
+    }
+    if (charImage!=nullptr) {
+        charImage->m_charset = new CharsetImage(charImage->m_colorList.m_type);
+        charImage->m_charset->ImportBin(f);
+    }
     f.close();
 
     updateCharSet();
@@ -794,7 +847,6 @@ void MainWindow::on_lstCharMap_currentItemChanged(QListWidgetItem *current, QLis
     int idx = current->data(Qt::UserRole).toInt();
     m_work.m_currentImage->m_image->SetCurrentType(LImage::WriteType::Character);
     Data::data.currentColor = idx;
-    qDebug() << idx;
 
 }
 

@@ -3,6 +3,8 @@
 
 #include <QDialog>
 #include <QDebug>
+#include "source/limage/imageleveleditor.h"
+
 namespace Ui {
 class DialogNewImage;
 }
@@ -15,9 +17,31 @@ public:
     explicit DialogNewImage(QWidget *parent = 0);
     void Initialize(QStringList cmbData);
     int retVal = -1;
+    CharmapGlobalData m_meta;
+
+    void ToMeta();
+    void CreateInfo();
+
+
     ~DialogNewImage();
 private slots:
     void slotOk();
+
+    void on_comboBox_currentIndexChanged(int index);
+
+    void on_leScreenWidth_textChanged(const QString &arg1);
+
+    void on_leScreenHeight_textChanged(const QString &arg1);
+
+    void on_leLevelsX_textChanged(const QString &arg1);
+
+    void on_leLevelsY_textChanged(const QString &arg1);
+
+    void on_leExtraDataSize_textChanged(const QString &arg1);
+
+    void on_leStartX_textChanged(const QString &arg1);
+
+    void on_leStartY_textChanged(const QString &arg1);
 
 private:
     Ui::DialogNewImage *ui;

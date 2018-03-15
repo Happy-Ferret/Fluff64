@@ -71,8 +71,10 @@ public:
     void updateCharSet();
 
     void SetMCColors();
+    void UpdateLevels();
 public slots:
     void Update();
+
     //   void OnQuit();
 
     void updateImage() {
