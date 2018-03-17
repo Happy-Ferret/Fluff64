@@ -43,6 +43,7 @@ public:
     QString m_currentSourceFile;
     CodeEditor m_codeEditor;
     QFileSystemModel *fileSystemModel;
+    QString m_iniFileName = "fluff64.ini";
     int m_searchFromPos = 0;
     int m_currentFromPos = 0;
     bool m_buildSuccess = false;
@@ -62,6 +63,8 @@ public:
 
     bool m_quit = false;
 
+    LColorList* m_currentColorList = nullptr;
+
     void setupEditor();
     Highlighter* highlighter;
     void Build();
@@ -77,8 +80,12 @@ public slots:
 
     //   void OnQuit();
 
+    void FillCMBColors();
+
     void updateImage() {
         ui->lblImage->setPixmap(m_updateThread->m_pixMapImage);
+        ui->lblImage->setFocus();
+
         m_grid.ApplyToLabel(ui->lblGrid);
         if (Data::data.redrawFileList) {
             m_work.UpdateListView(ui->lstImages);
@@ -113,7 +120,6 @@ private slots:
 
     void on_chkGrid_clicked(bool checked);
 
-    void on_cmbBackgroundMain_currentIndexChanged(int index);
 
     void on_btnNew_clicked();
 
@@ -159,9 +165,13 @@ private slots:
 
     void on_lstCharMap_currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous);
 
-    void on_cmbMC1_currentIndexChanged(int index);
 
-    void on_cmbMC2_currentIndexChanged(int index);
+    void on_cmbMC1_activated(int index);
+
+    void on_cmbMC2_activated(int index);
+
+    void on_cmbBackgroundMain_3_activated(int index);
+
 
 private:
     Ui::MainWindow *ui;

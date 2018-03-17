@@ -45,7 +45,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->centralWidget->setLayout(new QGridLayout());
 
-    m_iniFile.Load("fluff64.ini");
+    m_iniFile.Load(m_iniFileName);
     m_iniFile.setString("project_path", m_iniFile.getString("project_path").replace("\\","/"));
     setupEditor();
 
@@ -127,6 +127,9 @@ void MainWindow::keyPressEvent(QKeyEvent *e)
         Data::data.forceRedraw = true;
     }
 
+    m_work.m_currentImage->m_image->KeyPress(e);
+    FillCMBColors();
+
 /*    if (e->key() == Qt::Key_Enter && ui->leSearch->hasFocus()) {
         m_searchFromPos=m_currentFromPos+1;
         SearchInSource();
@@ -184,10 +187,16 @@ void MainWindow::UpdatePalette()
     if (m_work.m_currentImage==nullptr)
         return;
     LColorList* l = &m_work.m_currentImage->m_image->m_colorList;
+    //if (m_currentColorList!=l)
+    //{
 
-    l->CreateUI(ui->layoutColorsEdit_3,1);
-    l->FillComboBox(ui->cmbBackgroundMain_3);
-    l->FillComboBox(ui->cmbBorderMain_3);
+        l->CreateUI(ui->layoutColorsEdit_3,1);
+        l->FillComboBox(ui->cmbBackgroundMain_3);
+        l->FillComboBox(ui->cmbBorderMain_3);
+        l->FillComboBox(ui->cmbMC1);
+        l->FillComboBox(ui->cmbMC2);
+        m_currentColorList = l;
+    //}
 
     if (m_work.m_currentImage==nullptr)
         return;
@@ -195,10 +204,15 @@ void MainWindow::UpdatePalette()
     if (m_work.m_currentImage->m_image==nullptr)
         return;
 
-    l->FillComboBox(ui->cmbMC1);
+
     ui->cmbMC1->setCurrentIndex(m_work.m_currentImage->m_image->m_extraCols[1]);
-    l->FillComboBox(ui->cmbMC2);
     ui->cmbMC2->setCurrentIndex(m_work.m_currentImage->m_image->m_extraCols[2]);
+
+    ui->btnExportBin->setVisible(m_work.m_currentImage->m_image->m_supports.binarySave);
+    ui->btnImportBin->setVisible(m_work.m_currentImage->m_image->m_supports.binaryLoad);
+    ui->btnLoad->setVisible(m_work.m_currentImage->m_image->m_supports.flfLoad);
+    ui->btnSave->setVisible(m_work.m_currentImage->m_image->m_supports.flfSave);
+    ui->btnExportAsm->setVisible(m_work.m_currentImage->m_image->m_supports.asmExport);
 
 }
 
@@ -249,6 +263,14 @@ void MainWindow::on_btnConvert_clicked()
 void MainWindow::Update()
 {
 
+}
+
+void MainWindow::FillCMBColors()
+{
+//    qDebug() << "Extracols 1: " << QString::number(m_work.m_currentImage->m_image->m_extraCols[1]);
+    ui->cmbBackgroundMain_3->setCurrentIndex(m_work.m_currentImage->m_image->m_background);
+    ui->cmbMC1->setCurrentIndex(m_work.m_currentImage->m_image->m_extraCols[1]);
+    ui->cmbMC2->setCurrentIndex(m_work.m_currentImage->m_image->m_extraCols[2]);
 }
 
 void MainWindow::MainWindow::setupEditor()
@@ -379,9 +401,13 @@ void MainWindow::on_btnLoad_clicked()
 
     m_work.New(img, filename);
 
+    img->LoadCharset(m_iniFile.getString("current_charset"));
+    updateCharSet();
+
     Data::data.redrawFileList = true;
     Data::data.Redraw();
     UpdatePalette();
+    FillCMBColors();
 
 //    m_updateThread->UpdateImage(m_work.m_currentImage->m_image);
     //delete img;
@@ -409,11 +435,6 @@ void MainWindow::on_chkGrid_clicked(bool checked)
 }
 
 
-void MainWindow::on_cmbBackgroundMain_currentIndexChanged(int index)
-{
-    m_work.m_currentImage->m_image->setBackground(index);
-    Data::data.redrawOutput = true;
-}
 
 
 void MainWindow::on_btnNew_clicked()
@@ -576,7 +597,7 @@ void MainWindow::updateCharSet()
 
     }
 
-    ui->lstCharMap->setIconSize(QSize(32,32));
+    ui->lstCharMap->setIconSize(QSize(16,16));
 
 }
 
@@ -584,7 +605,9 @@ void MainWindow::SetMCColors()
 {
     int a = ui->cmbMC1->currentIndex();
     int b = ui->cmbMC2->currentIndex();
+    int back = ui->cmbBackgroundMain_3->currentIndex();
 
+    m_work.m_currentImage->m_image->SetColor(back, 0);
     m_work.m_currentImage->m_image->SetColor(a, 1);
     m_work.m_currentImage->m_image->SetColor(b, 2);
 
@@ -638,7 +661,7 @@ void MainWindow::on_btnSave_2_clicked()
         stream << txt;
     }
     file.close();
-    m_iniFile.Save("fluff64.ini");
+    m_iniFile.Save(m_iniFileName);
 }
 
 void MainWindow::on_treeFiles_doubleClicked(const QModelIndex &index)
@@ -826,18 +849,10 @@ void MainWindow::on_btnLoadCharmap_clicked()
     if (fileName == "")
         return;
 
-    QFile f(fileName);
-    f.open(QIODevice::ReadOnly);
-    if (editor!=nullptr) {
-        editor->m_charset = new CharsetImage(editor->m_colorList.m_type);
-        editor->m_charset->ImportBin(f);
-    }
-    if (charImage!=nullptr) {
-        charImage->m_charset = new CharsetImage(charImage->m_colorList.m_type);
-        charImage->m_charset->ImportBin(f);
-    }
-    f.close();
 
+    editor->LoadCharset(fileName);
+    m_iniFile.setString("current_charset", fileName);
+    m_iniFile.Save(m_iniFileName);
     updateCharSet();
 
 }
@@ -850,12 +865,24 @@ void MainWindow::on_lstCharMap_currentItemChanged(QListWidgetItem *current, QLis
 
 }
 
-void MainWindow::on_cmbMC1_currentIndexChanged(int index)
+
+void MainWindow::on_cmbMC1_activated(int index)
 {
     SetMCColors();
+
 }
 
-void MainWindow::on_cmbMC2_currentIndexChanged(int index)
+void MainWindow::on_cmbMC2_activated(int index)
 {
     SetMCColors();
+
+}
+
+void MainWindow::on_cmbBackgroundMain_3_activated(int index)
+{
+    m_work.m_currentImage->m_image->setBackground(index);
+    SetMCColors();
+    qDebug() << "Setting colors!";
+    Data::data.redrawOutput = true;
+
 }

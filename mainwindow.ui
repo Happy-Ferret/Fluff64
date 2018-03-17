@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>3000</width>
-    <height>1500</height>
+    <height>1000</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -23,12 +23,6 @@
    <bool>true</bool>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <property name="maximumSize">
-    <size>
-     <width>1351</width>
-     <height>16777215</height>
-    </size>
-   </property>
    <layout class="QGridLayout" name="gridLayout_4">
     <property name="sizeConstraint">
      <enum>QLayout::SetMaximumSize</enum>
@@ -53,7 +47,7 @@
          </sizepolicy>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>1</number>
         </property>
         <widget class="QWidget" name="tab_3">
          <property name="sizePolicy">
@@ -350,12 +344,12 @@
            <rect>
             <x>920</x>
             <y>60</y>
-            <width>401</width>
+            <width>1041</width>
             <height>611</height>
            </rect>
           </property>
           <property name="currentIndex">
-           <number>3</number>
+           <number>1</number>
           </property>
           <widget class="QWidget" name="tab_2">
            <attribute name="title">
@@ -483,7 +477,7 @@
              <rect>
               <x>10</x>
               <y>80</y>
-              <width>381</width>
+              <width>921</width>
               <height>311</height>
              </rect>
             </property>
