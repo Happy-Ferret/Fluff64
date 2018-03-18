@@ -6,7 +6,7 @@ void WorkerThread::UpdateDrawing()
     if (m_isPanning)
         return;
 
-    if (!Data::data.forceRedraw)
+    if (!Data::data.forceRedraw && m_currentButton == 0)
     if ((abs(m_prevPos.x()-m_currentPos.x())<1) && (abs(m_prevPos.y()-m_currentPos.y()))<1)
         return;
     Data::data.forceRedraw = false;

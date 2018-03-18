@@ -346,8 +346,11 @@ void MainWindow::Build()
         QString size = QString::number(QFile(filename+".prg").size());
 
         output +="<br>Assembled file size: <b>" + size + "</b> bytes";
-
         ui->txtOutput->setText(text + output);
+        if (output.toLower().contains("error"))
+            m_buildSuccess = false;
+        else
+
         m_buildSuccess = true;
     }
     else {
@@ -376,9 +379,10 @@ void MainWindow::on_btnExportAsm_clicked()
     if (mi==nullptr)
         return;
 
-    fileName.remove(".bin");
+    //fileName.remove(".bin");
 
-    mi->ExportRasBin(fileName, "");
+    mi->ExportAsm(fileName);
+//    mi->ExportRasBin(fileName, "");
 }
 
 void MainWindow::on_pushButton_clicked()
