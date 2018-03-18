@@ -130,7 +130,7 @@ void MainWindow::keyPressEvent(QKeyEvent *e)
     if (!ui->tblData->hasFocus()) {
         m_work.m_currentImage->m_image->StoreData(ui->tblData);
         m_work.m_currentImage->m_image->KeyPress(e);
-        m_work.m_currentImage->m_image->BuildData(ui->tblData);
+        m_work.m_currentImage->m_image->BuildData(ui->tblData, m_iniFile.getStringList("data_header"));
     }
     FillCMBColors();
 
@@ -417,7 +417,7 @@ void MainWindow::on_btnLoad_clicked()
     UpdatePalette();
     FillCMBColors();
 
-    m_work.m_currentImage->m_image->BuildData(ui->tblData);
+    m_work.m_currentImage->m_image->BuildData(ui->tblData, m_iniFile.getStringList("data_header"));
 
 //    m_updateThread->UpdateImage(m_work.m_currentImage->m_image);
     //delete img;
@@ -648,7 +648,7 @@ void MainWindow::UpdateLevels()
             QObject::connect( l, &QPushButton::clicked,  [=](){
                 m_work.m_currentImage->m_image->StoreData(ui->tblData);
                 le->SetLevel(QPoint(j,i));
-                m_work.m_currentImage->m_image->BuildData(ui->tblData);
+                m_work.m_currentImage->m_image->BuildData(ui->tblData,m_iniFile.getStringList("data_header"));
                 Data::data.Redraw();
             }
 
