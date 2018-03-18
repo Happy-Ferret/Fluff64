@@ -47,7 +47,7 @@
          </sizepolicy>
         </property>
         <property name="currentIndex">
-         <number>1</number>
+         <number>0</number>
         </property>
         <widget class="QWidget" name="tab_3">
          <property name="sizePolicy">
@@ -209,6 +209,13 @@
               </property>
               <property name="checked">
                <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="lblPosition">
+              <property name="text">
+               <string/>
               </property>
              </widget>
             </item>
@@ -555,6 +562,29 @@
            <attribute name="title">
             <string>Data</string>
            </attribute>
+           <widget class="QTableWidget" name="tblData">
+            <property name="geometry">
+             <rect>
+              <x>30</x>
+              <y>20</y>
+              <width>511</width>
+              <height>351</height>
+             </rect>
+            </property>
+           </widget>
+           <widget class="QPushButton" name="btnResizeData">
+            <property name="geometry">
+             <rect>
+              <x>30</x>
+              <y>390</y>
+              <width>101</width>
+              <height>28</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Resize data</string>
+            </property>
+           </widget>
           </widget>
          </widget>
         </widget>

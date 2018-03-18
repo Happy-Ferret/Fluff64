@@ -36,6 +36,7 @@ public:
     float m_zoom = 1;
     bool m_isPanning = false;
     QPoint m_zoomCenter = QPoint(00,00);
+    QPoint m_currentPosInImage;
 
     void run() override;
     QImage* m_tmpImage = nullptr;

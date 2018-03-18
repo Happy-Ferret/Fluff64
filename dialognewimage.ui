@@ -57,21 +57,21 @@
       <x>20</x>
       <y>30</y>
       <width>311</width>
-      <height>231</height>
+      <height>250</height>
      </rect>
     </property>
     <layout class="QGridLayout" name="gridLayout">
+     <item row="6" column="0">
+      <widget class="QLabel" name="label_15">
+       <property name="text">
+        <string>Chunk size</string>
+       </property>
+      </widget>
+     </item>
      <item row="1" column="0">
       <widget class="QLabel" name="label_2">
        <property name="text">
         <string>Screen height</string>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="0">
-      <widget class="QLabel" name="label_4">
-       <property name="text">
-        <string>Levels Y</string>
        </property>
       </widget>
      </item>
@@ -82,6 +82,20 @@
        </property>
       </widget>
      </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="label_4">
+       <property name="text">
+        <string>Levels Y</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="label_5">
+       <property name="text">
+        <string>Data chunks</string>
+       </property>
+      </widget>
+     </item>
      <item row="0" column="0">
       <widget class="QLabel" name="label">
        <property name="text">
@@ -89,61 +103,64 @@
        </property>
       </widget>
      </item>
-     <item row="4" column="0">
-      <widget class="QLabel" name="label_5">
-       <property name="text">
-        <string>Extra data size</string>
-       </property>
-      </widget>
-     </item>
-     <item row="6" column="0">
-      <widget class="QLabel" name="label_7">
-       <property name="text">
-        <string>Start Y</string>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="0">
+     <item row="7" column="0">
       <widget class="QLabel" name="label_6">
        <property name="text">
         <string>Start X</string>
        </property>
       </widget>
      </item>
-     <item row="0" column="1">
-      <widget class="QLineEdit" name="leScreenWidth">
-       <property name="inputMask">
-        <string>90</string>
-       </property>
+     <item row="8" column="0">
+      <widget class="QLabel" name="label_7">
        <property name="text">
-        <string>20</string>
+        <string>Start Y</string>
        </property>
       </widget>
      </item>
-     <item row="1" column="1">
-      <widget class="QLineEdit" name="leScreenHeight">
+     <item row="0" column="1">
+      <widget class="QLineEdit" name="leScreenWidth">
        <property name="inputMask">
-        <string>90</string>
+        <string>999</string>
        </property>
        <property name="text">
-        <string>11</string>
+        <string>22</string>
        </property>
       </widget>
      </item>
      <item row="2" column="1">
       <widget class="QLineEdit" name="leLevelsX">
        <property name="inputMask">
-        <string>90</string>
+        <string>999</string>
        </property>
        <property name="text">
         <string>4</string>
        </property>
       </widget>
      </item>
+     <item row="1" column="1">
+      <widget class="QLineEdit" name="leScreenHeight">
+       <property name="inputMask">
+        <string>999</string>
+       </property>
+       <property name="text">
+        <string>10</string>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="1">
+      <widget class="QLineEdit" name="leStartY">
+       <property name="inputMask">
+        <string>999</string>
+       </property>
+       <property name="text">
+        <string>2</string>
+       </property>
+      </widget>
+     </item>
      <item row="3" column="1">
       <widget class="QLineEdit" name="leLevelsY">
        <property name="inputMask">
-        <string>90</string>
+        <string>999</string>
        </property>
        <property name="text">
         <string>4</string>
@@ -151,19 +168,19 @@
       </widget>
      </item>
      <item row="4" column="1">
-      <widget class="QLineEdit" name="leExtraDataSize">
+      <widget class="QLineEdit" name="leDataChunks">
        <property name="inputMask">
-        <string>90</string>
+        <string>999</string>
        </property>
        <property name="text">
-        <string>64</string>
+        <string>8</string>
        </property>
       </widget>
      </item>
-     <item row="5" column="1">
+     <item row="7" column="1">
       <widget class="QLineEdit" name="leStartX">
        <property name="inputMask">
-        <string>90</string>
+        <string>999</string>
        </property>
        <property name="text">
         <string>0</string>
@@ -171,12 +188,12 @@
       </widget>
      </item>
      <item row="6" column="1">
-      <widget class="QLineEdit" name="leStartY">
+      <widget class="QLineEdit" name="leChunkSize">
        <property name="inputMask">
-        <string>90</string>
+        <string>999</string>
        </property>
        <property name="text">
-        <string>2</string>
+        <string>8</string>
        </property>
       </widget>
      </item>

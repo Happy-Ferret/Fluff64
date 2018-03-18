@@ -17,8 +17,10 @@ public:
     explicit DialogNewImage(QWidget *parent = 0);
     void Initialize(QStringList cmbData);
     int retVal = -1;
+    bool isResize = false;
+    bool started = true;
     CharmapGlobalData m_meta;
-
+    void SetResizeMeta(CharmapGlobalData gd);
     void ToMeta();
     void CreateInfo();
 
@@ -42,6 +44,10 @@ private slots:
     void on_leStartX_textChanged(const QString &arg1);
 
     void on_leStartY_textChanged(const QString &arg1);
+
+    void on_leChunkSize_textChanged(const QString &arg1);
+
+    void on_leDataChunks_textChanged(const QString &arg1);
 
 private:
     Ui::DialogNewImage *ui;

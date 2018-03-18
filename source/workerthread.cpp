@@ -32,7 +32,7 @@ void WorkerThread::UpdateDrawing()
             img = (LImage*)m_work->m_currentImage->m_temp;
 
         m_toolBox->m_current->Perform(pos.x(), pos.y(), col, img, isPreview, m_currentButton);
-
+        m_currentPosInImage = img->GetCurrentPosInImage(pos.x(), pos.y());
         Data::data.Redraw();
     }
     else {

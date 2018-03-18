@@ -127,7 +127,11 @@ void MainWindow::keyPressEvent(QKeyEvent *e)
         Data::data.forceRedraw = true;
     }
 
-    m_work.m_currentImage->m_image->KeyPress(e);
+    if (!ui->tblData->hasFocus()) {
+        m_work.m_currentImage->m_image->StoreData(ui->tblData);
+        m_work.m_currentImage->m_image->KeyPress(e);
+        m_work.m_currentImage->m_image->BuildData(ui->tblData);
+    }
     FillCMBColors();
 
 /*    if (e->key() == Qt::Key_Enter && ui->leSearch->hasFocus()) {
@@ -413,6 +417,8 @@ void MainWindow::on_btnLoad_clicked()
     UpdatePalette();
     FillCMBColors();
 
+    m_work.m_currentImage->m_image->BuildData(ui->tblData);
+
 //    m_updateThread->UpdateImage(m_work.m_currentImage->m_image);
     //delete img;
 
@@ -640,7 +646,9 @@ void MainWindow::UpdateLevels()
             ui->gridLevels->addWidget(l, i,j);
 
             QObject::connect( l, &QPushButton::clicked,  [=](){
+                m_work.m_currentImage->m_image->StoreData(ui->tblData);
                 le->SetLevel(QPoint(j,i));
+                m_work.m_currentImage->m_image->BuildData(ui->tblData);
                 Data::data.Redraw();
             }
 
@@ -886,7 +894,33 @@ void MainWindow::on_cmbBackgroundMain_3_activated(int index)
 {
     m_work.m_currentImage->m_image->setBackground(index);
     SetMCColors();
-    qDebug() << "Setting colors!";
     Data::data.redrawOutput = true;
+
+}
+
+void MainWindow::on_btnResizeData_clicked()
+{
+    ImageLevelEditor* img = dynamic_cast<ImageLevelEditor*>(m_work.m_currentImage->m_image);
+    if (img==nullptr)
+        return;
+
+
+    DialogNewImage* dResize = new DialogNewImage(this);
+    dResize->Initialize(m_work.getImageTypes());
+    dResize->setModal(true);
+    dResize->SetResizeMeta(img->m_meta);
+
+    dResize->exec();
+    if (dResize->retVal!=-1) {
+        img->Resize(dResize->m_meta);
+
+    }
+
+
+
+    UpdatePalette();
+
+    delete dResize;
+
 
 }

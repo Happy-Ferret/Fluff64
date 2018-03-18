@@ -84,7 +84,13 @@ public slots:
 
     void updateImage() {
         ui->lblImage->setPixmap(m_updateThread->m_pixMapImage);
-        ui->lblImage->setFocus();
+        if (!ui->tblData->hasFocus())
+            ui->lblImage->setFocus();
+
+        ui->lblPosition->setText("Position: " +
+                                 QString::number(m_updateThread->m_currentPosInImage.x()) + ", " +
+                                 QString::number(m_updateThread->m_currentPosInImage.y()));
+
 
         m_grid.ApplyToLabel(ui->lblGrid);
         if (Data::data.redrawFileList) {
@@ -172,6 +178,9 @@ private slots:
 
     void on_cmbBackgroundMain_3_activated(int index);
 
+
+
+    void on_btnResizeData_clicked();
 
 private:
     Ui::MainWindow *ui;
