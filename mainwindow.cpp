@@ -155,9 +155,12 @@ void MainWindow::keyPressEvent(QKeyEvent *e)
 
     }
     if (e->key() == Qt::Key_Z  && !(QApplication::keyboardModifiers() & Qt::ControlModifier)) {
-       ui->chkGrid->setChecked(!ui->chkGrid->isChecked());
-       ui->lblGrid->setVisible(ui->chkGrid->isChecked());
+            ui->chkGrid->setChecked(!ui->chkGrid->isChecked());
+            ui->lblGrid->setVisible(ui->chkGrid->isChecked());
 
+    }
+    if (e->key() == Qt::Key_X) {
+        m_work.m_currentImage->m_image->renderPathGrid =!m_work.m_currentImage->m_image->renderPathGrid;
     }
     if (e->key() == Qt::Key_S &&  (QApplication::keyboardModifiers() & Qt::ControlModifier)) {
         on_btnSave_2_clicked();
