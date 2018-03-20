@@ -134,6 +134,9 @@ void MainWindow::keyPressEvent(QKeyEvent *e)
     }
     FillCMBColors();
 
+  //  if (e->key()==Qt::Key_F)
+    //    m_work.m_currentImage->m_image->Fix();
+
 /*    if (e->key() == Qt::Key_Enter && ui->leSearch->hasFocus()) {
         m_searchFromPos=m_currentFromPos+1;
         SearchInSource();
@@ -637,20 +640,20 @@ void MainWindow::UpdateLevels()
 
 
     Util::clearLayout(ui->gridLevels);
-
+//    ui->gridLevels->set
     for (int i=0;i<le->m_meta.m_sizex;i++)
         for (int j=0;j<le->m_meta.m_sizey;j++) {
             QPushButton* l = new QPushButton();
             l->setText("");
-            QIcon icon(icons[i + j*le->m_meta.m_sizex]);
+            QIcon icon(icons[j + i*le->m_meta.m_sizey]);
             l->setIcon(icon);
             //l->setScaledContents(true);
             l->setIconSize(QSize(64,64));
-            ui->gridLevels->addWidget(l, i,j);
+            ui->gridLevels->addWidget(l, j,i);
 
             QObject::connect( l, &QPushButton::clicked,  [=](){
                 m_work.m_currentImage->m_image->StoreData(ui->tblData);
-                le->SetLevel(QPoint(j,i));
+                le->SetLevel(QPoint(i,j));
                 m_work.m_currentImage->m_image->BuildData(ui->tblData,m_iniFile.getStringList("data_header"));
                 Data::data.Redraw();
             }
