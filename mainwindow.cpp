@@ -345,8 +345,9 @@ void MainWindow::Build()
         interpreter.SaveBuild(filename + ".asm");
         QString text ="Build <b><font color=\"#90FF90\">Successful</font>!</b><br>";
         text+="Assembler file saved to : <b>" + filename+".asm</b><br>";
-        text+="Compiled " + QString::number(parser.m_lexer->m_lines.count()) +" of Rascal to ";
-        text+=QString::number(interpreter.m_assembler->m_source.count()) + " lines of DASM assembler<br>";
+        text+="Compiled <b>" + QString::number(parser.m_lexer->m_lines.count()) +"</b> of Rascal to <b>";
+        text+=QString::number(interpreter.m_assembler->getLineCount()) + "</b> lines of DASM assembler instructions (and variables/labels)<br>";
+        text+="Post-optimized away <b>" + QString::number(interpreter.m_assembler->m_totalOptimizedLines) +"</b> lines of assembler instructions<br>";
         text+="Time: " + Util::MilisecondToString(timer.elapsed())+"<br>";
         text+="**** DASM output:<br>";
         QProcess process;
@@ -362,6 +363,11 @@ void MainWindow::Build()
         else
 
         m_buildSuccess = true;
+        //ui->ed
+        ui->txtEditor->m_cycles =  interpreter.m_assembler->m_cycles;
+        ui->txtEditor->RepaintCycles();
+
+
     }
     else {
         ui->txtOutput->setText(ErrorHandler::e.m_teOut);

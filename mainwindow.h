@@ -41,7 +41,7 @@ public:
     LImageQImage m_grid;
     QColor m_gridColor = QColor(64,128,128,128);
     QString m_currentSourceFile;
-    CodeEditor m_codeEditor;
+ //   CodeEditor m_codeEditor;
     QFileSystemModel *fileSystemModel;
     QString m_iniFileName = "fluff64.ini";
     int m_searchFromPos = 0;
