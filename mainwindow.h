@@ -19,9 +19,13 @@
 #include "source/PmmEdit/highlighter.h"
 #include "source/PmmEdit/codeeditor.h"
 #include "source/util/cinifile.h"
+#include "source/trsedocuments/formraseditor.h"
+#include "source/trsedocuments/formimageeditor.h"
 
+#include "ui_mainwindow.h"
 namespace Ui {
 class MainWindow;
+
 }
 
 
@@ -35,152 +39,66 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-    ImageWorker m_work;
-    Toolbox m_toolBox;
+
+
     CIniFile m_iniFile;
-    LImageQImage m_grid;
-    QColor m_gridColor = QColor(64,128,128,128);
-    QString m_currentSourceFile;
  //   CodeEditor m_codeEditor;
     QFileSystemModel *fileSystemModel;
     QString m_iniFileName = "fluff64.ini";
-    int m_searchFromPos = 0;
-    int m_currentFromPos = 0;
-    bool m_buildSuccess = false;
-    void SearchInSource();
 
+    QVector<TRSEDocument*> m_documents;
+
+
+    TRSEDocument* m_currentDoc;
+
+    void SearchInSource();
+    void mouseMoveEvent(QMouseEvent *event) override;
     void mousePressEvent(QMouseEvent *e) override;
     void mouseReleaseEvent(QMouseEvent *e) override;
     void wheelEvent(QWheelEvent *event);
     void keyPressEvent(QKeyEvent* e);
     void keyReleaseEvent(QKeyEvent *e);
-    void UpdatePalette();
-    void LoadRasFile(QString fileName);
-    void ExecutePrg(QString fileName);
-    void SetLights();
 
     WorkerThread* m_updateThread;
 
+    void LoadDocument(QString fileName, QString type);
+
     bool m_quit = false;
 
-    LColorList* m_currentColorList = nullptr;
 
-    void setupEditor();
-    Highlighter* highlighter;
-    void Build();
-    void Run();
+  //  void setupEditor();
+    void SetupFileList();
 
     void RefreshFileList();
-    void updateCharSet();
-
-    void SetMCColors();
-    void UpdateLevels();
 public slots:
-    void Update();
 
     //   void OnQuit();
 
-    void FillCMBColors();
-
     void updateImage() {
-        ui->lblImage->setPixmap(m_updateThread->m_pixMapImage);
-        if (!ui->tblData->hasFocus())
-            ui->lblImage->setFocus();
-
-        ui->lblPosition->setText("Position: " +
-                                 QString::number(m_updateThread->m_currentPosInImage.x()) + ", " +
-                                 QString::number(m_updateThread->m_currentPosInImage.y()));
+        FormImageEditor* imageEdit = dynamic_cast<FormImageEditor*>(ui->tabMain->currentWidget());
+        if (imageEdit==nullptr)
+            return;
 
 
-        m_grid.ApplyToLabel(ui->lblGrid);
-        if (Data::data.redrawFileList) {
-            m_work.UpdateListView(ui->lstImages);
-            Data::data.redrawFileList = false;
-        }
+        imageEdit->UpdateImage();
 
     }
 
 
+    void RemoveTab(int);
 
 signals:
    void ValueChanged();
 
 
 private slots:
-    void on_actionImport_triggered();
 
-    void on_btnConvert_clicked();
-
-
-
-    void on_btnExportAsm_clicked();
-
-
-    void on_pushButton_clicked();
-
-
-
-    void on_btnLoad_clicked();
-
-    void on_btnSave_clicked();
-
-    void on_chkGrid_clicked(bool checked);
-
-
-    void on_btnNew_clicked();
-
-    void on_btnExportImage_clicked();
-
-    void on_b_clicked();
-
-    void on_lstImages_clicked(const QModelIndex &index);
-
-    void on_btnImport_clicked();
-
-    void on_btnTiff_clicked();
-
-    void on_btnSaveAs_clicked();
-
-    void on_btnBuild_clicked();
-
-    void on_btnBuild_2_clicked();
-
-    void on_btnSave_2_clicked();
 
     void on_treeFiles_doubleClicked(const QModelIndex &index);
 
-    void on_leSearch_textChanged();
-
-    void on_leSearch_returnPressed();
-
-    void on_actionNew_triggered();
 
 
-
-    void on_btnExpChar_clicked();
-
-    void on_leSearch_textChanged(const QString &arg1);
-
-    void on_btnImportBin_clicked();
-
-    void on_btnExportBin_clicked();
-
-    void on_tabWidget_2_currentChanged(int index);
-
-    void on_btnLoadCharmap_clicked();
-
-    void on_lstCharMap_currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous);
-
-
-    void on_cmbMC1_activated(int index);
-
-    void on_cmbMC2_activated(int index);
-
-    void on_cmbBackgroundMain_3_activated(int index);
-
-
-
-    void on_btnResizeData_clicked();
+    void on_tabMain_currentChanged(int index);
 
 private:
     Ui::MainWindow *ui;

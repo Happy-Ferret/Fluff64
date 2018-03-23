@@ -77,7 +77,10 @@ SOURCES += main.cpp\
     ..\Pmm\source/Assembler/assembler.cpp\
     ..\Pmm\source/Assembler/mos6502.cpp\
     ..\Pmm\source/Assembler/asmpascal.cpp \
-    ../Pmm/source/ast/nodebinaryclause.cpp
+    ../Pmm/source/ast/nodebinaryclause.cpp \
+    source/trsedocuments/trsedocument.cpp \
+    source/trsedocuments/formraseditor.cpp \
+    source/trsedocuments/formimageeditor.cpp
 
 
 HEADERS  += mainwindow.h \
@@ -124,12 +127,17 @@ HEADERS  += mainwindow.h \
     ..\Pmm\source/Assembler/assembler.h\
     ..\Pmm\source/Assembler/mos6502.h\
     ..\Pmm\source/Assembler/asmpascal.h \
+    ../Pmm/source/ast/nodebinaryclause.h \
     source/PmmEdit/codeeditor.h \
-    ../Pmm/source/ast/nodebinaryclause.h
+    source/trsedocuments/formraseditor.h \
+    source/trsedocuments/trsedocument.h \
+    source/trsedocuments/formimageeditor.h
 
 FORMS    += mainwindow.ui \
     dialognewimage.ui \
-    dialogimport.ui
+    dialogimport.ui \
+    source/trsedocuments/formraseditor.ui \
+    source/trsedocuments/formimageeditor.ui
 
 RESOURCES += \
     resources.qrc

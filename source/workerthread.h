@@ -11,8 +11,9 @@
 #include <thread>
 #include <QLayout>
 #include <QPointF>
+#include <QLabel>
 #include <source/toolbox.h>
-#include "ui_mainwindow.h"
+#include "ui_formimageeditor.h"
 
 
 
@@ -22,14 +23,21 @@ class WorkerThread : public QThread {
 public:
 
     ImageWorker* m_work = nullptr;
-    bool m_quit = false;
-    Ui::MainWindow* ui;
     Toolbox* m_toolBox = nullptr;
-    WorkerThread(ImageWorker* iw, Ui::MainWindow* _ui, Toolbox* toolbox) {
-            m_work = iw;
-            m_toolBox = toolbox;
-            ui = _ui;
+    bool m_quit = false;
+    QLabel* m_imgLabel;
+    WorkerThread() {
+
     }
+
+
+    void SetCurrentImage(ImageWorker* work, Toolbox* tb, QLabel* lbl) {
+        m_work = work;
+        m_toolBox = tb;
+        m_imgLabel = lbl;
+    }
+
+    QPointF pos;
 
     QPoint m_currentPos, m_prevPos;
     int m_currentButton = 0;
