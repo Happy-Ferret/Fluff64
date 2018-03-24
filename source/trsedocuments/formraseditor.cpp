@@ -14,6 +14,7 @@ FormRasEditor::FormRasEditor(QWidget *parent) :
     ui(new Ui::FormRasEditor)
 {
     ui->setupUi(this);
+    m_fileExtension = "ras";
 
 }
 
@@ -22,11 +23,11 @@ FormRasEditor::~FormRasEditor()
     delete ui;
 }
 
-void FormRasEditor::ExecutePrg(QString fileName)
+void FormRasEditor::ExecutePrg(QString fileName, QString emulator)
 {
     QProcess process;
     process.waitForFinished();
-    process.startDetached(m_iniFile->getString("emulator"), QStringList() << fileName);
+    process.startDetached(emulator, QStringList() << fileName);
     QString output(process.readAllStandardOutput());
     qDebug() << output;
 
@@ -88,27 +89,41 @@ void FormRasEditor::Build()
 
     if (interpreter.Build(Interpreter::MOS6502, path)) {
         interpreter.SaveBuild(filename + ".asm");
-        QString text ="Build <b><font color=\"#90FF90\">Successful</font>!</b><br>";
+        QString text ="Build <b><font color=\"#90FF90\">Successful</font>!</b> ( "+  (Util::MilisecondToString(timer.elapsed())) +")<br>";
         text+="Assembler file saved to : <b>" + filename+".asm</b><br>";
         text+="Compiled <b>" + QString::number(parser.m_lexer->m_lines.count()) +"</b> of Rascal to <b>";
         text+=QString::number(interpreter.m_assembler->getLineCount()) + "</b> lines of DASM assembler instructions (and variables/labels)<br>";
         text+="Post-optimized away <b>" + QString::number(interpreter.m_assembler->m_totalOptimizedLines) +"</b> lines of assembler instructions<br>";
-        text+="Time: " + Util::MilisecondToString(timer.elapsed())+"<br>";
+//        text+="+"<br>";
         text+="**** DASM output:<br>";
+
         QProcess process;
         process.start(m_iniFile->getString("dasm"), QStringList()<<(filename +".asm") << ("-o"+filename+".prg"));
         process.waitForFinished();
         QString output(process.readAllStandardOutput());
         QString size = QString::number(QFile(filename+".prg").size());
 
-        output +="<br>Assembled file size: <b>" + size + "</b> bytes";
-        ui->txtOutput->setText(text + output);
-        if (output.toLower().contains("error"))
-            m_buildSuccess = false;
-        else
 
         m_buildSuccess = true;
+
+        if (output.toLower().contains("error")) {
+            m_buildSuccess = false;
+            if (output.toLower().contains("reverse-indexed")) {
+                output += "<br>Please reorganize your binary inclusions in ascending order of memory locations.";
+            }
+        }
+        if (!output.toLower().contains("complete.")) {
+            m_buildSuccess = false;
+            if (output=="") {
+                output = "Could not find Dasm.exe. Did you set the correct environment variables?";
+            }
+
+        }
+        if (m_buildSuccess)
+            output +="<br>Assembled file size: <b>" + size + "</b> bytes";
+
         //ui->ed
+        ui->txtOutput->setText(text + output);
         ui->txtEditor->m_cycles =  interpreter.m_assembler->m_cycles;
         ui->txtEditor->RepaintCycles();
 
@@ -136,7 +151,7 @@ void FormRasEditor::Run()
         return;
     QString filename = m_currentSourceFile.split(".")[0] + ".prg";
 
-    ExecutePrg(filename);
+    ExecutePrg(filename,m_iniFile->getString("emulator"));
 
 }
 
@@ -162,27 +177,31 @@ void FormRasEditor::wheelEvent(QWheelEvent *event)
 
 void FormRasEditor::keyPressEvent(QKeyEvent *e)
 {
-        if (e->key() == Qt::Key_Escape && ui->leSearch->hasFocus()) {
-            ui->txtEditor->setFocus();
-        }
+    if (e->key() == Qt::Key_Escape && ui->leSearch->hasFocus()) {
+        ui->txtEditor->setFocus();
+    }
 
-        if (e->key()==Qt::Key_F && QApplication::keyboardModifiers() & Qt::ControlModifier) {
-                ui->leSearch->setText("");
-                ui->leSearch->setFocus();
-                m_searchFromPos = 0;
-        }
+    if (e->key()==Qt::Key_W && (QApplication::keyboardModifiers() & Qt::ControlModifier))
+        Data::data.requestCloseWindow = true;
 
-        if (e->key() == Qt::Key_S &&  (QApplication::keyboardModifiers() & Qt::ControlModifier)) {
-            //on_btnSave_2_clicked();
-            Save(m_currentSourceFile);
-        }
-        if (e->key() == Qt::Key_B &&  (QApplication::keyboardModifiers() & Qt::ControlModifier)) {
-            Build();
-        }
-        if (e->key() == Qt::Key_R &&  (QApplication::keyboardModifiers() & Qt::ControlModifier)) {
-            Build();
-            Run();
-        }
+    if (e->key()==Qt::Key_F && QApplication::keyboardModifiers() & Qt::ControlModifier) {
+        ui->leSearch->setText("");
+        ui->leSearch->setFocus();
+        m_searchFromPos = 0;
+    }
+
+    if (e->key() == Qt::Key_S &&  (QApplication::keyboardModifiers() & Qt::ControlModifier)) {
+        //on_btnSave_2_clicked();
+        //            Save(m_currentSourceFile);
+        SaveCurrent();
+    }
+    if (e->key() == Qt::Key_B &&  (QApplication::keyboardModifiers() & Qt::ControlModifier)) {
+        Build();
+    }
+    if (e->key() == Qt::Key_R &&  (QApplication::keyboardModifiers() & Qt::ControlModifier)) {
+        Build();
+        Run();
+    }
 
 }
 

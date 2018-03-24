@@ -23,7 +23,7 @@ public:
     int m_currentFromPos = 0;
     bool m_buildSuccess = false;
     void LoadRasFile(QString fileName);
-    void ExecutePrg(QString fileName);
+    static void ExecutePrg(QString fileName, QString emulator);
     void InitDocument(WorkerThread *t, CIniFile *ini) override;
     void setupEditor();
     void Build();

@@ -26,6 +26,8 @@ public:
     Toolbox* m_toolBox = nullptr;
     bool m_quit = false;
     QLabel* m_imgLabel;
+    int m_blinkTimer = 0;
+    QPalette m_pal, m_orgPal;
     WorkerThread() {
 
     }
@@ -56,9 +58,13 @@ public:
     void UpdatePanning();
     void UpdateImage(LImage* mc);
 
+    void UpdateMessages();
+
 signals:
     void updateImageSignal();
-
+    void updatePaletteSignal();
+    void requestSaveAs();
+    void requestCloseWindowSignal();
 public slots:
     void OnQuit();
 };

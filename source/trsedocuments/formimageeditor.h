@@ -40,6 +40,8 @@ public:
     void UpdateLevels();
     void FillCMBColors();
 
+    void resizeEvent(QResizeEvent *event) override;
+
     void mousePressEvent(QMouseEvent *e) override;
     void mouseReleaseEvent(QMouseEvent *e) override;
     void wheelEvent(QWheelEvent *event) override;

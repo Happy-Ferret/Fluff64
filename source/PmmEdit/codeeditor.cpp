@@ -47,13 +47,13 @@ int CodeEditor::cycleNumberAreaWidth()
 
 void CodeEditor::updateLineNumberAreaWidth(int /* newBlockCount */)
 {
-    setViewportMargins(lineNumberAreaWidth(), 0, 0, 0);
+    setViewportMargins(lineNumberAreaWidth(),0,cycleNumberAreaWidth(),0);
 }
 
 
 void CodeEditor::updateCycleNumberAreaWidth(int /* newBlockCount */)
 {
-    setViewportMargins(cycleNumberAreaWidth(), 0, 0, 0);
+    setViewportMargins(lineNumberAreaWidth(),0,cycleNumberAreaWidth(),0);
 }
 
 
@@ -131,7 +131,7 @@ void CodeEditor::lineNumberAreaPaintEvent(QPaintEvent *event)
     while (block.isValid() && top <= event->rect().bottom()) {
         if (block.isVisible() && bottom >= event->rect().top()) {
             QString number = QString::number(blockNumber + 1);
-            painter.setPen(Qt::yellow);
+            painter.setPen(Qt::lightGray);
             painter.drawText(0, top, lineNumberArea->width(), fontMetrics().height(),
                              Qt::AlignRight, number);
         }
@@ -160,7 +160,6 @@ void CodeEditor::cycleNumberAreaPaintEvent(QPaintEvent *event)
 
     top+=30;
     int bottom = top + (int) blockBoundingRect(block).height();
-
 
     while (block.isValid() && top <= event->rect().bottom()) {
         if (block.isVisible() && bottom >= event->rect().top()) {

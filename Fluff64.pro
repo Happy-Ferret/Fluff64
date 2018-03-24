@@ -80,7 +80,8 @@ SOURCES += main.cpp\
     ../Pmm/source/ast/nodebinaryclause.cpp \
     source/trsedocuments/trsedocument.cpp \
     source/trsedocuments/formraseditor.cpp \
-    source/trsedocuments/formimageeditor.cpp
+    source/trsedocuments/formimageeditor.cpp \
+    source/dialogtrsesettings.cpp
 
 
 HEADERS  += mainwindow.h \
@@ -131,13 +132,15 @@ HEADERS  += mainwindow.h \
     source/PmmEdit/codeeditor.h \
     source/trsedocuments/formraseditor.h \
     source/trsedocuments/trsedocument.h \
-    source/trsedocuments/formimageeditor.h
+    source/trsedocuments/formimageeditor.h \
+    source/dialogtrsesettings.h
 
 FORMS    += mainwindow.ui \
     dialognewimage.ui \
     dialogimport.ui \
     source/trsedocuments/formraseditor.ui \
-    source/trsedocuments/formimageeditor.ui
+    source/trsedocuments/formimageeditor.ui \
+    source/dialogtrsesettings.ui
 
 RESOURCES += \
     resources.qrc

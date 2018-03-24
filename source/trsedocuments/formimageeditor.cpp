@@ -15,6 +15,7 @@ FormImageEditor::FormImageEditor(QWidget *parent) :
     UpdatePalette();
     m_grid.Initialize(320*2,200*2);
     m_grid.CreateGrid(40,25,m_gridColor,4, 1, QPoint(0,0));
+    m_fileExtension = "flf";
 
 
     m_grid.ApplyToLabel(ui->lblGrid);
@@ -80,13 +81,19 @@ void FormImageEditor::keyPressEvent(QKeyEvent *e)
             Data::data.forceRedraw = true;
         }
 
-        if (!ui->tblData->hasFocus()) {
+        if (!ui->tblData->hasFocus() && !(QApplication::keyboardModifiers() & Qt::ControlModifier)) {
             m_work.m_currentImage->m_image->StoreData(ui->tblData);
             m_work.m_currentImage->m_image->KeyPress(e);
             m_work.m_currentImage->m_image->BuildData(ui->tblData, m_iniFile->getStringList("data_header"));
         }
+
+        if (e->key()==Qt::Key_S && (QApplication::keyboardModifiers() & Qt::ControlModifier))
+            SaveCurrent();
+
         FillCMBColors();
 
+        if (e->key()==Qt::Key_W && (QApplication::keyboardModifiers() & Qt::ControlModifier))
+            Data::data.requestCloseWindow = true;
 
         if (e->key()==Qt::Key_Z && QApplication::keyboardModifiers() & Qt::ControlModifier) {
             m_work.m_currentImage->Undo();
@@ -118,7 +125,13 @@ void FormImageEditor::keyReleaseEvent(QKeyEvent *e)
 
 void FormImageEditor::UpdateImage()
 {
+
+//    m_updateThread->m_
+
     ui->lblImage->setPixmap(m_updateThread->m_pixMapImage);
+
+
+
     if (!ui->tblData->hasFocus())
         ui->lblImage->setFocus();
 
@@ -223,6 +236,16 @@ void FormImageEditor::FillCMBColors()
 
 }
 
+void FormImageEditor::resizeEvent(QResizeEvent *event)
+{
+    ui->lblImage->setVisible(true);
+    ui->lblGrid->setGeometry(ui->lblImage->geometry());
+    ui->lblGrid->repaint();
+   // qDebug() <<
+//    qDebug() << ui->lblImage->geometry();
+  //  ui->lblImage->setVisible(false);
+}
+
 
 void FormImageEditor::on_btnExportAsm_clicked()
 {
@@ -289,22 +312,6 @@ void FormImageEditor::on_btnExportImage_clicked()
 
 void FormImageEditor::on_b_clicked()
 {
-
-
-    DialogNewImage* dNewFile = new DialogNewImage(this);
-    dNewFile->Initialize(m_work.getImageTypes());
-    dNewFile->setModal(true);
-    dNewFile->exec();
-    if (dNewFile->retVal!=-1) {
-        m_work.New(dNewFile->retVal, dNewFile->m_meta);
-
-    }
-
-
-
-    UpdatePalette();
-
-    delete dNewFile;
 }
 
 void FormImageEditor::on_lstImages_clicked(const QModelIndex &index)

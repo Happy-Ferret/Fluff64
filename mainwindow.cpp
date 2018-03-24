@@ -12,6 +12,7 @@
 #include <QWheelEvent>
 #include "dialognewimage.h"
 #include "source/limage/limageio.h"
+#include <QMessageBox>
 
 #include "source/errorhandler.h"
 #include "source/parser.h"
@@ -29,11 +30,16 @@ MainWindow::MainWindow(QWidget *parent) :
     //QObject::connect(m_updateThread, SIGNAL(valueChanged()), this, SLOT (Update()));
     m_updateThread = new WorkerThread();
     connect(m_updateThread, SIGNAL(updateImageSignal()), this, SLOT(updateImage()));
+    connect(m_updateThread, SIGNAL(updatePaletteSignal()), this, SLOT(updatePalette()));
+    connect(m_updateThread, SIGNAL(requestSaveAs()), this, SLOT(SaveAs()));
+    connect(m_updateThread, SIGNAL(requestCloseWindowSignal()), this, SLOT(closeWindowSlot()));
 
 
     connect( ui->tabMain, SIGNAL(tabCloseRequested(int)),this, SLOT(RemoveTab(int)));
     connect(qApp, SIGNAL(aboutToQuit()), m_updateThread, SLOT(OnQuit()));
 
+
+    m_updateThread->m_orgPal = palette();
     m_updateThread->start();
 
   //  ui->centralWidget->setLayout(new QGridLayout());
@@ -47,6 +53,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
 
+    ui->splitter->setStretchFactor(0,10);
+    ui->splitter->setStretchFactor(1,100);
 
 #ifndef USE_LIBTIFF
     //ui->btnTiff->setVisible(false);
@@ -168,7 +176,7 @@ void MainWindow::SetupFileList()
 
 void MainWindow::RefreshFileList()
 {
-    fileSystemModel = new QFileSystemModel(this);
+    fileSystemModel = new CustomFileSystemModel(this);
     QString rootPath= m_iniFile.getString("project_path");
     fileSystemModel->setReadOnly(true);
     fileSystemModel->setRootPath(rootPath);
@@ -176,8 +184,40 @@ void MainWindow::RefreshFileList()
                             QDir::AllDirs |QDir::AllEntries);
     fileSystemModel->setNameFilters(QStringList() << "*.ras" << "*.asm" << "*.txt" << "*.prg" << "*.inc" << "*.flf");
     fileSystemModel->setNameFilterDisables(false);
+
     ui->treeFiles->setModel(fileSystemModel);
     ui->treeFiles->setRootIndex(fileSystemModel->index(rootPath));
+
+}
+
+void MainWindow::closeWindowSlot()
+{
+    int idx = ui->tabMain->currentIndex();
+    RemoveTab(idx);
+}
+
+void MainWindow::SaveAs()
+{
+    QString ext = m_currentDoc->m_fileExtension;
+
+
+    QFileDialog dialog;
+    dialog.setFileMode(QFileDialog::AnyFile);
+    QString f = ext +" Files (*."+ext+")";
+    QString filename = dialog.getSaveFileName(NULL, "Create New File",m_iniFile.getString("project_path"),f);
+
+    if (filename=="")
+        return;
+    QString orgFile;
+    //filename = filename.split("/").last();
+
+    m_currentDoc->m_currentSourceFile = filename;
+    filename = filename.toLower().remove(m_iniFile.getString("project_path").toLower());
+    m_currentDoc->m_currentFileShort = filename;
+    m_currentDoc->SaveCurrent();
+
+    ui->tabMain->setTabText(ui->tabMain->currentIndex(),filename);
+
 
 }
 
@@ -193,22 +233,122 @@ void MainWindow::RemoveTab(int idx)
 
 
    m_updateThread->SetCurrentImage(nullptr, nullptr, nullptr);
-   qDebug() << "A;";
     TRSEDocument* d = (TRSEDocument*)ui->tabMain->currentWidget();
     FormImageEditor* fe = dynamic_cast<FormImageEditor*>(d);
-    qDebug() << "B;";
 
-    if (d!=nullptr)
-   //if (ui->tabMain->currentIndex()==1)
-   {
+    if (fe!=nullptr)
        m_updateThread->SetCurrentImage(&fe->m_work, &fe->m_toolBox,fe->getLabelImage());
-   }
 
    delete doc;
 }
 
 
 void MainWindow::on_treeFiles_doubleClicked(const QModelIndex &index)
+{
+
+
+    QString path = FindPathInProjectFolders(index);
+
+    // Finally load file!
+    QString file = index.data().toString();
+    if (file.toLower().endsWith(".ras") || file.toLower().endsWith(".asm")
+            || file.toLower().endsWith(".inc")) {
+        LoadDocument(path + file,"ras");
+    }
+    if (file.toLower().endsWith(".flf")) {
+        LoadDocument(path + file,"flf");
+    }
+    if (file.toLower().endsWith(".prg")) {
+        FormRasEditor::ExecutePrg(m_iniFile.getString("project_path")+"/" + file, m_iniFile.getString("emulator"));
+    }
+
+    Data::data.Redraw();
+    Data::data.forceRedraw = true;
+}
+
+
+/*
+
+*/
+
+void MainWindow::on_tabMain_currentChanged(int index)
+{
+    FormImageEditor* imageedit = dynamic_cast<FormImageEditor*>(ui->tabMain->widget(index));
+    FormRasEditor* rasedit = dynamic_cast<FormRasEditor*>(ui->tabMain->widget(index));
+    if (rasedit!=nullptr) {
+        m_updateThread->SetCurrentImage(nullptr, nullptr, nullptr);
+    }
+    if (imageedit!=nullptr) {
+        m_updateThread->SetCurrentImage(&imageedit->m_work, &imageedit->m_toolBox, imageedit->getLabelImage());
+    }
+    m_currentDoc = (TRSEDocument*)ui->tabMain->widget(index);
+}
+
+void MainWindow::on_btnSave_3_clicked()
+{
+    if (m_currentDoc==nullptr)
+        return;
+    m_currentDoc->SaveCurrent();
+}
+
+void MainWindow::on_actionRas_source_file_triggered()
+{
+    QFileDialog dialog;
+    dialog.setFileMode(QFileDialog::AnyFile);
+    QString f = "Ras Files (*.ras)";
+    QString filename = dialog.getSaveFileName(NULL, "Create New File",m_iniFile.getString("project_path"),f);
+
+    if (filename=="")
+        return;
+    QString orgFile;
+    //filename = filename.split("/").last();
+    filename = filename.toLower().remove(m_iniFile.getString("project_path").toLower());
+
+    //qDebug() << filename;
+    QString fn = m_iniFile.getString("project_path") + filename;
+    if (QFile::exists(fn))
+        QFile::remove(fn);
+    QFile file(fn);
+    if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        QTextStream s(&file);
+        s<< "program spankme;\n";
+        s<< "var  \n";
+        s<< "   index: byte; \n";
+        s<< "begin\n\n";
+        s<< "end.\n";
+        qDebug() << "Done writing;";
+    }
+
+    file.close();
+//    LoadRasFile(filename);
+    LoadDocument(filename, "ras");
+    RefreshFileList();
+}
+
+void MainWindow::on_actionDelete_file_triggered()
+{
+    qDebug() << (ui->treeFiles->SelectedClicked);
+    QModelIndex qlst = ui->treeFiles->currentIndex();
+    if (qlst.data().toString()=="")
+        return;
+    QString path = m_iniFile.getString("project_path") + FindPathInProjectFolders(qlst);
+    QString filename = qlst.data().toString();
+
+    QMessageBox msgBox;
+    msgBox.setWindowTitle("Warning");
+    msgBox.setInformativeText("Are you sure you wish to delete '"+filename+"'");
+    msgBox.setText("Warning!                                         ");
+    msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+    msgBox.setDefaultButton(QMessageBox::Cancel);
+    int ret = msgBox.exec();
+    if (ret==QMessageBox::Ok) {
+//        qDebug() << "Removing : " << path+filename;
+        QFile::remove(path + filename);
+        RefreshFileList();
+    }
+}
+
+QString MainWindow::FindPathInProjectFolders(const QModelIndex &index)
 {
     // Find file in path.. ugh
     QString path = "";
@@ -224,70 +364,62 @@ void MainWindow::on_treeFiles_doubleClicked(const QModelIndex &index)
         path=cur.data().toString() + "/" + path;
         cur = cur.parent();
         if (cnt++>20)
-            return;
+            return "";
     }
-
-
-    // Finally load file!
-    QString file = index.data().toString();
-    if (file.toLower().endsWith(".ras") || file.toLower().endsWith(".asm")
-            || file.toLower().endsWith(".inc")) {
-        LoadDocument(path + file,"ras");
-    }
-    if (file.toLower().endsWith(".flf")) {
-        LoadDocument(path + file,"flf");
-    }
-    if (file.toLower().endsWith(".prg")) {
-        //ExecutePrg(m_iniFile.getString("project_path")+"/" + file);
-    }
-
-    Data::data.Redraw();
-    Data::data.forceRedraw = true;
+    return path;
 }
 
 
-/*
-QFileDialog dialog;
-dialog.setFileMode(QFileDialog::AnyFile);
-QString f = "Ras Files (*.ras)";
-QString filename = dialog.getSaveFileName(NULL, "Create New File",m_iniFile->getString("project_path"),f);
-
-if (filename=="")
-    return;
-QString orgFile;
-//filename = filename.split("/").last();
-filename = filename.toLower().remove(m_iniFile->getString("project_path").toLower());
-
-//qDebug() << filename;
-QString fn = m_iniFile->getString("project_path") + filename;
-if (QFile::exists(fn))
-    QFile::remove(fn);
-QFile file(fn);
-qDebug() << "creating new file: " + fn;
-if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-    QTextStream s(&file);
-    s<< "program spankme;\n";
-    s<< "var  \n";
-    s<< "   index: byte; \n";
-    s<< "begin\n\n";
-    s<< "end.\n";
-    qDebug() << "Done writing;";
-}
-
-file.close();
-LoadRasFile(filename);
-RefreshFileList();
-*/
-
-void MainWindow::on_tabMain_currentChanged(int index)
+void MainWindow::on_actionImage_triggered()
 {
-    FormImageEditor* imageedit = dynamic_cast<FormImageEditor*>(ui->tabMain->widget(index));
-    FormRasEditor* rasedit = dynamic_cast<FormRasEditor*>(ui->tabMain->widget(index));
-    if (rasedit!=nullptr) {
-        m_updateThread->SetCurrentImage(nullptr, nullptr, nullptr);
+    FormImageEditor* editor = new FormImageEditor(this);
+    DialogNewImage* dNewFile = new DialogNewImage(this);
+    dNewFile->Initialize(editor->m_work.getImageTypes());
+    dNewFile->setModal(true);
+    dNewFile->exec();
+    if (dNewFile->retVal!=-1) {
+        editor->m_work.New(dNewFile->retVal, dNewFile->m_meta);
+    } else {
+        delete editor;
+        delete dNewFile;
+        return;
     }
-    if (imageedit!=nullptr) {
-        m_updateThread->SetCurrentImage(&imageedit->m_work, &imageedit->m_toolBox, imageedit->getLabelImage());
-    }
-    m_currentDoc = (TRSEDocument*)ui->tabMain->widget(index);
+    delete dNewFile;
+
+    editor->UpdatePalette();
+    editor->InitDocument(m_updateThread, &m_iniFile);
+    editor->m_currentSourceFile = "";
+    editor->m_currentFileShort = "";
+    ui->tabMain->addTab(editor, "New Image");
+
+    editor->setFocus();
+    editor->showMaximized();
+    ui->tabMain->setCurrentWidget(editor);
+
+    //m_iniFile.setString("current_file", fileName);
+    //m_buildSuccess = false;
+    ui->tabMain->setTabsClosable(true);
+    m_documents.append(editor);
+    m_currentDoc = editor;
+
+
+}
+
+void MainWindow::on_actionSave_As_triggered()
+{
+    SaveAs();
+}
+
+void MainWindow::on_actionTRSE_Settings_triggered()
+{
+    DialogTRSESettings* dSettings = new DialogTRSESettings(this);
+
+
+    dSettings->SetInit(&m_iniFile);
+
+
+    dSettings->exec();
+
+    delete dSettings;
+
 }

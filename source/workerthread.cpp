@@ -13,7 +13,7 @@ void WorkerThread::UpdateDrawing()
     if (!Data::data.forceRedraw && m_currentButton == 0)
     if ((abs(m_prevPos.x()-m_currentPos.x())<1) && (abs(m_prevPos.y()-m_currentPos.y()))<1)
         return;
-    QPoint pos = (m_currentPos-m_zoomCenter)*m_zoom + m_zoomCenter ;
+    QPointF pos = (m_currentPos - QPointF(0.5, 0.5) -m_zoomCenter)*m_zoom + m_zoomCenter ;
 
     if ((pos.x()>=0 && pos.x()<m_work->m_currentImage->m_image->m_width &&
        pos.y()>=0 && pos.y()<m_work->m_currentImage->m_image->m_height) || Data::data.forceRedraw ) {
@@ -34,6 +34,9 @@ void WorkerThread::UpdateDrawing()
 
         if (isPreview)
             img = (LImage*)m_work->m_currentImage->m_temp;
+
+//        pos.setX(pos.x()-0.25f);
+//        pos.setY(pos.y()-0.25f);
 
         m_toolBox->m_current->Perform(pos.x(), pos.y(), col, img, isPreview, m_currentButton);
         m_currentPosInImage = img->GetCurrentPosInImage(pos.x(), pos.y());
@@ -108,6 +111,37 @@ void WorkerThread::UpdateImage(LImage *mc)
     //ui->lblImage->setPixmap(m_pixMapImage);
 }
 
+void WorkerThread::UpdateMessages()
+{
+
+    if (Data::data.blink) {
+        Data::data.blink = false;
+        m_blinkTimer = 15;
+        m_pal = m_orgPal;
+        m_pal.setColor(QPalette::Window, QColor(90,90,70));
+        emit updatePaletteSignal();
+    }
+    if (m_blinkTimer>0) {
+        m_blinkTimer--;
+        if (m_blinkTimer==0) {
+            m_pal = m_orgPal;
+            emit updatePaletteSignal();
+
+        }
+
+    }
+
+    if (Data::data.requestSaveAs) {
+        Data::data.requestSaveAs = false;
+        emit requestSaveAs();
+    }
+    if (Data::data.requestCloseWindow) {
+        Data::data.requestCloseWindow = false;
+        emit requestCloseWindowSignal();
+    }
+
+}
+
 void WorkerThread::OnQuit()
 {
     m_quit = true;
@@ -123,7 +157,7 @@ void WorkerThread::run()
             continue;
         }
 */
-
+        UpdateMessages();
         UpdateMousePosition();
         UpdatePanning();
         UpdateDrawing();
