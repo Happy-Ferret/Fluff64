@@ -33,9 +33,9 @@ void FormRasEditor::ExecutePrg(QString fileName, QString emulator)
 
 }
 
-void FormRasEditor::InitDocument(WorkerThread *t, CIniFile *ini)
+void FormRasEditor::InitDocument(WorkerThread *t, CIniFile *ini, CIniFile* pro)
 {
-    TRSEDocument::InitDocument(t,ini);
+    TRSEDocument::InitDocument(t,ini, pro);
     setupEditor();
 }
 
@@ -75,7 +75,7 @@ void FormRasEditor::Build()
 
     QElapsedTimer timer;
     timer.start();
-    Lexer lexer = Lexer(text, lst, m_iniFile->getString("project_path"));
+    Lexer lexer = Lexer(text, lst, m_projectIniFile->getString("project_path"));
     Parser parser = Parser(&lexer);
     Interpreter interpreter = Interpreter(&parser);
     interpreter.Parse();
@@ -84,7 +84,7 @@ void FormRasEditor::Build()
     //interpreter.Build(Interpreter::PASCAL);
     //interpreter.SaveBuild(m_outputFilename+".pmm");
 
-    QString path = m_iniFile->getString("project_path") + "/";
+    QString path = m_projectIniFile->getString("project_path") + "/";
     QString filename = m_currentSourceFile.split(".")[0];
 
     if (interpreter.Build(Interpreter::MOS6502, path)) {

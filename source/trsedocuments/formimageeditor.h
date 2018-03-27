@@ -85,7 +85,16 @@ private slots:
 
     void on_lstImages_clicked(const QModelIndex &index);
 
+
     void on_btnImport_clicked();
+
+    void on_btnCharsetFull_clicked();
+    void on_btnCharset1x1_clicked();
+    void on_btnCharset2x2_clicked();
+    void on_btnCharset2x2Repeat_clicked();
+    void on_btnCharsetCopy_clicked();
+    void on_btnCharsetPaste_clicked();
+
 
     void on_btnTiff_clicked();
 

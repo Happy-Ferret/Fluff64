@@ -40,7 +40,7 @@
      <item row="1" column="1">
       <widget class="QTabWidget" name="tabWidget_2">
        <property name="currentIndex">
-        <number>0</number>
+        <number>2</number>
        </property>
        <widget class="QWidget" name="tab_2">
         <attribute name="title">
@@ -295,6 +295,9 @@
         <layout class="QGridLayout" name="gridLayout_9">
          <item row="0" column="0">
           <layout class="QGridLayout" name="gridLayout_8">
+           <item row="1" column="0">
+            <widget class="QTableWidget" name="lstCharMap"/>
+           </item>
            <item row="0" column="0">
             <widget class="QPushButton" name="btnLoadCharmap">
              <property name="text">
@@ -302,8 +305,51 @@
              </property>
             </widget>
            </item>
-           <item row="1" column="0">
-            <widget class="QTableWidget" name="lstCharMap"/>
+           <item row="6" column="0">
+            <layout class="QGridLayout" name="gridLayout_11">
+             <item row="3" column="0">
+              <widget class="QPushButton" name="btnCharset2x2Repeat">
+               <property name="text">
+                <string>2x2 charset repeat</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="1">
+              <widget class="QPushButton" name="btnCharset2x2">
+               <property name="text">
+                <string>2x2 character set</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QPushButton" name="btnCharsetFull">
+               <property name="text">
+                <string>Full character set</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="QPushButton" name="btnCharset1x1">
+               <property name="text">
+                <string>1x1 character set</string>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="0">
+              <widget class="QPushButton" name="btnCharsetCopy">
+               <property name="text">
+                <string>Copy</string>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="1">
+              <widget class="QPushButton" name="btnCharsetPaste">
+               <property name="text">
+                <string>Paste</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </item>
           </layout>
          </item>

@@ -45,12 +45,18 @@ MainWindow::MainWindow(QWidget *parent) :
   //  ui->centralWidget->setLayout(new QGridLayout());
 
     m_iniFile.Load(m_iniFileName);
-    m_iniFile.setString("project_path", m_iniFile.getString("project_path").replace("\\","/"));
+    UpdateRecentProjects();
+
+//    m_iniFile.setString("project_path", getProjectPath().replace("\\","/"));
     //setupEditor();
     SetupFileList();
 //    if (m_iniFile.getString("current_file")!="")
   //      LoadRasFile(m_iniFile.getString("current_file"));
 
+
+    QImage img;
+    img.load(":resources/images/trselogo.png");
+    ui->lblLogo->setPixmap(QPixmap::fromImage(img));
 
 
     ui->splitter->setStretchFactor(0,10);
@@ -123,7 +129,7 @@ void MainWindow::keyReleaseEvent(QKeyEvent *e)
 
 
 
-void MainWindow::LoadDocument(QString fileName, QString type)
+void MainWindow::LoadDocument(QString fileName)
 {
     for (TRSEDocument* d: m_documents) {
         if (d->m_currentFileShort==fileName) {
@@ -133,20 +139,24 @@ void MainWindow::LoadDocument(QString fileName, QString type)
     }
 
     TRSEDocument* editor = nullptr;
-    if (type=="flf") {
+    if (fileName.contains(".flf")) {
         editor = new FormImageEditor(this);
         FormImageEditor* fe = (FormImageEditor*)editor;
         m_updateThread->SetCurrentImage(&fe->m_work, &fe->m_toolBox, fe->getLabelImage());
 
     }
-    if (type=="ras") {
+    if (fileName.contains(".ras") || fileName.contains(".asm") || fileName.contains(".inc")  ) {
         editor = new FormRasEditor(this);
     }
-    editor->InitDocument(m_updateThread, &m_iniFile);
-    editor->m_currentSourceFile = m_iniFile.getString("project_path") + "/" + fileName;
+    editor->InitDocument(m_updateThread, &m_iniFile, &m_currentProject.m_ini);
+    editor->m_currentSourceFile = getProjectPath() + "/" + fileName;
     editor->m_currentFileShort = fileName;
     ui->tabMain->addTab(editor, fileName);
     editor->Load(editor->m_currentSourceFile);
+
+
+    m_currentProject.m_ini.addStringList("open_files", editor->m_currentFileShort, true);
+    m_currentProject.Save();
 
 
     editor->setFocus();
@@ -165,9 +175,6 @@ void MainWindow::LoadDocument(QString fileName, QString type)
 void MainWindow::SetupFileList()
 {
     RefreshFileList();
-    ui->treeFiles->hideColumn(1);
-    ui->treeFiles->hideColumn(2);
-    ui->treeFiles->hideColumn(3);
 }
 
 
@@ -177,7 +184,9 @@ void MainWindow::SetupFileList()
 void MainWindow::RefreshFileList()
 {
     fileSystemModel = new CustomFileSystemModel(this);
-    QString rootPath= m_iniFile.getString("project_path");
+    QString rootPath= getProjectPath();
+    if (rootPath=="")
+            return;
     fileSystemModel->setReadOnly(true);
     fileSystemModel->setRootPath(rootPath);
     fileSystemModel->setFilter(QDir::NoDotAndDotDot |
@@ -188,12 +197,34 @@ void MainWindow::RefreshFileList()
     ui->treeFiles->setModel(fileSystemModel);
     ui->treeFiles->setRootIndex(fileSystemModel->index(rootPath));
 
+    ui->treeFiles->hideColumn(1);
+    ui->treeFiles->hideColumn(2);
+    ui->treeFiles->hideColumn(3);
+
 }
 
 void MainWindow::closeWindowSlot()
 {
     int idx = ui->tabMain->currentIndex();
     RemoveTab(idx);
+}
+
+void MainWindow::UpdateRecentProjects()
+{
+    ui->lstRecentProjects->clear();
+    QStringList l = m_iniFile.getStringList("recent_projects");
+    qDebug() << l;
+
+    for (QString s: l) {
+        QListWidgetItem* item= new QListWidgetItem();
+       // item->data(Qt::UserRole).QVariant
+        item->setData(Qt::UserRole,s);
+        QString name = s.split("/").last();
+        item->setText(name);
+
+        ui->lstRecentProjects->addItem(item);
+    }
+
 }
 
 void MainWindow::SaveAs()
@@ -204,7 +235,7 @@ void MainWindow::SaveAs()
     QFileDialog dialog;
     dialog.setFileMode(QFileDialog::AnyFile);
     QString f = ext +" Files (*."+ext+")";
-    QString filename = dialog.getSaveFileName(NULL, "Create New File",m_iniFile.getString("project_path"),f);
+    QString filename = dialog.getSaveFileName(NULL, "Create New File",getProjectPath(),f);
 
     if (filename=="")
         return;
@@ -212,7 +243,7 @@ void MainWindow::SaveAs()
     //filename = filename.split("/").last();
 
     m_currentDoc->m_currentSourceFile = filename;
-    filename = filename.toLower().remove(m_iniFile.getString("project_path").toLower());
+    filename = filename.toLower().remove(getProjectPath().toLower());
     m_currentDoc->m_currentFileShort = filename;
     m_currentDoc->SaveCurrent();
 
@@ -227,6 +258,10 @@ void MainWindow::RemoveTab(int idx)
         return;
     idx--;
     TRSEDocument* doc = m_documents[idx];
+
+    m_currentProject.m_ini.removeFromList("open_files", doc->m_currentFileShort);
+    m_currentProject.Save();
+
     m_documents[idx]->Destroy();
     m_documents.remove(idx);
    ui->tabMain->removeTab(idx+1);
@@ -239,7 +274,20 @@ void MainWindow::RemoveTab(int idx)
     if (fe!=nullptr)
        m_updateThread->SetCurrentImage(&fe->m_work, &fe->m_toolBox,fe->getLabelImage());
 
-   delete doc;
+    delete doc;
+}
+
+void MainWindow::CloseAll()
+{
+    qDebug() << "Close all";
+    while (ui->tabMain->count()!=1) {
+        RemoveTab(1);
+    }
+}
+
+QString MainWindow::getProjectPath()
+{
+    return m_currentProject.m_ini.getString("project_path");
 }
 
 
@@ -253,13 +301,13 @@ void MainWindow::on_treeFiles_doubleClicked(const QModelIndex &index)
     QString file = index.data().toString();
     if (file.toLower().endsWith(".ras") || file.toLower().endsWith(".asm")
             || file.toLower().endsWith(".inc")) {
-        LoadDocument(path + file,"ras");
+        LoadDocument(path + file);
     }
     if (file.toLower().endsWith(".flf")) {
-        LoadDocument(path + file,"flf");
+        LoadDocument(path +file);
     }
     if (file.toLower().endsWith(".prg")) {
-        FormRasEditor::ExecutePrg(m_iniFile.getString("project_path")+"/" + file, m_iniFile.getString("emulator"));
+        FormRasEditor::ExecutePrg(getProjectPath()+"/" + file, m_iniFile.getString("emulator"));
     }
 
     Data::data.Redraw();
@@ -296,16 +344,16 @@ void MainWindow::on_actionRas_source_file_triggered()
     QFileDialog dialog;
     dialog.setFileMode(QFileDialog::AnyFile);
     QString f = "Ras Files (*.ras)";
-    QString filename = dialog.getSaveFileName(NULL, "Create New File",m_iniFile.getString("project_path"),f);
+    QString filename = dialog.getSaveFileName(NULL, "Create New File",getProjectPath(),f);
 
     if (filename=="")
         return;
     QString orgFile;
     //filename = filename.split("/").last();
-    filename = filename.toLower().remove(m_iniFile.getString("project_path").toLower());
+    filename = filename.toLower().remove(getProjectPath().toLower());
 
     //qDebug() << filename;
-    QString fn = m_iniFile.getString("project_path") + filename;
+    QString fn = getProjectPath() + filename;
     if (QFile::exists(fn))
         QFile::remove(fn);
     QFile file(fn);
@@ -321,7 +369,7 @@ void MainWindow::on_actionRas_source_file_triggered()
 
     file.close();
 //    LoadRasFile(filename);
-    LoadDocument(filename, "ras");
+    LoadDocument(filename);
     RefreshFileList();
 }
 
@@ -331,7 +379,7 @@ void MainWindow::on_actionDelete_file_triggered()
     QModelIndex qlst = ui->treeFiles->currentIndex();
     if (qlst.data().toString()=="")
         return;
-    QString path = m_iniFile.getString("project_path") + FindPathInProjectFolders(qlst);
+    QString path = getProjectPath() + FindPathInProjectFolders(qlst);
     QString filename = qlst.data().toString();
 
     QMessageBox msgBox;
@@ -352,7 +400,7 @@ QString MainWindow::FindPathInProjectFolders(const QModelIndex &index)
 {
     // Find file in path.. ugh
     QString path = "";
-    QStringList pathSplit = m_iniFile.getString("project_path").toLower().replace("\\", "/").split("/");
+    QStringList pathSplit = getProjectPath().toLower().replace("\\", "/").split("/");
     QString test = pathSplit.last();
     if (test=="")
         test = pathSplit[pathSplit.count()-2];
@@ -387,7 +435,7 @@ void MainWindow::on_actionImage_triggered()
     delete dNewFile;
 
     editor->UpdatePalette();
-    editor->InitDocument(m_updateThread, &m_iniFile);
+    editor->InitDocument(m_updateThread, &m_iniFile, &m_currentProject.m_ini);
     editor->m_currentSourceFile = "";
     editor->m_currentFileShort = "";
     ui->tabMain->addTab(editor, "New Image");
@@ -421,5 +469,76 @@ void MainWindow::on_actionTRSE_Settings_triggered()
     dSettings->exec();
 
     delete dSettings;
+
+}
+
+void MainWindow::on_actionNew_project_triggered()
+{
+    QFileDialog dialog;
+    QString filename = dialog.getSaveFileName(this, "New project",getProjectPath(),"*.trse");
+    if (filename=="")
+        return;
+
+    CloseAll();
+    QStringList splt = filename.split("/");
+    QString path="";
+    for (int i=0;i<splt.count()-1;i++)
+        path+=splt[i] + "/";
+
+    m_currentProject = TRSEProject();
+    m_currentProject.m_ini.setString("project_path", path);
+    m_currentProject.m_filename = filename;
+    m_currentProject.Save();
+    RefreshFileList();
+
+   // m_iniFile.setString("project_path", getProjectPath());
+    m_iniFile.addStringList("recent_projects", filename, true);
+    m_iniFile.Save();
+
+    UpdateRecentProjects();
+
+}
+
+void MainWindow::on_actionClose_all_triggered()
+{
+    CloseAll();
+}
+
+void MainWindow::on_actionOpen_project_triggered()
+{
+    QFileDialog dialog;
+    QString filename = dialog.getOpenFileName(this, "Open project",getProjectPath(),"*.trse");
+    if (filename=="")
+        return;
+
+    LoadProject(filename);
+
+
+}
+
+void MainWindow::LoadProject(QString filename)
+{
+    CloseAll();
+    m_currentProject.Load(filename);
+//    m_iniFile.setString("project_path", getProjectPath());
+    m_iniFile.addStringList("recent_projects", filename, true);
+    RefreshFileList();
+    m_iniFile.Save();
+
+    UpdateRecentProjects();
+
+    QStringList files = m_currentProject.m_ini.getStringList("open_files");
+    for (QString f: files) {
+        LoadDocument(f);
+    }
+
+
+}
+
+
+void MainWindow::on_lstRecentProjects_itemDoubleClicked(QListWidgetItem *item)
+{
+    QString projectFile = item->data(Qt::UserRole).toString();
+    LoadProject(projectFile);
 
 }

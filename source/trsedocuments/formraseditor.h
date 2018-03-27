@@ -24,7 +24,7 @@ public:
     bool m_buildSuccess = false;
     void LoadRasFile(QString fileName);
     static void ExecutePrg(QString fileName, QString emulator);
-    void InitDocument(WorkerThread *t, CIniFile *ini) override;
+    void InitDocument(WorkerThread *t, CIniFile *ini, CIniFile* iniProject) override;
     void setupEditor();
     void Build();
     void Setup();

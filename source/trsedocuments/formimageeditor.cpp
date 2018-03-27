@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cmath>
 #include <QPushButton>
+#include "source/limage/charsetimage.h"
 
 
 FormImageEditor::FormImageEditor(QWidget *parent) :
@@ -19,6 +20,7 @@ FormImageEditor::FormImageEditor(QWidget *parent) :
 
 
     m_grid.ApplyToLabel(ui->lblGrid);
+   // updateCharSet();
 }
 
 FormImageEditor::~FormImageEditor()
@@ -91,6 +93,8 @@ void FormImageEditor::keyPressEvent(QKeyEvent *e)
             SaveCurrent();
 
         FillCMBColors();
+
+        updateCharSet();
 
         if (e->key()==Qt::Key_W && (QApplication::keyboardModifiers() & Qt::ControlModifier))
             Data::data.requestCloseWindow = true;
@@ -182,7 +186,8 @@ void FormImageEditor::Save(QString filename)
 void FormImageEditor::SelectCharacter(int idx)
 {
     m_work.m_currentImage->m_image->SetCurrentType(LImage::WriteType::Character);
-    Data::data.currentColor = idx;
+//    Data::data.currentColor = idx;
+    m_work.m_currentImage->m_image->setCurrentChar(idx);
 
 }
 
@@ -251,7 +256,7 @@ void FormImageEditor::on_btnExportAsm_clicked()
 {
 
     QString fileName = QFileDialog::getSaveFileName(this,
-                                                    tr("Export Multicolor Assembler image"), m_iniFile->getString("project_path"),
+                                                    tr("Export Multicolor Assembler image"), m_projectIniFile->getString("project_path"),
                                                     tr("Bin (*.bin);"));
 
 
@@ -333,10 +338,60 @@ void FormImageEditor::on_btnImport_clicked()
 
 }
 
+void FormImageEditor::on_btnCharsetFull_clicked()
+{
+    CharsetImage* ci = dynamic_cast<CharsetImage*>(m_work.m_currentImage->m_image);
+    if (ci==nullptr)
+        return;
+
+    ci->m_currentMode = CharsetImage::Mode::FULL_IMAGE;
+}
+
+void FormImageEditor::on_btnCharset1x1_clicked()
+{
+    CharsetImage* ci = dynamic_cast<CharsetImage*>(m_work.m_currentImage->m_image);
+    if (ci==nullptr)
+        return;
+
+    ci->m_currentMode = CharsetImage::Mode::CHARSET1x1;
+
+}
+
+void FormImageEditor::on_btnCharset2x2_clicked()
+{
+    CharsetImage* ci = dynamic_cast<CharsetImage*>(m_work.m_currentImage->m_image);
+    if (ci==nullptr)
+        return;
+
+    ci->m_currentMode = CharsetImage::Mode::CHARSET2x2;
+
+}
+
+void FormImageEditor::on_btnCharset2x2Repeat_clicked()
+{
+    CharsetImage* ci = dynamic_cast<CharsetImage*>(m_work.m_currentImage->m_image);
+    if (ci==nullptr)
+        return;
+
+    ci->m_currentMode = CharsetImage::Mode::CHARSET2x2_REPEAT;
+
+}
+
+void FormImageEditor::on_btnCharsetCopy_clicked()
+{
+    m_work.m_currentImage->m_image->CopyChar();
+}
+
+void FormImageEditor::on_btnCharsetPaste_clicked()
+{
+    m_work.m_currentImage->m_image->PasteChar();
+
+}
+
 void FormImageEditor::on_btnTiff_clicked()
 {
     QString fileName = QFileDialog::getOpenFileName(this,
-        tr("Open Tiled Tiff"), m_iniFile->getString("project_path"), tr("Image Files (*.tif *.tiff )"));
+        tr("Open Tiled Tiff"), m_projectIniFile->getString("project_path"), tr("Image Files (*.tif *.tiff )"));
 
     if (fileName == "")
         return;
@@ -371,15 +426,7 @@ void FormImageEditor::on_btnSaveAs_clicked()
 
 void FormImageEditor::updateCharSet()
 {
-    CharsetImage* charmap = nullptr;
-    C64FullScreenChar* ch = dynamic_cast<C64FullScreenChar*>(m_work.m_currentImage->m_image);
-    if (ch!=nullptr)
-        charmap = ch->m_charset;
-
-    ImageLevelEditor* le = dynamic_cast<ImageLevelEditor*>(m_work.m_currentImage->m_image);
-    if (le!=nullptr)
-        charmap = le->m_charset;
-
+    CharsetImage* charmap = m_work.m_currentImage->m_image->getCharset();
     if (charmap == nullptr)
         return;
 
@@ -407,7 +454,7 @@ void FormImageEditor::updateCharSet()
 */
 //   ui->lstCharMap->setViewMode(QListView::IconMode);
    ui->lstCharMap->setColumnCount(40);
-   ui->lstCharMap->setRowCount(7);
+   ui->lstCharMap->setRowCount(maps.count()/40);
     int cnt=0;
     int j=0;
     int i=0;
@@ -433,7 +480,7 @@ void FormImageEditor::updateCharSet()
             ui->lstCharMap->setItem(j,i,itm);
 
         }
-
+        itm->setIcon(q);
         itm->setData(Qt::UserRole, kk);
         cnt++;
         i++;
@@ -532,7 +579,7 @@ void FormImageEditor::on_btnImportBin_clicked()
 {
     QString f = "Binary Files ( *.bin )";
     QString filename = QFileDialog::getOpenFileName(this,
-        tr("Import binary file"), m_iniFile->getString("project_path"), f);
+        tr("Import binary file"), m_projectIniFile->getString("project_path"), f);
     if (filename=="")
         return;
 
@@ -551,7 +598,7 @@ void FormImageEditor::on_btnImportBin_clicked()
 void FormImageEditor::on_btnExportBin_clicked()
 {
     QString fileName = QFileDialog::getSaveFileName(this,
-                                                    tr("Export binary file"), m_iniFile->getString("project_path"),
+                                                    tr("Export binary file"), m_projectIniFile->getString("project_path"),
                                                     tr("Bin (*.bin);"));
 
 
@@ -592,7 +639,7 @@ void FormImageEditor::on_btnLoadCharmap_clicked()
 
 
     QString fileName = QFileDialog::getOpenFileName(this,
-        tr("Open Character map"), m_iniFile->getString("project_path"), tr("Binary Files (*.bin )"));
+        tr("Open Character map"), m_projectIniFile->getString("project_path"), tr("Binary Files (*.bin )"));
 
     if (fileName == "")
         return;
@@ -610,7 +657,12 @@ void FormImageEditor::on_lstCharMap_currentItemChanged(QTableWidgetItem *current
 
     int idx = current->data(Qt::UserRole).toInt();
     m_work.m_currentImage->m_image->SetCurrentType(LImage::WriteType::Character);
-    Data::data.currentColor = idx;
+   // Data::data.currentColor = idx;
+    m_work.m_currentImage->m_image->setCurrentChar(idx);
+
+    Data::data.Redraw();
+    Data::data.forceRedraw = true;
+
 
 }
 

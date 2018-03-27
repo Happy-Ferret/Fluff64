@@ -30,6 +30,19 @@ class MainWindow;
 }
 
 
+class TRSEProject {
+public:
+    CIniFile m_ini;
+    QString m_filename;
+    void Load(QString projectfile) {
+        m_ini.Load(projectfile);
+        m_filename = projectfile;
+    }
+    void Save() {
+        m_ini.Save(m_filename);
+    }
+};
+
 
 class CustomFileSystemModel : public QFileSystemModel {
     Q_OBJECT
@@ -82,6 +95,9 @@ public:
     QVector<TRSEDocument*> m_documents;
 
 
+    TRSEProject m_currentProject;
+
+
     TRSEDocument* m_currentDoc = nullptr;
 
     void SearchInSource();
@@ -94,7 +110,7 @@ public:
 
     WorkerThread* m_updateThread;
 
-    void LoadDocument(QString fileName, QString type);
+    void LoadDocument(QString fileName);
 
     bool m_quit = false;
 
@@ -121,9 +137,14 @@ public slots:
         setPalette(m_updateThread->m_pal);
     }
 
+    void UpdateRecentProjects();
     void SaveAs();
 
     void RemoveTab(int);
+    void LoadProject(QString filename);
+
+    void CloseAll();
+    QString getProjectPath();
 
 signals:
    void ValueChanged();
@@ -149,6 +170,14 @@ private slots:
     void on_actionSave_As_triggered();
 
     void on_actionTRSE_Settings_triggered();
+
+    void on_actionNew_project_triggered();
+
+    void on_actionClose_all_triggered();
+
+    void on_actionOpen_project_triggered();
+
+    void on_lstRecentProjects_itemDoubleClicked(QListWidgetItem *item);
 
 private:
 

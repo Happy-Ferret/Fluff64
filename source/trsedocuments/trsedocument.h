@@ -19,6 +19,7 @@ public:
 
     WorkerThread* m_updateThread;
     CIniFile* m_iniFile;
+    CIniFile* m_projectIniFile;
 
     virtual void Save(QString filename) {}
     virtual void Load(QString filename) {}
@@ -31,9 +32,10 @@ public:
     }
     virtual void Init() {}
 
-    virtual void InitDocument(WorkerThread* t, CIniFile* ini) {
+    virtual void InitDocument(WorkerThread* t, CIniFile* ini, CIniFile* iniProject) {
         m_updateThread = t;
         m_iniFile = ini;
+        m_projectIniFile = iniProject;
     }
 
     virtual void Destroy() = 0;

@@ -98,12 +98,55 @@
           <attribute name="title">
            <string>Turbo Rascal Solution</string>
           </attribute>
-          <layout class="QGridLayout" name="gridLayout_6">
-           <item row="0" column="0">
-            <layout class="QGridLayout" name="gridLayout_2" rowstretch="0" columnstretch="0">
-             <property name="sizeConstraint">
-              <enum>QLayout::SetMaximumSize</enum>
-             </property>
+          <layout class="QGridLayout" name="gridLayout_4">
+           <item row="1" column="0">
+            <layout class="QGridLayout" name="gridLayout_2" columnstretch="1,4">
+             <item row="0" column="0">
+              <layout class="QVBoxLayout" name="verticalLayout_2" stretch="1,2">
+               <item>
+                <widget class="QLabel" name="lblLogo">
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="scaledContents">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="label">
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item row="0" column="1">
+              <layout class="QVBoxLayout" name="verticalLayout_3">
+               <item>
+                <widget class="QLabel" name="label_2">
+                 <property name="font">
+                  <font>
+                   <pointsize>20</pointsize>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>Recent projects</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QListWidget" name="lstRecentProjects">
+                 <property name="font">
+                  <font>
+                   <pointsize>16</pointsize>
+                  </font>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
             </layout>
            </item>
           </layout>
@@ -136,6 +179,8 @@
      <addaction name="actionImage"/>
     </widget>
     <addaction name="menuNew"/>
+    <addaction name="actionNew_project"/>
+    <addaction name="actionOpen_project"/>
     <addaction name="actionSave_As"/>
     <addaction name="actionDelete_file"/>
    </widget>
@@ -159,9 +204,17 @@
     </property>
     <addaction name="actionAbout"/>
    </widget>
+   <widget class="QMenu" name="menuWindow">
+    <property name="title">
+     <string>Window</string>
+    </property>
+    <addaction name="actionClose_current"/>
+    <addaction name="actionClose_all"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
    <addaction name="menuTools"/>
+   <addaction name="menuWindow"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
@@ -221,6 +274,26 @@
   <action name="actionAbout">
    <property name="text">
     <string>About</string>
+   </property>
+  </action>
+  <action name="actionNew_project">
+   <property name="text">
+    <string>New project</string>
+   </property>
+  </action>
+  <action name="actionClose_current">
+   <property name="text">
+    <string>Close current (c-w)</string>
+   </property>
+  </action>
+  <action name="actionClose_all">
+   <property name="text">
+    <string>Close all</string>
+   </property>
+  </action>
+  <action name="actionOpen_project">
+   <property name="text">
+    <string>Open project</string>
    </property>
   </action>
  </widget>
