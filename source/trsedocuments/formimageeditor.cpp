@@ -86,7 +86,7 @@ void FormImageEditor::keyPressEvent(QKeyEvent *e)
         if (!ui->tblData->hasFocus() && !(QApplication::keyboardModifiers() & Qt::ControlModifier)) {
             m_work.m_currentImage->m_image->StoreData(ui->tblData);
             m_work.m_currentImage->m_image->KeyPress(e);
-            m_work.m_currentImage->m_image->BuildData(ui->tblData, m_iniFile->getStringList("data_header"));
+            m_work.m_currentImage->m_image->BuildData(ui->tblData, m_projectIniFile->getStringList("data_header"));
         }
 
         if (e->key()==Qt::Key_S && (QApplication::keyboardModifiers() & Qt::ControlModifier))
@@ -172,7 +172,7 @@ void FormImageEditor::Load(QString filename)
     UpdatePalette();
     FillCMBColors();
 
-    m_work.m_currentImage->m_image->BuildData(ui->tblData, m_iniFile->getStringList("data_header"));
+    m_work.m_currentImage->m_image->BuildData(ui->tblData, m_projectIniFile->getStringList("data_header"));
 
 
 }
@@ -538,7 +538,7 @@ void FormImageEditor::UpdateLevels()
             QObject::connect( l, &QPushButton::clicked,  [=](){
                 m_work.m_currentImage->m_image->StoreData(ui->tblData);
                 le->SetLevel(QPoint(i,j));
-                m_work.m_currentImage->m_image->BuildData(ui->tblData,m_iniFile->getStringList("data_header"));
+                m_work.m_currentImage->m_image->BuildData(ui->tblData,m_projectIniFile->getStringList("data_header"));
                 Data::data.Redraw();
             }
 
