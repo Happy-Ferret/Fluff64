@@ -22,6 +22,7 @@
 #include "source/trsedocuments/formraseditor.h"
 #include "source/trsedocuments/formimageeditor.h"
 #include "source/dialogtrsesettings.h"
+#include "source/messages.h"
 
 #include "ui_mainwindow.h"
 namespace Ui {
@@ -115,13 +116,14 @@ public:
     bool m_quit = false;
 
 
+
   //  void setupEditor();
     void SetupFileList();
 
     void RefreshFileList();
 public slots:
 
-    //   void OnQuit();
+      void OnQuit();
 
     void updateImage() {
         FormImageEditor* imageEdit = dynamic_cast<FormImageEditor*>(ui->tabMain->currentWidget());

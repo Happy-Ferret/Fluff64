@@ -81,7 +81,9 @@ SOURCES += main.cpp\
     source/trsedocuments/trsedocument.cpp \
     source/trsedocuments/formraseditor.cpp \
     source/trsedocuments/formimageeditor.cpp \
-    source/dialogtrsesettings.cpp
+    source/dialogtrsesettings.cpp \
+    source/dialogmessage.cpp \
+    source/messages.cpp
 
 
 HEADERS  += mainwindow.h \
@@ -133,14 +135,17 @@ HEADERS  += mainwindow.h \
     source/trsedocuments/formraseditor.h \
     source/trsedocuments/trsedocument.h \
     source/trsedocuments/formimageeditor.h \
-    source/dialogtrsesettings.h
+    source/dialogtrsesettings.h \
+    source/dialogmessage.h \
+    source/messages.h
 
 FORMS    += mainwindow.ui \
     dialognewimage.ui \
     dialogimport.ui \
     source/trsedocuments/formraseditor.ui \
     source/trsedocuments/formimageeditor.ui \
-    source/dialogtrsesettings.ui
+    source/dialogtrsesettings.ui \
+    source/dialogmessage.ui
 
 RESOURCES += \
     resources.qrc

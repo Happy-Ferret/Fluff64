@@ -37,6 +37,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect( ui->tabMain, SIGNAL(tabCloseRequested(int)),this, SLOT(RemoveTab(int)));
     connect(qApp, SIGNAL(aboutToQuit()), m_updateThread, SLOT(OnQuit()));
+    connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(OnQuit()));
 
 
     m_updateThread->m_orgPal = palette();
@@ -45,6 +46,13 @@ MainWindow::MainWindow(QWidget *parent) :
   //  ui->centralWidget->setLayout(new QGridLayout());
 
     m_iniFile.Load(m_iniFileName);
+    QPoint p = ui->splitter->pos();
+//    p.setX();
+    QVector3D sp = m_iniFile.getVec("splitpos");
+    if (sp.length()!=0)
+        ui->splitter->setSizes(QList<int>() << sp.x() << sp.y());
+
+    Messages::messages.LoadFromCIni(&m_iniFile);
     UpdateRecentProjects();
 
 //    m_iniFile.setString("project_path", getProjectPath().replace("\\","/"));
@@ -172,6 +180,7 @@ void MainWindow::LoadDocument(QString fileName)
 
 }
 
+
 void MainWindow::SetupFileList()
 {
     RefreshFileList();
@@ -201,6 +210,12 @@ void MainWindow::RefreshFileList()
     ui->treeFiles->hideColumn(2);
     ui->treeFiles->hideColumn(3);
 
+}
+
+void MainWindow::OnQuit()
+{
+    m_iniFile.setVec("splitpos", QVector3D(ui->splitter->sizes()[0],ui->splitter->sizes()[1],0));
+    m_iniFile.Save();
 }
 
 void MainWindow::closeWindowSlot()
@@ -467,6 +482,9 @@ void MainWindow::on_actionTRSE_Settings_triggered()
 
 
     dSettings->exec();
+
+    for (TRSEDocument* doc : m_documents)
+        doc->UpdateColors();
 
     delete dSettings;
 

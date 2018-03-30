@@ -110,6 +110,7 @@ void FormImageEditor::keyPressEvent(QKeyEvent *e)
         }
         if (e->key() == Qt::Key_X) {
             m_work.m_currentImage->m_image->renderPathGrid =!m_work.m_currentImage->m_image->renderPathGrid;
+            ui->chkBackgroundArea->setChecked(m_work.m_currentImage->m_image->renderPathGrid);
         }
 
         Data::data.forceRedraw = true;
@@ -290,7 +291,13 @@ void FormImageEditor::on_btnExportAsm_clicked()
 void FormImageEditor::on_chkGrid_clicked(bool checked)
 {
 //    if (checked)
-        ui->lblGrid->setVisible(checked);
+    ui->lblGrid->setVisible(checked);
+}
+
+void FormImageEditor::on_chkBackgroundArea_clicked(bool checked)
+{
+    m_work.m_currentImage->m_image->renderPathGrid = checked;
+    Data::data.forceRedraw = true;
 }
 
 
@@ -345,6 +352,7 @@ void FormImageEditor::on_btnCharsetFull_clicked()
         return;
 
     ci->m_currentMode = CharsetImage::Mode::FULL_IMAGE;
+    Data::data.forceRedraw = true;
 }
 
 void FormImageEditor::on_btnCharset1x1_clicked()
@@ -354,6 +362,7 @@ void FormImageEditor::on_btnCharset1x1_clicked()
         return;
 
     ci->m_currentMode = CharsetImage::Mode::CHARSET1x1;
+    Data::data.forceRedraw = true;
 
 }
 
@@ -364,6 +373,7 @@ void FormImageEditor::on_btnCharset2x2_clicked()
         return;
 
     ci->m_currentMode = CharsetImage::Mode::CHARSET2x2;
+    Data::data.forceRedraw = true;
 
 }
 
@@ -374,6 +384,7 @@ void FormImageEditor::on_btnCharset2x2Repeat_clicked()
         return;
 
     ci->m_currentMode = CharsetImage::Mode::CHARSET2x2_REPEAT;
+    Data::data.forceRedraw = true;
 
 }
 
@@ -385,6 +396,7 @@ void FormImageEditor::on_btnCharsetCopy_clicked()
 void FormImageEditor::on_btnCharsetPaste_clicked()
 {
     m_work.m_currentImage->m_image->PasteChar();
+    Data::data.forceRedraw = true;
 
 }
 

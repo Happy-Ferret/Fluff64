@@ -5,6 +5,7 @@
 #include "trsedocument.h"
 #include "source/PmmEdit/highlighter.h"
 #include "source/PmmEdit/codeeditor.h"
+#include "source/messages.h"
 
 namespace Ui {
     class FormRasEditor;
@@ -17,7 +18,8 @@ class FormRasEditor : public TRSEDocument
 public:
     explicit FormRasEditor(QWidget *parent = 0);
     ~FormRasEditor();
-    Highlighter* highlighter;
+    Highlighter* highlighter = nullptr;
+
 
     int m_searchFromPos = 0;
     int m_currentFromPos = 0;
@@ -31,8 +33,9 @@ public:
     void Run();
     void SetLights();
     void SetText(QString s);
+    void SetupHighlighter();
     void SearchInSource();
-
+    void UpdateColors() override;
     void Save(QString filename) override;
     void Load(QString filename) override;
     void wheelEvent(QWheelEvent *event) override;

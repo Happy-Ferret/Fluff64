@@ -167,6 +167,7 @@ void CodeEditor::cycleNumberAreaPaintEvent(QPaintEvent *event)
            // qDebug() << m_cycles.count();
             if (m_cycles.contains(ln))
             {
+
                 QString number = QString::number(m_cycles[ln]);
                 painter.setPen(Qt::yellow);
                 painter.drawText(0, top, cycleNumberArea->width(), fontMetrics().height(),

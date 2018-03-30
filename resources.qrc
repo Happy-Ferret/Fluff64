@@ -9,5 +9,8 @@
         <file>resources/images/asm_icon.png</file>
         <file>resources/images/image_icon.png</file>
         <file>resources/images/trselogo.png</file>
+        <file>resources/images/creatures.png</file>
+        <file>resources/images/friday.jpg</file>
+        <file>resources/images/friday.png</file>
     </qresource>
 </RCC>

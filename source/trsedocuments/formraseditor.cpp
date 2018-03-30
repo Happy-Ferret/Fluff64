@@ -15,7 +15,6 @@ FormRasEditor::FormRasEditor(QWidget *parent) :
 {
     ui->setupUi(this);
     m_fileExtension = "ras";
-
 }
 
 FormRasEditor::~FormRasEditor()
@@ -25,11 +24,14 @@ FormRasEditor::~FormRasEditor()
 
 void FormRasEditor::ExecutePrg(QString fileName, QString emulator)
 {
+    if (!QFile::exists(emulator)) {
+        Messages::messages.DisplayMessage(Messages::messages.NO_EMULATOR);
+        return;
+    }
     QProcess process;
     process.waitForFinished();
     process.startDetached(emulator, QStringList() << fileName);
     QString output(process.readAllStandardOutput());
-    qDebug() << output;
 
 }
 
@@ -49,7 +51,8 @@ void FormRasEditor::setupEditor()
     font.setPointSize(12);
     ui->txtEditor->setFont(font);
     //ui->txtEditor->setTextColor(QColor(220,210,190));
-    highlighter = new Highlighter(ui->txtEditor->document());
+    SetupHighlighter();
+//    highlighter->Save("dark_standard.ini");
 
     QFontMetrics metrics(font);
     ui->txtEditor->setTabStopWidth(m_iniFile->getInt("tab_size") * metrics.width(' '));
@@ -109,12 +112,19 @@ void FormRasEditor::Build()
         if (output.toLower().contains("error")) {
             m_buildSuccess = false;
             if (output.toLower().contains("reverse-indexed")) {
+                Messages::messages.DisplayMessage(Messages::messages.MEMORY_OVERLAP_ERROR);
                 output += "<br>Please reorganize your binary inclusions in ascending order of memory locations.";
             }
+
+            else
+                Messages::messages.DisplayMessage(Messages::messages.DASM_COMPILER_ERROR);
+
         }
         if (!output.toLower().contains("complete.")) {
             m_buildSuccess = false;
             if (output=="") {
+                Messages::messages.DisplayMessage(Messages::messages.NO_DASM);
+
                 output = "Could not find Dasm.exe. Did you set the correct environment variables?";
             }
 
@@ -167,7 +177,23 @@ void FormRasEditor::SetLights()
 
 void FormRasEditor::SetText(QString s)
 {
-  ui->txtEditor->setPlainText(s);
+    ui->txtEditor->setPlainText(s);
+}
+
+void FormRasEditor::SetupHighlighter()
+{
+    if (highlighter != nullptr)
+        delete highlighter;
+    CIniFile colors;
+    colors.Load("themes/" + m_iniFile->getString("theme"));
+    QPalette p = ui->txtEditor->palette();
+    p.setColor(QPalette::Base, colors.getColor("backgroundcolor"));
+    p.setColor(QPalette::Text, colors.getColor("textcolor"));
+    ui->txtEditor->setPalette(p);
+    highlighter = new Highlighter(colors, ui->txtEditor->document());
+
+//    qDebug() << "UPDATE " << m_iniFile->getString("theme");
+
 }
 
 void FormRasEditor::wheelEvent(QWheelEvent *event)
@@ -217,6 +243,11 @@ void FormRasEditor::SearchInSource()
     m_currentFromPos = ui->txtEditor->document()->toPlainText().toLower().indexOf(ui->leSearch->text().toLower(), m_searchFromPos);
     QTextCursor cursor(ui->txtEditor->document()->findBlock(m_currentFromPos));
     ui->txtEditor->setTextCursor(cursor);
+}
+
+void FormRasEditor::UpdateColors()
+{
+    SetupHighlighter();
 }
 
 void FormRasEditor::Save(QString filename)

@@ -31,7 +31,7 @@ public:
         Data::data.blink = true;
     }
     virtual void Init() {}
-
+    virtual void UpdateColors() { }
     virtual void InitDocument(WorkerThread* t, CIniFile* ini, CIniFile* iniProject) {
         m_updateThread = t;
         m_iniFile = ini;

@@ -75,6 +75,7 @@ private slots:
  //   void on_btnSave_clicked();
 
     void on_chkGrid_clicked(bool checked);
+    void on_chkBackgroundArea_clicked(bool checked);
 
 
     void on_btnNew_clicked();

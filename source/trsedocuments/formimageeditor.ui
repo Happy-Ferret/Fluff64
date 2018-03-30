@@ -29,6 +29,16 @@
         </widget>
        </item>
        <item>
+        <widget class="QCheckBox" name="chkBackgroundArea">
+         <property name="text">
+          <string>Background area</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QLabel" name="lblPosition">
          <property name="text">
           <string/>

@@ -5,13 +5,18 @@
 #include <QTextDocument>
 #include <QRegularExpression>
 #include <QString>
+#include "source/util/cinifile.h"
+
+
 
 class Highlighter : public QSyntaxHighlighter
 {
     Q_OBJECT
 
 public:
-    Highlighter(QTextDocument *parent = 0);
+    Highlighter(CIniFile ini, QTextDocument *parent = 0);
+    CIniFile m_colors;
+    void Save(QString fn);
 
 protected:
     void highlightBlock(const QString &text) override;
@@ -23,6 +28,7 @@ private:
         QTextCharFormat format;
     };
     QVector<HighlightingRule> highlightingRules;
+
 
 
     QRegularExpression commentStartExpression;
