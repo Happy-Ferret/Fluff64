@@ -7,6 +7,11 @@
 #include <QTextEdit>
 #include <QObject>
 #include <QMap>
+#include <QCompleter>
+#include <QStringListModel>
+#include "source/symboltable.h"
+#include "source/syntax.h"
+#include "source/parser.h"
 
 class QPaintEvent;
 class QResizeEvent;
@@ -18,6 +23,7 @@ class QWidget;
 class LineNumberArea;
 
 
+
 class CodeEditor : public QPlainTextEdit
 {
     Q_OBJECT
@@ -25,14 +31,18 @@ class CodeEditor : public QPlainTextEdit
 public:
     CodeEditor(QWidget *parent = 0);
 
-
-
+    void setCompleter(QCompleter *c);
+    QCompleter *completer() const;
+    QAbstractItemModel *modelFromFile(const QString& fileName);
+    QAbstractItemModel *modelFromTRSE(SymbolTable* symtab, Parser* parser);
 
     void lineNumberAreaPaintEvent(QPaintEvent *event);
     int lineNumberAreaWidth();
 
     void cycleNumberAreaPaintEvent(QPaintEvent *event);
     int cycleNumberAreaWidth();
+
+    void InitCompleter(SymbolTable* m_symTab, Parser* parser);
 
 
     QMap<int,int> m_cycles;
@@ -56,6 +66,26 @@ private slots:
 private:
     QWidget *lineNumberArea;
     QWidget *cycleNumberArea;
+
+
+ // Completer stuff
+
+protected:
+    void keyPressEvent(QKeyEvent *e) override;
+    void focusInEvent(QFocusEvent *e) override;
+
+private slots:
+    void insertCompletion(const QString &completion);
+
+private:
+    QString textUnderCursor() const;
+
+private:
+    QCompleter *c = nullptr;
+
+
+
+
 };
 
 

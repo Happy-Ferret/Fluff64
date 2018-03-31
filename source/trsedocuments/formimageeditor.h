@@ -77,12 +77,10 @@ private slots:
     void on_chkGrid_clicked(bool checked);
     void on_chkBackgroundArea_clicked(bool checked);
 
-
+    // Actually clear4
     void on_btnNew_clicked();
 
     void on_btnExportImage_clicked();
-
-    void on_b_clicked();
 
     void on_lstImages_clicked(const QModelIndex &index);
 
@@ -97,17 +95,9 @@ private slots:
     void on_btnCharsetPaste_clicked();
 
 
-    void on_btnTiff_clicked();
-
-    void on_btnSaveAs_clicked();
-
-    void on_btnSave_2_clicked();
 
 
 
-
-
-    void on_btnExpChar_clicked();
 
 
     void on_btnImportBin_clicked();

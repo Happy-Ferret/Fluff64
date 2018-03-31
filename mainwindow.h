@@ -123,6 +123,7 @@ public:
     void RefreshFileList();
 public slots:
 
+
       void OnQuit();
 
     void updateImage() {

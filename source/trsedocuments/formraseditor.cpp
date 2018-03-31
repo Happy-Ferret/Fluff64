@@ -136,7 +136,7 @@ void FormRasEditor::Build()
         ui->txtOutput->setText(text + output);
         ui->txtEditor->m_cycles =  interpreter.m_assembler->m_cycles;
         ui->txtEditor->RepaintCycles();
-
+        ui->txtEditor->InitCompleter(interpreter.m_assembler->m_symTab, &parser);
 
     }
     else {
@@ -213,7 +213,7 @@ void FormRasEditor::keyPressEvent(QKeyEvent *e)
     if (e->key()==Qt::Key_F && QApplication::keyboardModifiers() & Qt::ControlModifier) {
         ui->leSearch->setText("");
         ui->leSearch->setFocus();
-        m_searchFromPos = 0;
+        m_searchFromPos =ui->txtEditor->textCursor().position();
     }
 
     if (e->key() == Qt::Key_S &&  (QApplication::keyboardModifiers() & Qt::ControlModifier)) {
@@ -228,6 +228,9 @@ void FormRasEditor::keyPressEvent(QKeyEvent *e)
         Build();
         Run();
     }
+
+//    if (e->key() == Qt::Key_Tab && (QApplication::keyboardModifiers() & Qt
+
 
 }
 

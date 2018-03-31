@@ -175,6 +175,8 @@ void FormImageEditor::Load(QString filename)
 
     m_work.m_currentImage->m_image->BuildData(ui->tblData, m_projectIniFile->getStringList("data_header"));
 
+    ui->lblImageName->setText(m_currentFileShort);
+
 
 }
 
@@ -228,9 +230,9 @@ void FormImageEditor::UpdatePalette()
 
     ui->btnExportBin->setVisible(m_work.m_currentImage->m_image->m_supports.binarySave);
     ui->btnImportBin->setVisible(m_work.m_currentImage->m_image->m_supports.binaryLoad);
-    ui->btnLoad->setVisible(m_work.m_currentImage->m_image->m_supports.flfLoad);
-    ui->btnSave->setVisible(m_work.m_currentImage->m_image->m_supports.flfSave);
-    ui->btnExportAsm->setVisible(m_work.m_currentImage->m_image->m_supports.asmExport);
+//    ui->btnLoad->setVisible(m_work.m_currentImage->m_image->m_supports.flfLoad);
+//    ui->btnSave->setVisible(m_work.m_currentImage->m_image->m_supports.flfSave);
+//    ui->btnExportAsm->setVisible(m_work.m_currentImage->m_image->m_supports.asmExport);
 
 }
 
@@ -307,6 +309,7 @@ void FormImageEditor::on_btnNew_clicked()
 {
     m_work.m_currentImage->m_image->Clear();
     Data::data.Redraw();
+    Data::data.forceRedraw = true;
 }
 
 void FormImageEditor::on_btnExportImage_clicked()
@@ -322,9 +325,6 @@ void FormImageEditor::on_btnExportImage_clicked()
 
 }
 
-void FormImageEditor::on_b_clicked()
-{
-}
 
 void FormImageEditor::on_lstImages_clicked(const QModelIndex &index)
 {
@@ -400,7 +400,7 @@ void FormImageEditor::on_btnCharsetPaste_clicked()
 
 }
 
-void FormImageEditor::on_btnTiff_clicked()
+/*void FormImageEditor::on_btnTiff_clicked()
 {
     QString fileName = QFileDialog::getOpenFileName(this,
         tr("Open Tiled Tiff"), m_projectIniFile->getString("project_path"), tr("Image Files (*.tif *.tiff )"));
@@ -419,7 +419,9 @@ void FormImageEditor::on_btnTiff_clicked()
     UpdatePalette();
 
 }
+*/
 
+/*
 void FormImageEditor::on_btnSaveAs_clicked()
 {
 
@@ -433,6 +435,7 @@ void FormImageEditor::on_btnSaveAs_clicked()
 
 }
 
+*/
 
 
 
@@ -563,29 +566,6 @@ void FormImageEditor::UpdateLevels()
 }
 
 
-void FormImageEditor::on_btnSave_2_clicked()
-{
-
-}
-
-
-
-void FormImageEditor::on_btnExpChar_clicked()
-{
-/*    if (m_work.m_currentImage->m_imageType->type==LImage::Type::HiresBitmap ||
-        m_work.m_currentImage->m_imageType->type==LImage::Type::MultiColorBitmap
-            )
-    {
-        MultiColorImage* img = (MultiColorImage*)m_work.m_currentImage->m_image;
-        img->CalculateCharIndices();
-        qDebug() <<"Number of chars: " <<img->m_organized.count();
-        QString filename = m_iniFile->getString("project_path") + "/testchar.inc";
-        img->SaveCharRascal(filename,"test");
-        RefreshFileList();
-    }
-*/
-
-}
 
 void FormImageEditor::on_btnImportBin_clicked()
 {
@@ -622,7 +602,8 @@ void FormImageEditor::on_btnExportBin_clicked()
     QFile file(fileName);
     file.open(QIODevice::WriteOnly);
     m_work.m_currentImage->m_image->ExportBin(file);
-    file.close();
+    if (file.isOpen())
+        file.close();
 
   //  fileName.remove(".bin");
 

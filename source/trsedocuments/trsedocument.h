@@ -36,6 +36,7 @@ public:
         m_updateThread = t;
         m_iniFile = ini;
         m_projectIniFile = iniProject;
+
     }
 
     virtual void Destroy() = 0;

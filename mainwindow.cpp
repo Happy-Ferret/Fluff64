@@ -212,6 +212,9 @@ void MainWindow::RefreshFileList()
 
 }
 
+
+
+
 void MainWindow::OnQuit()
 {
     m_iniFile.setVec("splitpos", QVector3D(ui->splitter->sizes()[0],ui->splitter->sizes()[1],0));

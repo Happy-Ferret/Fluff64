@@ -204,3 +204,5 @@ DEPENDPATH += $$PWD/../LeLib/lib/libtiff
 
 }
 # TIFF END INCLUDES
+
+DISTFILES +=

@@ -47,10 +47,71 @@
        </item>
       </layout>
      </item>
+     <item row="1" column="0">
+      <widget class="QGroupBox" name="groupBox">
+       <property name="title">
+        <string/>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_4">
+        <item row="0" column="0">
+         <widget class="QLabel" name="lblImage">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="autoFillBackground">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="scaledContents">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+       <widget class="QLabel" name="lblGrid">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="geometry">
+         <rect>
+          <x>12</x>
+          <y>12</y>
+          <width>791</width>
+          <height>531</height>
+         </rect>
+        </property>
+        <property name="autoFillBackground">
+         <bool>false</bool>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="scaledContents">
+         <bool>true</bool>
+        </property>
+       </widget>
+       <zorder>lblImage</zorder>
+       <zorder>lblGrid</zorder>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QLabel" name="lblImageName">
+       <property name="font">
+        <font>
+         <pointsize>14</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Image Name</string>
+       </property>
+      </widget>
+     </item>
      <item row="1" column="1">
       <widget class="QTabWidget" name="tabWidget_2">
        <property name="currentIndex">
-        <number>2</number>
+        <number>0</number>
        </property>
        <widget class="QWidget" name="tab_2">
         <attribute name="title">
@@ -83,64 +144,18 @@
         <widget class="QWidget" name="gridLayoutWidget_7">
          <property name="geometry">
           <rect>
-           <x>190</x>
-           <y>220</y>
+           <x>170</x>
+           <y>20</y>
            <width>195</width>
            <height>205</height>
           </rect>
          </property>
-         <layout class="QGridLayout" name="gridLayout_2" rowstretch="0,0,0,0,0,0,0" columnstretch="0,0">
-          <item row="5" column="0">
-           <widget class="QPushButton" name="btnExportAsm">
-            <property name="text">
-             <string>Export Asm</string>
-            </property>
-           </widget>
-          </item>
-          <item row="6" column="0">
-           <widget class="QPushButton" name="btnExportImage">
-            <property name="text">
-             <string>Export image</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QPushButton" name="btnLoad">
-            <property name="text">
-             <string>Load</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="0">
-           <widget class="QPushButton" name="btnSave">
-            <property name="text">
-             <string>Save</string>
-            </property>
-           </widget>
-          </item>
+         <layout class="QGridLayout" name="gridLayout_2" rowstretch="0,0,0,0" columnstretch="0,0">
           <item row="3" column="1">
-           <widget class="QPushButton" name="b">
-            <property name="text">
-             <string>New</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QPushButton" name="btnImport">
-            <property name="text">
-             <string>Import image</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="0">
-           <widget class="QPushButton" name="btnSaveAs">
-            <property name="text">
-             <string>Save As</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="1">
            <widget class="QPushButton" name="btnNew">
+            <property name="toolTip">
+             <string>Clear this image</string>
+            </property>
             <property name="text">
              <string>Clear</string>
             </property>
@@ -148,29 +163,41 @@
           </item>
           <item row="2" column="0">
            <widget class="QPushButton" name="btnImportBin">
+            <property name="toolTip">
+             <string>Import binary data (from CBM PRG studio etc). Plain C64 binary format.</string>
+            </property>
             <property name="text">
              <string>Import bin</string>
             </property>
            </widget>
           </item>
-          <item row="5" column="1">
-           <widget class="QPushButton" name="btnTiff">
-            <property name="text">
-             <string>Load Tiff</string>
-            </property>
-           </widget>
-          </item>
           <item row="2" column="1">
            <widget class="QPushButton" name="btnExportBin">
+            <property name="toolTip">
+             <string>Export to C64 binary format (or CBM PRG Studio)</string>
+            </property>
             <property name="text">
              <string>Export bin</string>
             </property>
            </widget>
           </item>
-          <item row="6" column="1">
-           <widget class="QPushButton" name="btnExpChar">
+          <item row="0" column="1">
+           <widget class="QPushButton" name="btnExportImage">
+            <property name="toolTip">
+             <string>Export this image as a png/jpg</string>
+            </property>
             <property name="text">
-             <string>Export Char</string>
+             <string>Export image</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QPushButton" name="btnImport">
+            <property name="toolTip">
+             <string>Imports a png/jpg into a c64 image of any type</string>
+            </property>
+            <property name="text">
+             <string>Import image</string>
             </property>
            </widget>
           </item>
@@ -213,6 +240,9 @@
             <height>41</height>
            </rect>
           </property>
+          <property name="toolTip">
+           <string>General background color. </string>
+          </property>
          </widget>
          <widget class="QComboBox" name="cmbBorderMain_3">
           <property name="geometry">
@@ -222,6 +252,9 @@
             <width>61</width>
             <height>41</height>
            </rect>
+          </property>
+          <property name="toolTip">
+           <string/>
           </property>
          </widget>
          <widget class="QLabel" name="label_10">
@@ -242,12 +275,15 @@
            <rect>
             <x>90</x>
             <y>90</y>
-            <width>55</width>
+            <width>61</width>
             <height>16</height>
            </rect>
           </property>
+          <property name="toolTip">
+           <string>Foreground color. Only used for full-screen multicolor images.</string>
+          </property>
           <property name="text">
-           <string>Border</string>
+           <string>Foreground</string>
           </property>
          </widget>
          <widget class="QComboBox" name="cmbMC2">
@@ -258,6 +294,9 @@
             <width>61</width>
             <height>41</height>
            </rect>
+          </property>
+          <property name="toolTip">
+           <string>Set multicolor #2 (charsets, sprites)</string>
           </property>
          </widget>
          <widget class="QLabel" name="label_13">
@@ -295,6 +334,9 @@
             <height>41</height>
            </rect>
           </property>
+          <property name="toolTip">
+           <string>Set multicolor #1 (charsets, sprites)</string>
+          </property>
          </widget>
         </widget>
        </widget>
@@ -310,6 +352,9 @@
            </item>
            <item row="0" column="0">
             <widget class="QPushButton" name="btnLoadCharmap">
+             <property name="toolTip">
+              <string>Load a charmap to use in a level editor</string>
+             </property>
              <property name="text">
               <string>Load Charmap</string>
              </property>
@@ -406,67 +451,6 @@
          </item>
         </layout>
        </widget>
-      </widget>
-     </item>
-     <item row="0" column="0">
-      <widget class="QLabel" name="lblImageName">
-       <property name="font">
-        <font>
-         <pointsize>14</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>Image Name</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="0">
-      <widget class="QGroupBox" name="groupBox">
-       <property name="title">
-        <string/>
-       </property>
-       <layout class="QGridLayout" name="gridLayout_4">
-        <item row="0" column="0">
-         <widget class="QLabel" name="lblImage">
-          <property name="enabled">
-           <bool>true</bool>
-          </property>
-          <property name="autoFillBackground">
-           <bool>false</bool>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-          <property name="scaledContents">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-       </layout>
-       <widget class="QLabel" name="lblGrid">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="geometry">
-         <rect>
-          <x>12</x>
-          <y>12</y>
-          <width>791</width>
-          <height>531</height>
-         </rect>
-        </property>
-        <property name="autoFillBackground">
-         <bool>false</bool>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-        <property name="scaledContents">
-         <bool>true</bool>
-        </property>
-       </widget>
-       <zorder>lblImage</zorder>
-       <zorder>lblGrid</zorder>
       </widget>
      </item>
     </layout>
