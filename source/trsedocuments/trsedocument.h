@@ -23,6 +23,7 @@ public:
 
     virtual void Save(QString filename) {}
     virtual void Load(QString filename) {}
+    virtual void AutoFormat() {}
     void SaveCurrent() {
         if (m_currentSourceFile=="") {
             Data::data.requestSaveAs = true;
@@ -30,6 +31,10 @@ public:
         Save(m_currentSourceFile);
         Data::data.blink = true;
     }
+    virtual void Build() {}
+    virtual void Run() {}
+
+    virtual void UpdateFromIni() {}
     virtual void Init() {}
     virtual void UpdateColors() { }
     virtual void InitDocument(WorkerThread* t, CIniFile* ini, CIniFile* iniProject) {

@@ -33,6 +33,25 @@ void Messages::InitMessages()
     m_messages[NO_EMULATOR] = Message(NO_EMULATOR, Message::Error,
                                       "You need to download a c64 emulator (such as Vice) and specify the location in the TRSE settings panel.");
 
+    m_messages[NO_PROJECT] = Message(NO_PROJECT, Message::Error,
+                                      "You need to open a project in order to create a new file.");
+
+    m_messages[CHARSET_WARNING] = Message(CHARSET_WARNING, Message::Msg,
+                                      "In order to display anything in the level editor, you first need to load and set a (binary) charset from the <b>charset</b> tab.");
+
+    m_messages[ALPHA_WARNING] = Message(ALPHA_WARNING, Message::Msg,
+                                      "Ah. Hi there! <br><br>Welcome to this pre-pre-alpha release of Turbo Rascal Syntax Error. However, be warned: "
+                                      "this version is probably riddled with bugs and will occasionally crash. Not really meant for production. "
+                                      "For now, open the tutorial 1-10 project located in the parent directory and play around. <br> "
+                                      "<br> "
+                                      "<b>A fair warning:</b><br>"
+                                      "In the following version, the tutorials will probably be overhauled. So, if you do create your own project, please remember "
+                                      "to place it in a completely separate directory from the TRSE directory, or everything will be overwritten with subsequent updates.<br>"
+                                      "<br>"
+                                      "If there are bugs with the updater, you can ignore it by just running <b>bin&#92;trse.exe</b><br><br>"
+                                      "Thank you so much for trying out this pre-pre-alpha release of the TRSE suite! Remember to report any bugs to <b>generalgrapefruit@lemonspawn.com</b>.");
+
+
 }
 void Messages::DisplayMessage(int message)
 {

@@ -12,6 +12,7 @@ class DialogTRSESettings : public QDialog
 {
     Q_OBJECT
 
+
 public:
     explicit DialogTRSESettings(QWidget *parent = 0);
 

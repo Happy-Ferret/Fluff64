@@ -40,6 +40,9 @@ public:
     int MEMORY_OVERLAP_ERROR = 1;
     int NO_DASM = 2;
     int NO_EMULATOR = 3;
+    int NO_PROJECT = 4;
+    int ALPHA_WARNING = 5;
+    int CHARSET_WARNING = 6;
 
     QMap<int, Message> m_messages;
     CIniFile* m_iniFile;

@@ -29,13 +29,23 @@ void DialogTRSESettings::FillFromIni()
     ui->cmbTheme->addItems(washed);
     ui->cmbTheme->setCurrentText(m_ini->getString("theme").split(".")[0]);
 
+    ui->leFontSize->setText(QString::number((int)m_ini->getdouble("font_size")));
+    ui->leTabWidth->setText(QString::number((int)m_ini->getdouble("tab_width")));
+
+
+
 }
+
 
 void DialogTRSESettings::FillToIni()
 {
     m_ini->setString("dasm", ui->leDasm->text());
     m_ini->setString("emulator", ui->leEmulator->text());
     m_ini->setString("theme", ui->cmbTheme->currentText() + ".ini");
+
+    m_ini->setFloat("font_size", ui->leFontSize->text().toInt());
+    m_ini->setFloat("tab_width", ui->leTabWidth->text().toInt());
+
 }
 
 DialogTRSESettings::~DialogTRSESettings()

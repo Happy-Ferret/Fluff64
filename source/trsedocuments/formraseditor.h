@@ -6,6 +6,10 @@
 #include "source/PmmEdit/highlighter.h"
 #include "source/PmmEdit/codeeditor.h"
 #include "source/messages.h"
+#include "source/lexer.h"
+#include "source/parser.h"
+#include "source/interpreter.h"
+#include <QElapsedTimer>
 
 namespace Ui {
     class FormRasEditor;
@@ -19,7 +23,13 @@ public:
     explicit FormRasEditor(QWidget *parent = 0);
     ~FormRasEditor();
     Highlighter* highlighter = nullptr;
+    QFont m_font;
 
+    Interpreter interpreter;
+    Parser parser;
+    Lexer lexer;
+    QString filename;
+    QElapsedTimer timer;
 
     int m_searchFromPos = 0;
     int m_currentFromPos = 0;
@@ -28,14 +38,18 @@ public:
     static void ExecutePrg(QString fileName, QString emulator);
     void InitDocument(WorkerThread *t, CIniFile *ini, CIniFile* iniProject) override;
     void setupEditor();
-    void Build();
+    void Build() override;
     void Setup();
-    void Run();
+    void Run() override;
     void SetLights();
     void SetText(QString s);
     void SetupHighlighter();
     void SearchInSource();
     void UpdateColors() override;
+    void UpdateFromIni() override;
+    void AutoFormat() override;
+    bool BuildStep();
+
     void Save(QString filename) override;
     void Load(QString filename) override;
     void wheelEvent(QWheelEvent *event) override;

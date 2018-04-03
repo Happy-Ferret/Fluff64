@@ -3,9 +3,6 @@
 #include <QProcess>
 #include "source/errorhandler.h"
 #include <QElapsedTimer>
-#include "source/lexer.h"
-#include "source/parser.h"
-#include "source/interpreter.h"
 #include "source/util/util.h"
 
 
@@ -45,52 +42,23 @@ void FormRasEditor::InitDocument(WorkerThread *t, CIniFile *ini, CIniFile* pro)
 
 void FormRasEditor::setupEditor()
 {
-    QFont font;
-    font.setFamily("Courier");
-    font.setFixedPitch(true);
-    font.setPointSize(12);
-    ui->txtEditor->setFont(font);
+    m_font.setFamily("Courier");
+    m_font.setFixedPitch(true);
+    m_font.setPointSize(m_iniFile->getdouble("font_size"));
     //ui->txtEditor->setTextColor(QColor(220,210,190));
     SetupHighlighter();
 //    highlighter->Save("dark_standard.ini");
 
-    QFontMetrics metrics(font);
-    ui->txtEditor->setTabStopWidth(m_iniFile->getInt("tab_size") * metrics.width(' '));
+    UpdateFromIni();
+//    ui->txtEditor->setTabStopWidth(m_iniFile->getInt("tab_width") * metrics.width(' '));
 
 }
 
 void FormRasEditor::Build()
 {
-    if (!m_currentSourceFile.toLower().endsWith(".ras")) {
-        ui->txtOutput->setText("Turbo Rascal SE can only compile .ras files");
-        m_buildSuccess = false;
-        return;
-    }
 
-
-    QString text = ui->txtEditor->toPlainText();
-    ErrorHandler::e.m_level = ErrorHandler::e.ERROR_ONLY;
-    ErrorHandler::e.m_teOut = "";
-    ErrorHandler::e.exitOnError = false;
-    QStringList lst = text.split("\n");
- //   text = text.replace("\n","");
-//    SymbolTable::isInitialized = true;
-
-    QElapsedTimer timer;
-    timer.start();
-    Lexer lexer = Lexer(text, lst, m_projectIniFile->getString("project_path"));
-    Parser parser = Parser(&lexer);
-    Interpreter interpreter = Interpreter(&parser);
-    interpreter.Parse();
-//    interpreter.Interpret();
-
-    //interpreter.Build(Interpreter::PASCAL);
-    //interpreter.SaveBuild(m_outputFilename+".pmm");
-
-    QString path = m_projectIniFile->getString("project_path") + "/";
-    QString filename = m_currentSourceFile.split(".")[0];
-
-    if (interpreter.Build(Interpreter::MOS6502, path)) {
+    if (BuildStep())
+        {
         interpreter.SaveBuild(filename + ".asm");
         QString text ="Build <b><font color=\"#90FF90\">Successful</font>!</b> ( "+  (Util::MilisecondToString(timer.elapsed())) +")<br>";
         text+="Assembler file saved to : <b>" + filename+".asm</b><br>";
@@ -210,6 +178,9 @@ void FormRasEditor::keyPressEvent(QKeyEvent *e)
     if (e->key()==Qt::Key_W && (QApplication::keyboardModifiers() & Qt::ControlModifier))
         Data::data.requestCloseWindow = true;
 
+    if (e->key()==Qt::Key_K && (QApplication::keyboardModifiers() & Qt::ControlModifier))
+        AutoFormat();
+
     if (e->key()==Qt::Key_F && QApplication::keyboardModifiers() & Qt::ControlModifier) {
         ui->leSearch->setText("");
         ui->leSearch->setFocus();
@@ -251,6 +222,124 @@ void FormRasEditor::SearchInSource()
 void FormRasEditor::UpdateColors()
 {
     SetupHighlighter();
+}
+
+void FormRasEditor::UpdateFromIni()
+{
+
+    QFontMetrics metrics(m_font);
+
+    m_font.setPointSize(m_iniFile->getdouble("font_size"));
+    ui->txtEditor->setFont(m_font);
+    ui->txtEditor->setTabStopWidth(m_iniFile->getInt("tab_width") * metrics.width(' '));
+
+
+}
+
+void FormRasEditor::AutoFormat()
+{
+    if (!BuildStep())
+        return;
+
+    int pos = ui->txtEditor->textCursor().position();
+    QStringList source = ui->txtEditor->document()->toPlainText().split("\n");
+    int ln = 0;
+    int curBlock = 0;
+    int nextBlock = 0;
+    int singleLine = 0;
+    QString outSource = "";
+    bool varBlock = false;
+    for (QString& s:source) {
+        QString nxt = "";
+        if (ln+1<m_currentSourceFile.count()-1)
+            nxt = source[ln+1];
+        nxt=nxt.toLower();
+
+        int add = singleLine;
+        s=s.trimmed();
+        nextBlock = curBlock;
+        QString k = s.toLower();
+        if (k.startsWith("procedure")) {
+            curBlock = 0;
+            nextBlock = 0;
+        }
+
+        if (varBlock)
+            if (k.startsWith("procedure") || k.startsWith("begin")) {
+                varBlock = false;
+                curBlock = 0;
+                nextBlock = 0;
+            }
+
+
+        if (varBlock) {
+            curBlock=1;
+            nextBlock = 1;
+        }
+        if (k=="var")
+            varBlock = true;
+
+        if (k.contains("begin"))
+            nextBlock++;
+        if (k.startsWith("end")) {
+            curBlock--;
+            nextBlock = curBlock;
+        }
+        if (k.contains("if ") || k.contains("while ") || k.contains("for ") || k.contains("else")) {
+            if (!k.contains("begin") && !nxt.contains("begin"))
+                if (!k.endsWith(";") )
+                singleLine = 1;
+        }
+        for (int i=0;i<curBlock+add;i++)
+            s.insert(0,"\t");
+
+        if (add!=0) {
+            curBlock--;
+            singleLine = 0;
+        }
+
+        ln++;
+        outSource+=s+"\n";
+        curBlock = nextBlock;
+    }
+    SetText(outSource);
+    QTextCursor tc = ui->txtEditor->textCursor();
+    tc.setPosition(pos);
+    ui->txtEditor->setTextCursor(tc);
+
+}
+
+bool FormRasEditor::BuildStep()
+{
+    if (!m_currentSourceFile.toLower().endsWith(".ras")) {
+        ui->txtOutput->setText("Turbo Rascal SE can only compile .ras files");
+        m_buildSuccess = false;
+        return false;
+    }
+
+
+    QString text = ui->txtEditor->toPlainText();
+    ErrorHandler::e.m_level = ErrorHandler::e.ERROR_ONLY;
+    ErrorHandler::e.m_teOut = "";
+    ErrorHandler::e.exitOnError = false;
+    QStringList lst = text.split("\n");
+ //   text = text.replace("\n","");
+//    SymbolTable::isInitialized = true;
+
+    timer.start();
+    lexer = Lexer(text, lst, m_projectIniFile->getString("project_path"));
+    parser = Parser(&lexer);
+    interpreter = Interpreter(&parser);
+    interpreter.Parse();
+//    interpreter.Interpret();
+
+    //interpreter.Build(Interpreter::PASCAL);
+    //interpreter.SaveBuild(m_outputFilename+".pmm");
+
+    QString path = m_projectIniFile->getString("project_path") + "/";
+    filename = m_currentSourceFile.split(".")[0];
+
+    return interpreter.Build(Interpreter::MOS6502, path);
 }
 
 void FormRasEditor::Save(QString filename)

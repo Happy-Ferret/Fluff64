@@ -4,7 +4,7 @@
 #include <cmath>
 #include <QPushButton>
 #include "source/limage/charsetimage.h"
-
+#include "source/messages.h"
 
 FormImageEditor::FormImageEditor(QWidget *parent) :
     TRSEDocument(parent),
@@ -442,6 +442,11 @@ void FormImageEditor::on_btnSaveAs_clicked()
 void FormImageEditor::updateCharSet()
 {
     CharsetImage* charmap = m_work.m_currentImage->m_image->getCharset();
+    ImageLevelEditor* le = dynamic_cast<ImageLevelEditor*>(m_work.m_currentImage->m_image);
+    if (le!=nullptr && charmap==nullptr) {
+        Messages::messages.DisplayMessage(Messages::messages.CHARSET_WARNING);
+        return;
+    }
     if (charmap == nullptr)
         return;
 
@@ -555,6 +560,7 @@ void FormImageEditor::UpdateLevels()
                 le->SetLevel(QPoint(i,j));
                 m_work.m_currentImage->m_image->BuildData(ui->tblData,m_projectIniFile->getStringList("data_header"));
                 Data::data.Redraw();
+                Data::data.forceRedraw = true;
             }
 
             );

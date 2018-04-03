@@ -11,6 +11,7 @@
 #include "source/util/util.h"
 #include <QWheelEvent>
 #include "dialognewimage.h"
+#include "source/dialogabout.h"
 #include "source/limage/limageio.h"
 #include <QMessageBox>
 
@@ -45,12 +46,21 @@ MainWindow::MainWindow(QWidget *parent) :
 
   //  ui->centralWidget->setLayout(new QGridLayout());
 
-    m_iniFile.Load(m_iniFileName);
+    if (QFile::exists(m_iniFileName))
+       m_iniFile.Load(m_iniFileName);
+    else
+    {
+        m_iniFile.setFloat("font_size", 12);
+        m_iniFile.setFloat("tab_width", 4);
+        m_iniFile.setString("theme", "dark_standard.ini");
+        m_iniFile.filename = m_iniFileName;
+    }
     QPoint p = ui->splitter->pos();
 //    p.setX();
     QVector3D sp = m_iniFile.getVec("splitpos");
     if (sp.length()!=0)
         ui->splitter->setSizes(QList<int>() << sp.x() << sp.y());
+
 
     Messages::messages.LoadFromCIni(&m_iniFile);
     UpdateRecentProjects();
@@ -69,6 +79,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->splitter->setStretchFactor(0,10);
     ui->splitter->setStretchFactor(1,100);
+
+
+    Messages::messages.DisplayMessage(Messages::messages.ALPHA_WARNING);
 
 #ifndef USE_LIBTIFF
     //ui->btnTiff->setVisible(false);
@@ -359,6 +372,13 @@ void MainWindow::on_btnSave_3_clicked()
 
 void MainWindow::on_actionRas_source_file_triggered()
 {
+    if (m_currentProject.m_filename=="") {
+        Messages::messages.DisplayMessage(Messages::messages.NO_PROJECT);
+        return;
+    }
+
+
+
     QFileDialog dialog;
     dialog.setFileMode(QFileDialog::AnyFile);
     QString f = "Ras Files (*.ras)";
@@ -438,6 +458,13 @@ QString MainWindow::FindPathInProjectFolders(const QModelIndex &index)
 
 void MainWindow::on_actionImage_triggered()
 {
+
+    if (m_currentProject.m_filename=="") {
+        Messages::messages.DisplayMessage(Messages::messages.NO_PROJECT);
+        return;
+    }
+
+
     FormImageEditor* editor = new FormImageEditor(this);
     DialogNewImage* dNewFile = new DialogNewImage(this);
     dNewFile->Initialize(editor->m_work.getImageTypes());
@@ -486,8 +513,11 @@ void MainWindow::on_actionTRSE_Settings_triggered()
 
     dSettings->exec();
 
-    for (TRSEDocument* doc : m_documents)
+    for (TRSEDocument* doc : m_documents) {
         doc->UpdateColors();
+        doc->UpdateFromIni();
+    }
+
 
     delete dSettings;
 
@@ -562,4 +592,30 @@ void MainWindow::on_lstRecentProjects_itemDoubleClicked(QListWidgetItem *item)
     QString projectFile = item->data(Qt::UserRole).toString();
     LoadProject(projectFile);
 
+}
+
+void MainWindow::on_btnBuild_3_clicked()
+{
+    if (m_currentDoc!=nullptr)
+        m_currentDoc->Build();
+}
+
+void MainWindow::on_btnBuild_4_clicked()
+{
+    if (m_currentDoc!=nullptr)
+        m_currentDoc->Run();
+
+}
+
+void MainWindow::on_actionAbout_triggered()
+{
+    DialogAbout* da = new DialogAbout();
+    da->exec();
+    delete da;
+}
+
+void MainWindow::on_actionAuto_ident_triggered()
+{
+    if (m_currentDoc!=nullptr)
+        m_currentDoc->AutoFormat();
 }

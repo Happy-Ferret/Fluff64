@@ -42,6 +42,8 @@ public:
     void cycleNumberAreaPaintEvent(QPaintEvent *event);
     int cycleNumberAreaWidth();
 
+    void FixBackTab(QKeyEvent* e);
+
     void InitCompleter(SymbolTable* m_symTab, Parser* parser);
 
 

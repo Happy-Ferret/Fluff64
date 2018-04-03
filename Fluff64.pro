@@ -83,7 +83,8 @@ SOURCES += main.cpp\
     source/trsedocuments/formimageeditor.cpp \
     source/dialogtrsesettings.cpp \
     source/dialogmessage.cpp \
-    source/messages.cpp
+    source/messages.cpp \
+    source/dialogabout.cpp
 
 
 HEADERS  += mainwindow.h \
@@ -137,7 +138,8 @@ HEADERS  += mainwindow.h \
     source/trsedocuments/formimageeditor.h \
     source/dialogtrsesettings.h \
     source/dialogmessage.h \
-    source/messages.h
+    source/messages.h \
+    source/dialogabout.h
 
 FORMS    += mainwindow.ui \
     dialognewimage.ui \
@@ -145,7 +147,8 @@ FORMS    += mainwindow.ui \
     source/trsedocuments/formraseditor.ui \
     source/trsedocuments/formimageeditor.ui \
     source/dialogtrsesettings.ui \
-    source/dialogmessage.ui
+    source/dialogmessage.ui \
+    source/dialogabout.ui
 
 RESOURCES += \
     resources.qrc
@@ -205,4 +208,5 @@ DEPENDPATH += $$PWD/../LeLib/lib/libtiff
 }
 # TIFF END INCLUDES
 
-DISTFILES +=
+DISTFILES += \
+    resources/text/about.txt

@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>Turbo Rascal Syntax error, &quot;;&quot; expected but &quot;BEGIN&quot; Version 0.01</string>
+   <string>Turbo Rascal Syntax error, &quot;;&quot; expected but &quot;BEGIN&quot; Version 0.001 Pre-pre-alpha</string>
   </property>
   <property name="autoFillBackground">
    <bool>true</bool>
@@ -62,21 +62,21 @@
             <item row="0" column="1">
              <widget class="QPushButton" name="btnBuild_3">
               <property name="text">
-               <string>Build (C-b)</string>
+               <string>Build (c-b)</string>
               </property>
              </widget>
             </item>
             <item row="0" column="0">
              <widget class="QPushButton" name="btnSave_3">
               <property name="text">
-               <string>Save (C-s)</string>
+               <string>Save (c-s)</string>
               </property>
              </widget>
             </item>
             <item row="1" column="0">
              <widget class="QPushButton" name="btnBuild_4">
               <property name="text">
-               <string>Run</string>
+               <string>Run (c-r)</string>
               </property>
              </widget>
             </item>
@@ -243,17 +243,23 @@
   </action>
   <action name="actionSearch">
    <property name="text">
-    <string>Search</string>
+    <string>Search (c-f)</string>
    </property>
   </action>
   <action name="actionReplace">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Replace</string>
    </property>
   </action>
   <action name="actionAuto_ident">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
    <property name="text">
-    <string>Auto-ident</string>
+    <string>Autoformat (c-k)</string>
    </property>
   </action>
   <action name="actionDelete_file">

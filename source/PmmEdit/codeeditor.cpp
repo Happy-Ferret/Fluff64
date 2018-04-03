@@ -133,6 +133,42 @@ int CodeEditor::cycleNumberAreaWidth()
     return 80;
 }
 
+void CodeEditor::FixBackTab(QKeyEvent *e)
+{
+
+    QTextCursor cur = textCursor();
+    int pos = cur.position();
+    int anchor = cur.anchor();
+    cur.setPosition(pos);
+
+    cur.setPosition(pos-1,QTextCursor::KeepAnchor);
+    setTextCursor(cur);
+    cur = textCursor();
+
+
+    if (cur.selectedText()=="\t") {
+        cur.removeSelectedText();
+        cur.setPosition(anchor-1);
+        cur.setPosition(pos-1,QTextCursor::KeepAnchor);
+    }
+    else {
+        cur.setPosition(anchor) ;
+        cur.setPosition(anchor-1,QTextCursor::KeepAnchor);
+        if (cur.selectedText() == "\t") {
+            cur.removeSelectedText();
+            cur.setPosition(anchor-1);
+            cur.setPosition(pos-1,QTextCursor::KeepAnchor);
+        }
+        else {
+
+// Its not a tab, so reset the selection to what it was
+            cur.setPosition(anchor);
+            cur.setPosition(pos,QTextCursor::KeepAnchor);
+        }
+    }
+    setTextCursor(cur);
+
+}
 void CodeEditor::InitCompleter(SymbolTable* symTab, Parser* parser)
 {
 
@@ -165,6 +201,17 @@ void CodeEditor::updateCycleNumberAreaWidth(int /* newBlockCount */)
 
 void CodeEditor::keyPressEvent(QKeyEvent *e)
 {
+
+//    if (Qt::Key_Tab && (e->modifiers() & Qt::ShiftModifier))
+    if (e->key() == Qt::Key_Backtab) {
+        FixBackTab(e);
+//        QPlainTextEdit::keyPressEvent(e);
+//        return;
+//        e->ignore();
+      //  return;
+    }
+
+
     if (c && c->popup()->isVisible()) {
             // The following keys are forwarded by the completer to the widget
            switch (e->key()) {
@@ -172,6 +219,7 @@ void CodeEditor::keyPressEvent(QKeyEvent *e)
            case Qt::Key_Return:
            case Qt::Key_Escape:
            case Qt::Key_Tab:
+
            case Qt::Key_Backtab:
                 e->ignore();
                 return; // let the completer do default behavior
@@ -179,6 +227,13 @@ void CodeEditor::keyPressEvent(QKeyEvent *e)
                break;
            }
         }
+
+
+    if (!(e->modifiers() & Qt::ControlModifier))
+    if (e->key()==Qt::Key_Tab || e->key()==Qt::Key_Backtab || e->key()==Qt::Key_Space || e->key()==Qt::Key_Backspace) {
+        QPlainTextEdit::keyPressEvent(e);
+        return;
+    }
 
         bool isShortcut = ((e->modifiers() & Qt::ControlModifier) && e->key() == Qt::Key_Space); // CTRL+E
         if (!c || !isShortcut) // do not process the shortcut when we have a completer
@@ -192,9 +247,10 @@ void CodeEditor::keyPressEvent(QKeyEvent *e)
         static QString eow("~!@#$%^&*()_+{}|:\"<>?,./;'[]\\-="); // end of word
         bool hasModifier = (e->modifiers() != Qt::NoModifier) && !ctrlOrShift;
         QString completionPrefix = textUnderCursor();
-
-
-        if (!isShortcut && (hasModifier || e->text().isEmpty()|| completionPrefix.length() < 2
+//        completionPrefix= completionPrefix.remove("\t");
+  //      completionPrefix= completionPrefix.remove(" ");
+       // qDebug() << completionPrefix;
+        if (!isShortcut && (hasModifier || e->text().isEmpty()|| completionPrefix.length() < 3
                           || eow.contains(e->text().right(1)))) {
             c->popup()->hide();
             return;

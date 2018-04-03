@@ -21,7 +21,7 @@
        <item>
         <widget class="QCheckBox" name="chkGrid">
          <property name="text">
-          <string>Grid</string>
+          <string>Grid (z)</string>
          </property>
          <property name="checked">
           <bool>true</bool>
@@ -31,10 +31,10 @@
        <item>
         <widget class="QCheckBox" name="chkBackgroundArea">
          <property name="text">
-          <string>Background area</string>
+          <string>Collision area (x)</string>
          </property>
          <property name="checked">
-          <bool>true</bool>
+          <bool>false</bool>
          </property>
         </widget>
        </item>
@@ -342,7 +342,7 @@
        </widget>
        <widget class="QWidget" name="tab_5">
         <attribute name="title">
-         <string>Charmap</string>
+         <string>Charset</string>
         </attribute>
         <layout class="QGridLayout" name="gridLayout_9">
          <item row="0" column="0">
@@ -356,7 +356,7 @@
               <string>Load a charmap to use in a level editor</string>
              </property>
              <property name="text">
-              <string>Load Charmap</string>
+              <string>Load Charset</string>
              </property>
             </widget>
            </item>
@@ -451,6 +451,13 @@
          </item>
         </layout>
        </widget>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>WSAD to move around levels and charsets</string>
+       </property>
       </widget>
      </item>
     </layout>

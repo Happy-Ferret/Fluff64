@@ -36,8 +36,14 @@ public:
     CIniFile m_ini;
     QString m_filename;
     void Load(QString projectfile) {
+        m_ini = CIniFile();
         m_ini.Load(projectfile);
         m_filename = projectfile;
+        QStringList l = m_filename.split("/");
+        l.removeLast();
+        QString path = "";
+        for (QString s: l) path+=s+"/";
+        m_ini.setString("project_path", path);
     }
     void Save() {
         m_ini.Save(m_filename);
@@ -181,6 +187,14 @@ private slots:
     void on_actionOpen_project_triggered();
 
     void on_lstRecentProjects_itemDoubleClicked(QListWidgetItem *item);
+
+    void on_btnBuild_3_clicked();
+
+    void on_btnBuild_4_clicked();
+
+    void on_actionAbout_triggered();
+
+    void on_actionAuto_ident_triggered();
 
 private:
 

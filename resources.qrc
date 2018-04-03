@@ -12,5 +12,6 @@
         <file>resources/images/creatures.png</file>
         <file>resources/images/friday.jpg</file>
         <file>resources/images/friday.png</file>
+        <file>resources/text/about.txt</file>
     </qresource>
 </RCC>
