@@ -3,5 +3,5 @@ var
    index: byte; 
 begin
 	// Super interesting!
-	writeln("hello world",#0);
+	writeln("hello world",0);
 end.

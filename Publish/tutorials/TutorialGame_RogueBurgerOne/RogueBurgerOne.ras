@@ -2,7 +2,7 @@ program Tutorial13;
 var  
 //	intro_image_color: IncBin("images/lemonspawn_color.bin", "$3000");  // $800
 	music1 : incsid("music/fliptape.sid", "2");
-
+	// 3854
 	mainChar: IncBin("charsets/charset_text.bin","$4800"); // $800 bytes
 
 	levelChar: IncBin("charsets/charset_level.bin","$5000");// $800 bytes
@@ -99,7 +99,7 @@ var
 	joystick_pressed : byte;
 	
 
-	moveSprite : array[8] of byte = (#$61,#$62,#$63,#$64,#$65, #$64,#$63,#$62); 
+	moveSprite : array[8] of byte = ($61,$62,$63,$64,$65, $64,$63,$62); 
 	
 
 
@@ -108,32 +108,42 @@ var
 //data_header =,id,x,y,life,color, spread, sx, sy, isdead, damage, ammo, sound, upgrade
 
 // Location in .flf files of entity values
-@define entity_id "#0"
-@define entity_isdead "#8"
-@define entity_damage "#9"
-@define entity_ammo "#10"
-@define entity_sound "#11"
-@define entity_upgrade "#12"
-@define entity_tag "#13"
+@define entity_id "0"
+@define entity_isdead "8"
+@define entity_damage "9"
+@define entity_ammo "10"
+@define entity_sound "11"
+@define entity_upgrade "12"
+@define entity_tag "13"
 
-@define upgrade_health_bit "#0"
-@define upgrade_ammo_bit "#1"
-@define upgrade_scroll_bit "#2"
-@define upgrade_speed_bit "#3"
+@define upgrade_health_bit "0"
+@define upgrade_ammo_bit "1"
+@define upgrade_scroll_bit "2"
+@define upgrade_speed_bit "3"
 
 // Screen writing positions
-@define screen1hi "#$44"
-@define screenmem1 "$4400"
+@define screen1hi "$44"
+@define screenmem1 "^$4400"
 
-@define screen2hi "#$04"
-@define screenmem2 "$0400"
+@define screen2hi "$04"
+@define screenmem2 "^$0400"
 
-@define charmapLevel "#$14"
-@define charmapText "#$12"
+@define charmapLevel "$14"
+@define charmapText "$12"
 
-@define clearchar "#$20"
+@define clearchar "$20"
 
-@define spritebank "#1"
+@define spritebank "1"
+
+@define playerSprite "0"
+@define bulletSprite "7"
+
+@define player_sprite_loc "$60"
+@define bullet_sprite_loc "$66"
+
+@define crashDistance "12"
+
+@define playerSpeed "2"
 
 
 
@@ -148,23 +158,27 @@ var
 
 
 /*
- Goes through all data and resets the isdead flag to 0
+   Renders a .flf level at map pos x,y
 */
+
+
+ //Goes through all data and resets the isdead flag to 0
+
 procedure ResetLevels();
 begin
-	inczp(@levelpointer, #13); // Fluff header
-	inczp(@levelpointer, #9); // Level designer header
+	inczp(@levelpointer, 13); // Fluff header
+	inczp(@levelpointer, 9); // Level designer header
 	m_rl_val := m_rl_width*m_rl_height;
 	k:=m_rl_sizex*m_rl_sizey;
 
 
-	for m_rl_j:=#0 to k do begin
+	for m_rl_j:=0 to k do begin
 			inczp(@levelpointer,m_rl_val); // Data
 			inczp(@levelpointer,m_rl_val); // Colors
-			inczp(@levelpointer,#3); // MC/BG Colors
+			inczp(@levelpointer,3); // MC/BG Colors
 			
-			for i:=#0 to m_rl_chunks do begin
-				@levelpointer[@entity_isdead]:=#0;
+			for i:=0 to m_rl_chunks do begin
+				@levelpointer[@entity_isdead]:=0;
 				inczp(@levelpointer,m_rl_chunksize);
 			end;
 //			inczp(@levelpointer,m_rl_dataSize);
@@ -173,19 +187,10 @@ begin
 
 end;
 
+
 //@include "RasLib/sprites.ras"  
 
 // Sprite 0 and 7 are reserved, so we can only have 6 entity sprites in one screen
-@define playerSprite "#0"
-@define bulletSprite "#7"
-
-@define player_sprite_loc "#$6	0"
-@define bullet_sprite_loc "#$66"
-
-@define crashDistance "#12"
-
-@define playerSpeed "#2"
-
 
 
 
@@ -195,19 +200,19 @@ begin
 	spritepos(spritex, spritey, @playerSprite);
 
 	val := joystickup+joystickdown+joystickleft+joystickright;
-	if val<>#0 then 
-		val:=#1;
+	if val<>0 then 
+		val:=1;
 
 
 	sprite1_counter:=sprite1_counter-val;
 	// Animation hits at 0 and 10
 
-	i:=sprite1_counter/#4;
+	i:=sprite1_counter/4;
 	k:=moveSprite[i];
 	setspriteloc(@playerSprite, moveSprite[i], @spritebank);
 
-	if sprite1_counter=#00 then
-		sprite1_counter := #32;
+	if sprite1_counter=00 then
+		sprite1_counter := 32;
 	
 
 
@@ -218,7 +223,7 @@ end;
 procedure pointToEntityData(pte_idx : byte);
 begin
 	zeropage5:=zeropage3;
-	for i:=#0 to pte_idx do 
+	for i:=0 to pte_idx do 
 		inczp(zeropage5, m_rl_chunksize);
 
 end;
@@ -227,14 +232,14 @@ end;
 // Prints colored text (slow, unused for now)
 Procedure PrintTextColor();
 begin
-	j:=time/#4;
-	for i:=#0 to #25 do begin
+	j:=time/4;
+	for i:=0 to 25 do begin
 
-		val := fade[(i+j)&#15];
-		$D800[i] := val;
-		$D828[i] := val;
+		val := fade[(i+j)&15];
+		poke(^$D800,i,val);
+		poke(^$D828,i,val);
 		//poke($D800, i,val );
-		//poke($D800+ #40, i, val);
+		//poke($D800+ 40, i, val);
 	end;
 
 end;
@@ -243,42 +248,42 @@ end;
 procedure PrintText();
 begin
 	// The "Rogue Burger" logo
-	for i:=#0 to #25 do begin
-		poke(@screenmem1, i, i + #120);
-		poke(@screenmem1+ #40, i, i + #160);
-		poke(@screenmem2, i, i + #120);
-		poke(@screenmem2+ #40, i, i + #160);
-		val := fade[i&#15];
-		poke($D800, i,val );
-		poke($D800+ #40, i, val);
+	for i:=0 to 25 do begin
+		poke(@screenmem1, i, i + 120);
+		poke(@screenmem1+ ^40, i, i + 160);
+		poke(@screenmem2, i, i + 120);
+		poke(@screenmem2+ ^40, i, i + 160);
+		val := fade[i&15];
+		poke(^$D800, i,val );
+		poke(^$D800+ ^40, i, val);
 	end;
-	moveto(#0, #24, #$D8);
-	for i:=#0 to #40 do 
+	moveto(0, 24, $D8);
+	for i:=0 to 40 do 
 		screenmemory[i] := RED;
 
-	moveto(#30, #1, @screen1hi);
+	moveto(30, 1, @screen1hi);
 
-	printstring("SCORE", #0, #10);
+	printstring("SCORE", 0, 10);
 
-	moveto(#1, #24, @screen1hi);
+	moveto(1, 24, @screen1hi);
 
-	printstring("LIFE", #0, #10);
+	printstring("LIFE", 0, 10);
 
-	//moveto(#30, #24, @screen1hi);
+	//moveto(30, 24, @screen1hi);
 
-//	printstring("AMMO", #0, #10);
+//	printstring("AMMO", 0, 10);
 
 end;
 
 procedure ClearText();
 begin
-	for i:=#0 to #25 do begin
+	for i:=0 to 25 do begin
 		poke(@screenmem1, i, @clearchar);
-		poke(@screenmem1+ #40, i, @clearchar);
+		poke(@screenmem1+ ^40, i, @clearchar);
 
 	end;
-	moveto(#0, #24, #$D8);
-	for i:=#0 to #40 do 
+	moveto(0, 24, $D8);
+	for i:=0 to 40 do 
 		screenmemory[i] := @clearchar;
 
 
@@ -292,63 +297,61 @@ begin
 end;
 
 
-
-
 /*
  Sets up entity data when a new level is loaded
 */
 procedure LoadEntities();
 begin
 	// levelPointer
-	val:=#1;
-	no_entities := #0;
+	val:=1;
+	no_entities := 0;
 	zeropage3:=@levelpointer;
-	while val=#1 do begin
+	while val=1 do begin
 		// Check if entity is not zero
-		if (@levelpointer[#0]<>#0 and no_entities<#5) then
+		if (@levelpointer[0]<>0 and no_entities<5) then
 		begin
-			entity_pos_x[no_entities] := @levelpointer[#1]*#4 + #10;
-			entity_pos_y[no_entities] := @levelpointer[#2]*#8+#45;
+			entity_pos_x[no_entities] := @levelpointer[1]*4 + 10;
+			entity_pos_y[no_entities] := @levelpointer[2]*8+45;
 
 			entity_curpos_x[no_entities] := entity_pos_x[no_entities];
 			entity_curpos_y[no_entities] := entity_pos_y[no_entities];
-			entity_type[no_entities] := @levelpointer[#0];
+			entity_type[no_entities] := @levelpointer[0];
 
-			entity_color[no_entities] := @levelpointer[#4];
+			entity_color[no_entities] := @levelpointer[4];
 
-			entity_pos_spread[no_entities] := @levelpointer[#5];
+			entity_pos_spread[no_entities] := @levelpointer[5];
 
-			entity_dd_x[no_entities] := #1;
-			entity_dd_y[no_entities] := #1;
+			entity_dd_x[no_entities] := 1;
+			entity_dd_y[no_entities] := 1;
 
-			entity_framecounter_x[no_entities] := @levelpointer[#6];;
-			entity_framecounter_y[no_entities] := @levelpointer[#7];;
+			entity_framecounter_x[no_entities] := @levelpointer[6];;
+			entity_framecounter_y[no_entities] := @levelpointer[7];;
 
-			entity_framecounter_maxx[no_entities] := @levelpointer[#6];;
-			entity_framecounter_maxy[no_entities] := @levelpointer[#7];;
+			entity_framecounter_maxx[no_entities] := @levelpointer[6];;
+			entity_framecounter_maxy[no_entities] := @levelpointer[7];;
 
-			entity_health[no_entities] := @levelpointer[#3];;
+			entity_health[no_entities] := @levelpointer[3];;
 
-			if @levelpointer[@entity_isdead]=#1 then 
-				entity_type[no_entities] := #0;
+			if @levelpointer[@entity_isdead]=1 then 
+				entity_type[no_entities] := 0;
 
-			entity_pickup[no_entities]:=#0;
+			entity_pickup[no_entities]:=0;
 			// Positive stuff! For use in blinking!
-			if @levelpointer[@entity_ammo]<>#0 then
-				entity_pickup[no_entities]:=#1;
-			if @levelpointer[@entity_damage]>#128 then
-				entity_pickup[no_entities]:=#1;
-			if @levelpointer[@entity_upgrade]<>#0 then
-				entity_pickup[no_entities]:=#1;
+			if @levelpointer[@entity_ammo]<>0 then
+				entity_pickup[no_entities]:=1;
+			if @levelpointer[@entity_damage]>128 then
+				entity_pickup[no_entities]:=1;
+			if @levelpointer[@entity_upgrade]<>0 then
+				entity_pickup[no_entities]:=1;
 			
 
-			entity_hurt[no_entities]:=#0;
+			entity_hurt[no_entities]:=0;
 
-			no_entities:=no_entities+#1;
+			no_entities:=no_entities+1;
 			
 		end
 		else
-			val:=#0; // break loop
+			val:=0; // break loop
 		inczp(@levelpointer, m_rl_chunksize);
 
 	end;
@@ -361,22 +364,22 @@ procedure InitEntities();
 begin
 	// Clear sprite bitmask
 	zeropage5:=zeropage3;
-	poke(SPRITE_BITMASK, #0, #1);
-	poke(SPRITE_STRETCH_X, #0, #%00000000);
-	poke(SPRITE_STRETCH_Y, #0, #%00000000);
-	for val:=#0 to no_entities do begin
+	poke(SPRITE_BITMASK, 0, 1);
+	poke(SPRITE_STRETCH_X, 0, %00000000);
+	poke(SPRITE_STRETCH_Y, 0, %00000000);
+	for val:=0 to no_entities do begin
 	
-		if entity_type[val]<>#0 then begin
+		if entity_type[val]<>0 then begin
 			pointToEntityData(val);
-			i:=val+#1;
+			i:=val+1;
 			j:=	entity_sprites[ entity_type[val] ];
 			SetSpriteLoc(i, j ,@spritebank);
-			toggleBit(SPRITE_BITMASK, i, #1);
+			toggleBit(SPRITE_BITMASK, i, 1);
 			poke(SPRITE_COLOR,i, entity_color[val]);
-			j:=getbit(zeropage5[@entity_tag], #0);
-			if j=#0 then begin
-				togglebit(SPRITE_STRETCH_X, i, #1);
-				togglebit(SPRITE_STRETCH_Y, i, #1);
+			j:=getbit(zeropage5[@entity_tag], 0);
+			if j=0 then begin
+				togglebit(SPRITE_STRETCH_X, i, 1);
+				togglebit(SPRITE_STRETCH_Y, i, 1);
 
 			end;
 
@@ -387,7 +390,6 @@ begin
 	end;
 
 end;
-
 /*
  Called for each frame: Moves entities according to definition, aggressive if hurt
  
@@ -397,34 +399,34 @@ begin
 
 	// Move all
 	
-		for i:=#0 to no_entities do begin
+		for i:=0 to no_entities do begin
 			
 								
-			entity_framecounter_x[i]:= entity_framecounter_x[i] - #1;
-			if entity_framecounter_x[i]=#0 then begin
+			entity_framecounter_x[i]:= entity_framecounter_x[i] - 1;
+			if entity_framecounter_x[i]=0 then begin
 				entity_framecounter_x[i]:=entity_framecounter_maxx[i];
 
-				if entity_hurt[i]=#0 then begin // Passive movement
+				if entity_hurt[i]=0 then begin // Passive movement
 					entity_curpos_x[i] := entity_curpos_x[i] + entity_dd_x[i];
 
 					val := entity_curpos_x[i] - entity_pos_x[i];
 					j:=entity_pos_spread[i];
 					if val>j then
-						entity_dd_x[i] := #0 - entity_dd_x[i];
+						entity_dd_x[i] := 0 - entity_dd_x[i];
 				end
 				else begin // Aggressive behaviour
-					val:=spritex/#2;
+					val:=spritex/2;
 					val:=val-entity_curpos_x[i];
-					if val<#128 then val:=#1 else val:=#255;
+					if val<128 then val:=1 else val:=255;
 					entity_curpos_x[i] := entity_curpos_x[i] + val;
 				end;
 			end;
 	
-			entity_framecounter_y[i] := entity_framecounter_y[i] - #1;
-			if entity_framecounter_y[i]=#0 then begin
+			entity_framecounter_y[i] := entity_framecounter_y[i] - 1;
+			if entity_framecounter_y[i]=0 then begin
 				entity_framecounter_y[i]:=entity_framecounter_maxy[i];
 
-				if entity_hurt[i]=#0 then begin // Passive
+				if entity_hurt[i]=0 then begin // Passive
 				
 					entity_curpos_y[i] := entity_curpos_y[i] + entity_dd_y[i];
 
@@ -432,12 +434,12 @@ begin
 					val := entity_curpos_y[i] - entity_pos_y[i];
 					j:=entity_pos_spread[i];
 					if val>j then
-						entity_dd_y[i] := #0 - entity_dd_y[i];
+						entity_dd_y[i] := 0 - entity_dd_y[i];
 				end
 		
 				else begin  // Aggressive behaviour
 					val:=spritey - entity_curpos_y[i];
-					if val<#128 then val:=#1 else val:=#255;
+					if val<128 then val:=1 else val:=255;
 					entity_curpos_y[i] := entity_curpos_y[i] + val;
 				end;
 
@@ -446,21 +448,21 @@ begin
 
 
 			// Color stuff. Fix. 
-			val:=i+#1;
-			if entity_pickup[i]=#1 then begin
-				j := time &#7;
-				if j=#0 then 
-					poke(SPRITE_COLOR,val, #1)
+			val:=i+1;
+			if entity_pickup[i]=1 then begin
+				j := time &7;
+				if j=0 then 
+					poke(SPRITE_COLOR,val, 1)
 				else
 					poke(SPRITE_COLOR,val, entity_color[i]);
 				
 
 			end;
 
-			if entity_hurt[i]=#1 then begin
-				j := time &#3;
-				if j=#0 then 
-					poke(SPRITE_COLOR,val, #1)
+			if entity_hurt[i]=1 then begin
+				j := time &3;
+				if j=0 then 
+					poke(SPRITE_COLOR,val, 1)
 				else
 					poke(SPRITE_COLOR,val, entity_color[i]);
 
@@ -468,12 +470,12 @@ begin
 
 	end;
 
-	for i:=#0 to no_entities do begin
-		val:=i+#1;
+	for i:=0 to no_entities do begin
+		val:=i+1;
 		tmp:=entity_curpos_x[i];
-		tmp:=tmp*#2;
+		tmp:=tmp*2;
 		spritepos(tmp, entity_curpos_y[i], val);
-//		spritepos(tmp, entity_curpos_y[i], val+#1 ); CRASH FIX
+//		spritepos(tmp, entity_curpos_y[i], val+1 ); CRASH FIX
 
 	end;
 
@@ -482,39 +484,39 @@ end;
 
 procedure PlayDeathSound(ps_t:byte);
 begin
-	if ps_t=#1 then
+	if ps_t=1 then
 		PlaySound(@sidchannel, 
-				#15,  // Volume
-				#5,  // Hi byte frequency 
-				#0*#16+#0,  // Attack voice 1
-				#5*#16 + #9,   // Sustain = 16*15 + release=6
-				#1 +SID_NOISE,  // Waveform
+				15,  // Volume
+				5,  // Hi byte frequency 
+				0*16+0,  // Attack voice 1
+				5*16 + 9,   // Sustain = 16*15 + release=6
+				1 +SID_NOISE,  // Waveform
 				SID_NOISE);  // waveform
-	if ps_t=#2 then
+	if ps_t=2 then
 		PlaySound(@sidchannel, 
-				#15,  // Volume
-				#25,  // Hi byte frequency 
-				#5*#16+#3,  // Attack voice 1
-				#5*#16 + #9,   // Sustain = 16*15 + release=6
-				#1 +SID_TRI,  // Waveform
+				15,  // Volume
+				25,  // Hi byte frequency 
+				5*16+3,  // Attack voice 1
+				5*16 + 9,   // Sustain = 16*15 + release=6
+				1 +SID_TRI,  // Waveform
 				SID_SAW);  // waveform
 
-	if ps_t=#3 then
+	if ps_t=3 then
 		PlaySound(@sidchannel, 
-				#15,  // Volume
-				#45,  // Hi byte frequency 
-				#0*#16+#15,  // Attack voice 1
-				#15*#15 + #8,   // Sustain = 16*15 + release=6
-				#1+ SID_SAW ,  // Waveform
+				15,  // Volume
+				45,  // Hi byte frequency 
+				0*16+15,  // Attack voice 1
+				15*15 + 8,   // Sustain = 16*15 + release=6
+				1+ SID_SAW ,  // Waveform
 				SID_SAW);  // waveform
 
-	if ps_t=#4 then
+	if ps_t=4 then
 		PlaySound(@sidchannel, 
-				#15,  // Volume
-				#50,  // Hi byte frequency 
-				#0*#16+#15,  // Attack voice 1
-				#15*#15 + #9,   // Sustain = 16*15 + release=6
-				#1+ SID_TRI ,  // Waveform
+				15,  // Volume
+				50,  // Hi byte frequency 
+				0*16+15,  // Attack voice 1
+				15*15 + 9,   // Sustain = 16*15 + release=6
+				1+ SID_TRI ,  // Waveform
 				SID_TRI);  // waveform
 
 
@@ -528,48 +530,48 @@ end;
 procedure HitEntity(de_i, de_dmg : byte);
 begin
 	entity_health[de_i]:=entity_health[de_i] -de_dmg;
-	entity_hurt[de_i] :=#1;
-	if entity_framecounter_maxx[de_i]=#0 then 
-		entity_framecounter_maxx[de_i]:=#1;
-	if entity_framecounter_maxy[de_i]=#0 then 
-		entity_framecounter_maxy[de_i]:=#1;
+	entity_hurt[de_i] :=1;
+	if entity_framecounter_maxx[de_i]=0 then 
+		entity_framecounter_maxx[de_i]:=1;
+	if entity_framecounter_maxy[de_i]=0 then 
+		entity_framecounter_maxy[de_i]:=1;
 
-	entity_framecounter_x[de_i] := #1;
-	entity_framecounter_y[de_i] := #1;
+	entity_framecounter_x[de_i] := 1;
+	entity_framecounter_y[de_i] := 1;
 
 
 	// Entity dies
-	if (entity_health[de_i] =#0 or entity_health[de_i]>#128) then begin
-			entity_type[de_i] :=#0; // Turn off 
+	if (entity_health[de_i] =0 or entity_health[de_i]>128) then begin
+			entity_type[de_i] :=0; // Turn off 
 				
-			togglebit(SPRITE_BITMASK, j+#1, #0);
-			zeropage5[@entity_isdead]:=#1;
+			togglebit(SPRITE_BITMASK, j+1, 0);
+			zeropage5[@entity_isdead]:=1;
 			PlayDeathSound(zeropage5[@entity_sound]);
-			player_score:=player_score +#1;		
+			player_score:=player_score +1;		
 
 			val:=zeropage5[@entity_upgrade];
 			// UPGRADES!
 			
 			j:=getbit(val, @upgrade_ammo_bit);
-			if #0=j then bullet_dmg:=bullet_dmg+#4;
+			if 0=j then bullet_dmg:=bullet_dmg+4;
 			j:=getbit(val, @upgrade_health_bit);	
-			if j=#0 then begin
-				player_health := player_health + #10;	
-				player_maxhealth := player_maxhealth + #10;	
+			if j=0 then begin
+				player_health := player_health + 10;	
+				player_maxhealth := player_maxhealth + 10;	
 			end;
 			j:=getbit(val, @upgrade_speed_bit);
-			if j=#0 then player_speed := player_speed +#1;
+			if j=0 then player_speed := player_speed +1;
 
 
 
 		end
 		else
 			PlaySound(SID_CHANNEL3, 
-				#15,  // Volume
-				#10,  // Hi byte frequency 
-				#0*#16+#0,  // Attack voice 1
-				#5*#16 + #6,   // Sustain = 16*15 + release=6
-				#1 +SID_NOISE,  // Waveform
+				15,  // Volume
+				10,  // Hi byte frequency 
+				0*16+0,  // Attack voice 1
+				5*16 + 6,   // Sustain = 16*15 + release=6
+				1 +SID_NOISE,  // Waveform
 			SID_NOISE);  // waveform
 
 end;
@@ -583,10 +585,10 @@ procedure InitGameOver();
 */
 procedure findCollider(fc_x,fc_y:byte);
 begin
-	val := #255;
-	j:=#0;
-	for i:=#0 to no_entities do begin
-		if entity_type[i]<>#0 then 
+	val := 255;
+	j:=0;
+	for i:=0 to no_entities do begin
+		if entity_type[i]<>0 then 
 		begin
 			tmp2 := abs(entity_curpos_x[i] - fc_x) + abs(entity_curpos_y[i] -fc_y);
 			if tmp2<val then begin
@@ -609,12 +611,12 @@ procedure BackgroundCollideBullet();
 procedure UpdateBullet();
 begin
 	val := getbit(SPRITE_BITMASK, @bulletSprite);
-	//val:=#1;
-	//togglebit(SPRITE_BITMASK, #7, #1);
-	if val=#0 then
+	//val:=1;
+	//togglebit(SPRITE_BITMASK, 7, 1);
+	if val=0 then
 	begin
 		tmp:=bullet_x;
-		tmp:=tmp*#2;
+		tmp:=tmp*2;
 
 		bullet_x := bullet_x + bullet_dx;
 		bullet_y := bullet_y + bullet_dy;
@@ -623,24 +625,24 @@ begin
 
 
 		findCollider(bullet_x, bullet_y);
-		if val<#8 then begin
+		if val<8 then begin
 			pointToEntityData(j);
-			togglebit(SPRITE_BITMASK, @bulletSprite, #0);
+			togglebit(SPRITE_BITMASK, @bulletSprite, 0);
 			HitEntity(j, bullet_dmg);	
 
 
 		end;
-//		waitnoraster(#2);
+//		waitnoraster(2);
 		//tmp2 := getbit(SPRITE_BG_COLLISION, @bulletSprite);
 		BackgroundCollideBullet();
-		if tmp2=#1 then begin
-			togglebit(SPRITE_BITMASK, @bulletSprite, #0);
-//			poke(SPRITE_BITMASK, #0, #0);
+		if tmp2=1 then begin
+			togglebit(SPRITE_BITMASK, @bulletSprite, 0);
+//			poke(SPRITE_BITMASK, 0, 0);
 		end;
 
 		
 	end;
-    setSpriteLoc(#7, @bullet_sprite_loc, @spritebank);
+    setSpriteLoc(7, @bullet_sprite_loc, @spritebank);
 
 end;
 
@@ -648,43 +650,43 @@ end;
 procedure Shoot();
 begin
 
-	if (joystickbutton=#1 and (bullet_count<>#0 and bullet_wait=#0)) then begin
+	if (joystickbutton=1 and (bullet_count<>0 and bullet_wait=0)) then begin
 		// Shoot!
-		bullet_x := spritex/#2;
+		bullet_x := spritex/2;
 		bullet_y := spritey;
-		bullet_dy := prev_dy*#2;
+		bullet_dy := prev_dy*2;
 		bullet_dx := prev_dx;
 
-		bullet_x := bullet_x + bullet_dx * #4;
-		bullet_y := bullet_y + bullet_dy * #4;
-		togglebit(SPRITE_BITMASK, @bulletSprite, #0);
+		bullet_x := bullet_x + bullet_dx * 4;
+		bullet_y := bullet_y + bullet_dy * 4;
+		togglebit(SPRITE_BITMASK, @bulletSprite, 0);
 
-		if (bullet_dy<>#0 or bullet_dx<>#0) then begin
+		if (bullet_dy<>0 or bullet_dx<>0) then begin
 			tmp:=bullet_x;
-			tmp:=tmp*#2;
+			tmp:=tmp*2;
 			spritepos(tmp, bullet_y, @bulletSprite);
-			togglebit(SPRITE_BITMASK, @bulletSprite, #1);
+			togglebit(SPRITE_BITMASK, @bulletSprite, 1);
 			PlaySound(SID_CHANNEL2, 
-				#15,  // Volume
-				#15,  // Hi byte frequency 
-				#0*#16+#0,  // Attack voice 1
-				#5*#16 + #6,   // Sustain = 16*15 + release=6
-				#1 +SID_NOISE,  // Waveform
+				15,  // Volume
+				15,  // Hi byte frequency 
+				0*16+0,  // Attack voice 1
+				5*16 + 6,   // Sustain = 16*15 + release=6
+				1 +SID_NOISE,  // Waveform
 			SID_NOISE);  // waveform*/
 
 
 
-			bullet_count:=bullet_count-#1;
+			bullet_count:=bullet_count-1;
 	
 			
 		end;
-		bullet_wait := #30;
-		joystick_pressed := #0;
+		bullet_wait := 30;
+		joystick_pressed := 0;
 
 	end;
 
-	if bullet_wait<>#0 then
-		bullet_wait:=bullet_wait - #1;
+	if bullet_wait<>0 then
+		bullet_wait:=bullet_wait - 1;
 
 
 end;
@@ -694,16 +696,16 @@ end;
 procedure BackgroundCollideBullet();
 begin
 
-	tmp:=bullet_x+#3;	
-	i:=tmp/#4-m_rl_startx;
-	j:=(bullet_y-#55)/#8;
+	tmp:=bullet_x+3;	
+	i:=tmp/4-m_rl_startx;
+	j:=(bullet_y-55)/8;
 	i:=i-m_rl_starty;
-	i:=i/#2;
-	j:=j/#2;
+	i:=i/2;
+	j:=j/2;
 	val := j*m_rl_width +i;
 //	val := val + i;
 	val:=peek(zeropage4, val); 
-	tmp2:=getbit(val, #3);
+	tmp2:=getbit(val, 3);
 
 end;
 
@@ -712,12 +714,12 @@ end;
 procedure BackgroundCollide();
 begin
 
-	tmp:=spritex - #15;	
-	i:=(tmp)/#16;// -m_rl_startx;//-m_rl_startx;
+	tmp:=spritex - 15;	
+	i:=(tmp)/16;// -m_rl_startx;//-m_rl_startx;
 //	i:=i-m_rl_starty;
-	j:=(spritey-#53)/#16;
+	j:=(spritey-53)/16;
 	val := j*m_rl_width+i;
-	tmp2:=getbit(zeropage4[val], #3);
+	tmp2:=getbit(zeropage4[val], 3);
 
 
 end;
@@ -730,21 +732,21 @@ begin
 	// Update joystick routines
 	Joystick();
 
-//	if joystickbutton=#1 then
+//	if joystickbutton=1 then
 	Shoot();
 
 	// Hit
 	//val:=getBit(SPRITE_COLLISION, @playerSprite);
-	tmp2:=spritex/#2;
+	tmp2:=spritex/2;
 	findCollider(tmp2, spritey);
 
 	if val<@crashDistance then begin
 		pointToEntityData(j);
 		player_health := player_health - zeropage5[@entity_damage];
-/*		if player_health >#200 then
-			InitGameOver();*/
-		if player_health >#200 then
-			player_health:=#10;
+		if player_health >200 then
+			InitGameOver();
+//		if player_health >200 then
+	//		player_health:=10;
 
 		if player_health>player_maxhealth then
 			player_health := player_maxhealth;
@@ -752,34 +754,34 @@ begin
 		bullet_count := bullet_count + zeropage5[@entity_ammo];
 		if bullet_count>bullet_max then
 			bullet_count:=bullet_max;
-		HitEntity(j, #1);	
-//		debug(#25, #0, zeropage5[#9]);
+		HitEntity(j, 1);	
+//		debug(25, 0, zeropage5[9]);
 			PlaySound(SID_CHANNEL2, 
-				#15,  // Volume
-			#25,  // Hi byte frequency 
-			#0*#16+#0,  // Attack voice 1
-			#5*#16 + #3,   // Sustain = 16*15 + release=6
-			#1 +SID_SAW,  // Waveform
+				15,  // Volume
+			25,  // Hi byte frequency 
+			0*16+0,  // Attack voice 1
+			5*16 + 3,   // Sustain = 16*15 + release=6
+			1 +SID_SAW,  // Waveform
 			SID_NOISE);  // waveform
 
 	end;
 //    asm(";test");
 
 	// Default: don't redraw
-	redraw:=#0;
+	redraw:=0;
 
 	// Move sprite
 
-	//if joystick_pressed=#0 then begin
+	//if joystick_pressed=0 then begin
 
-		if (joystickright<>#0 or joystickleft<>#0) then begin
+		if (joystickright<>0 or joystickleft<>0) then begin
 			prev_dx := joystickright - joystickleft;
-			prev_dy := #0;
+			prev_dy := 0;
 		end;
 
-		if (joystickup<>#0 or joystickdown<>#0) then begin
+		if (joystickup<>0 or joystickdown<>0) then begin
 			prev_dy := joystickdown - joystickup;
-			prev_dx := #0;
+			prev_dx := 0;
 		end;
 		joystickdown:=joystickdown*player_speed;	
 		joystickup:=joystickup*player_speed;	
@@ -801,7 +803,7 @@ begin
 	BackgroundCollide();
 	UpdatePlayerSprite();
 	// If collision, abort abort
-	if tmp2=#1 then begin
+	if tmp2=1 then begin
 		spritex:=spritex - joystickright;
 		spritex:=spritex + joystickleft;
 		spritey:=spritey - joystickdown + joystickup;
@@ -810,51 +812,51 @@ begin
 
 
 	// Sprite border check, boring stuff, extract numbers to defines
-	if spritex>#318 then begin
-		if m_posx<>m_rl_sizex-#1 then begin
-			m_posx:=m_posx+#1;
-			spritex:=#25;
-			redraw:=#1;
+	if spritex>318 then begin
+		if m_posx<>m_rl_sizex-1 then begin
+			m_posx:=m_posx+1;
+			spritex:=25;
+			redraw:=1;
 		end
 	else
-		spritex:=#317;
+		spritex:=317;
 	end;
-	if spritex<#24 then begin
-		if m_posx<>#0 then begin
-			spritex:= #317;
-			m_posx:=m_posx-#1;
-			redraw:=#1;
+	if spritex<24 then begin
+		if m_posx<>0 then begin
+			spritex:= 317;
+			m_posx:=m_posx-1;
+			redraw:=1;
 		end
 	else
-		spritex:=#25;
+		spritex:=25;
 	end;
 
-	if spritey<#65 then begin
-		if m_posy<>#0 then begin
+	if spritey<65 then begin
+		if m_posy<>0 then begin
 
-			spritey:=#219;
-			m_posy:=m_posy-#1;
-			redraw:=#1;
+			spritey:=219;
+			m_posy:=m_posy-1;
+			redraw:=1;
 		end
 		else
-			spritey:=#66;
+			spritey:=66;
 
 	end;
-	if spritey>#220 then begin
-		if m_posy<>m_rl_sizey-#1 then begin
-			spritey:=#66;
-			m_posy:=m_posy+#1;
-			redraw:=#1;
+	if spritey>220 then begin
+		if m_posy<>m_rl_sizey-1 then begin
+			spritey:=66;
+			m_posy:=m_posy+1;
+			redraw:=1;
 		end
 		else
-			spritey:=#219;
+			spritey:=219;
 	end;
 	
 
-	if redraw=#1 then begin
-    	poke(SPRITE_BITMASK,#0, #%00000000);
+	if redraw=1 then begin
+    	poke(SPRITE_BITMASK,0, %00000000);
 		ClearText();
-		poke(SCREEN_FG_COL, #0, BLACK);
+		poke(SCREEN_FG_COL, 0, BLACK);
 		// Render me baby!
 		@levelpointer := levels;
 		// Defined in Levels.ras
@@ -862,7 +864,7 @@ begin
 		LoadEntities();
 		InitEntities();
 
-		current_background := peek(MULTICOLOR_CHAR_COL,#0);
+		current_background := peek(MULTICOLOR_CHAR_COL,0);
 
 		CopyFullScreen(@screenmem2, @screenmem1);
 
@@ -878,14 +880,14 @@ procedure InitSprites();
 begin
 
 	// Black and yellow are our colors
-	poke(SPRITE_MULTICOLOR_REG1, #0, BLACK);
-	poke(SPRITE_MULTICOLOR_REG2, #0, YELLOW);
+	poke(SPRITE_MULTICOLOR_REG1, 0, BLACK);
+	poke(SPRITE_MULTICOLOR_REG2, 0, YELLOW);
 
-    poke(SPRITE_BITMASK,#0, #%00000001);
+    poke(SPRITE_BITMASK,0, %00000001);
 
-	poke(SPRITE_COLOR,#0, RED);
+	poke(SPRITE_COLOR,0, RED);
 
-	poke(SPRITE_MULTICOLOR, #0, #$FF); // ALL multicolor
+	poke(SPRITE_MULTICOLOR, 0, $FF); // ALL multicolor
 end;
 
 
@@ -893,68 +895,68 @@ end;
 procedure MainScreen();
 procedure InitMainScreen();
 begin
-	poke(VIC_DATA_LOC, #0, @charmapText);
-	poke(SCREEN_BG_COL, #0, #0);
-	poke(SCREEN_FG_COL, #0, #0);
+	poke(VIC_DATA_LOC, 0, @charmapText);
+	poke(SCREEN_BG_COL, 0, 0);
+	poke(SCREEN_FG_COL, 0, 0);
 	SetBank(VIC_BANK1);
 	setregularcolormode();
-	ClearScreen(@clearchar, #$0400);
-	ClearScreen(@clearchar, #$4400);
-	ClearScreen(#11, SCREEN_COL_LOC);
-	joystickbutton:=#0;
-	moveto(#5, #10, #$D8);
+	ClearScreen(@clearchar, $0400);
+	ClearScreen(@clearchar, $4400);
+	ClearScreen(11, SCREEN_COL_LOC);
+	joystickbutton:=0;
+	moveto(5, 10, $D8);
 	zeropage5:=screenmemory;
-	moveto(#5, #10, #$44);
-	j:=#10;
+	moveto(5, 10, $44);
+	j:=10;
 	// Draw burgers
-	for i:=#34 to #40 do begin
-		for j:=#0 to #4 do begin
-			k:=j*#8 + #5 + i;
+	for i:=34 to 40 do begin
+		for j:=0 to 4 do begin
+			k:=j*8 + 5 + i;
 			screenmemory[k]:=i;
-			screenmemory[k+#40]:=i+#40;
-			screenmemory[k+#80]:=i+#80;
-			screenmemory[k+#120]:=i+#120;
+			screenmemory[k+40]:=i+40;
+			screenmemory[k+80]:=i+80;
+			screenmemory[k+120]:=i+120;
 		end;
 	end;
-	moveto(#0, #3, #$44);
-	/*printstring("AAA                     AAAA          ",#0,#40);	incscreenx(#40);	
-	printstring("A  A  AA  AAA A  A AAA  A   A AA  AAA ",#0,#40);	incscreenx(#40);	
-	printstring("AAA  A  A A   A  A A    A  A  A A A   ",#0,#40);	incscreenx(#40);	
-	printstring("A  A A  A A A A  A AA   A   A AA  A A ",#0,#40);	incscreenx(#40);	
-	printstring("A   A AA  AAA  AA  AAA  AAAA  A A AAA ",#0,#40);	incscreenx(#40);
+	moveto(0, 3, $44);
+	/*printstring("AAA                     AAAA          ",0,40);	incscreenx(40);	
+	printstring("A  A  AA  AAA A  A AAA  A   A AA  AAA ",0,40);	incscreenx(40);	
+	printstring("AAA  A  A A   A  A A    A  A  A A A   ",0,40);	incscreenx(40);	
+	printstring("A  A A  A A A A  A AA   A   A AA  A A ",0,40);	incscreenx(40);	
+	printstring("A   A AA  AAA  AA  AAA  AAAA  A A AAA ",0,40);	incscreenx(40);
 */
 
-	for i:=#0 to #25 do begin
-		poke(@screenmem1, i, i + #120);
-		poke(@screenmem1+ #40, i, i + #160);
-		poke(@screenmem2, i, i + #120);
-		poke(@screenmem2+ #40, i, i + #160);
-	//	val := fade[i&#15];
+	for i:=0 to 25 do begin
+		poke(@screenmem1, i, i + 120);
+		poke(@screenmem1+ ^40, i, i + 160);
+		poke(@screenmem2, i, i + 120);
+		poke(@screenmem2+ ^40, i, i + 160);
+	//	val := fade[i&15];
 		val := LIGHT_RED;
-		poke($D800, i,val );
-		poke($D800+ #40, i, val);
+		poke(^$D800, i,val );
+		poke(^$D800+ ^40, i, val);
 	end;
 
 
 	
-/*	moveto(#0, #3, #$D8);
+/*	moveto(0, 3, $D8);
 	zeropage5:=screenmemory;
-	moveto(#0, #3, #$44);
-	for i:=#10 to #15 do begin
-		for k:=#0 to #40 do begin
+	moveto(0, 3, $44);
+	for i:=10 to 15 do begin
+		for k:=0 to 40 do begin
 			j:=screenmemory[k];
-			if j<>#$20 then begin 
-				screenmemory[k]:=#47;
+			if j<>$20 then begin 
+				screenmemory[k]:=47;
 				zeropage5[k]:=LIGHT_RED
 			end;
 		end;
-		incscreenx(#40);
-		inczp(zeropage5, #40);
+		incscreenx(40);
+		inczp(zeropage5, 40);
 	end;
 */
 
-	player_health:=#20;
-	val:=#1;
+	player_health:=20;
+	val:=1;
 
 end;
 
@@ -965,32 +967,32 @@ end;
 interrupt GameOverLoop();
 begin
 	setRegularColormode();
-	poke(VIC_DATA_LOC, #0, @charmapText);
-	val:=val+#1;
-	moveto(#15,#10, @screen1hi);
-	printstring("GAME OVER", #0, #20);
-	moveto(#15,#13, @screen1hi);
-	printstring("SCORE", #0, #20);
-	moveto(#21,#13, @screen1hi);
+	poke(VIC_DATA_LOC, 0, @charmapText);
+	val:=val+1;
+	moveto(15,10, @screen1hi);
+	printstring("GAME OVER", 0, 20);
+	moveto(15,13, @screen1hi);
+	printstring("SCORE", 0, 20);
+	moveto(21,13, @screen1hi);
 	printnumber(player_score);
-	moveto(#0,#10, #$D8);
-	j:=fade[val&#15];
-	k:=fade[(val+#2)&#15];
-	for i:=#0 to #39 do begin
+	moveto(0,10, $D8);
+	j:=fade[val&15];
+	k:=fade[(val+2)&15];
+	for i:=0 to 39 do begin
 		screenmemory[i] := j;
-		screenmemory[i+#120] := k;
+		screenmemory[i+120] := k;
 	end;
 
 	call(SIDFILE_1_PLAY);
 	Joystick();
 
-	if joystickbutton=#1 then begin
+	if joystickbutton=1 then begin
 		InitMainScreen();
-		RasterIRQ(MainScreen(), #0);
+		RasterIRQ(MainScreen(), 0);
 	end;
 
 
-	waitForRaster(#200);
+	waitForRaster(200);
 	kernalInterrupt();
 end;
 
@@ -1003,50 +1005,53 @@ end;
 // Funky sprite flashing and noises on game over
 procedure InitGameOver();
 begin
-	rasterIRQ(GameOverLoop(), #1);
-	for i:=#0 to #100 do begin
-		poke(SPRITE_COLOR, #0, i);
-		poke(SPRITE_COLOR, #1, i);
-		waitForRaster(#1);
-		val:=#120-i;
+	rasterIRQ(GameOverLoop(), 1);
+	for i:=0 to 100 do begin
+		poke(SPRITE_COLOR, 0, i);
+		poke(SPRITE_COLOR, 1, i);
+		waitForRaster(1);
+		val:=120-i;
 		PlaySound(SID_CHANNEL3, 
-			#15,  // Volume
+			15,  // Volume
 			val,  // Hi byte frequency 
-			#0*#16+#0,  // Attack voice 1
-			#5*#16 + #6,   // Sustain = 16*15 + release=6
-			#1 +SID_NOISE,  // Waveform
+			0*16+0,  // Attack voice 1
+			5*16 + 6,   // Sustain = 16*15 + release=6
+			1 +SID_NOISE,  // Waveform
 			SID_SAW);  // waveform
 
-		waitForRaster(#255);
+		waitForRaster(255);
 	end;
 
 	InitSid(SIDFILE_1_INIT);
 
 	Setbank(VIC_BANK1);
-	poke(SPRITE_BITMASK, #0, #0);
-	ClearScreen(#$20, #$4400);
-	ClearScreen(#$02, SCREEN_COL_LOC);
-	poke(VIC_DATA_LOC, #0, @charmapText);
-	poke(SCREEN_BG_COL, #0, BLACK);
+	poke(SPRITE_BITMASK, 0, 0);
+	ClearScreen($20, $4400);
+	ClearScreen($02, SCREEN_COL_LOC);
+	poke(VIC_DATA_LOC, 0, @charmapText);
+	poke(SCREEN_BG_COL, 0, BLACK);
 
 	
 
 end;
 
+
 /*
    Draw some hearts
-*/ 
+*/
+
+
 procedure RenderHealthBar();
 begin
-	moveto(#6, #24, #$D8);
+	moveto(6, 24, $D8);
 	zeropage1 := screenmemory;
-	moveto(#6, #24, #@screen1hi);
+	moveto(6, 24, @screen1hi);
 
-	tmp2 := player_maxhealth/#8;
-	k := player_health/#8;
+	tmp2 := player_maxhealth/8;
+	k := player_health/8;
 
-	for i:=#0 to tmp2 do begin
-		screenmemory[i] := #96;
+	for i:=0 to tmp2 do begin
+		screenmemory[i] := 96;
 		if i<k then
 			zeropage1[i] := YELLOW
 		else
@@ -1056,16 +1061,16 @@ end;
 
 procedure RenderBulletBar();
 begin
-	moveto(#34, #24, #$D8);
+	moveto(34, 24, $D8);
 	zeropage1 := screenmemory;
-	moveto(#34, #24, #@screen1hi);
+	moveto(34, 24, @screen1hi);
 
-	tmp2 := #10/#2;
-	k := bullet_count/#2;
-	j:=bullet_dmg/#4;
-	if j>#8 then j:=#8;
-	for i:=#0 to tmp2 do begin
-		screenmemory[i] := #103 +j;
+	tmp2 := 10/2;
+	k := bullet_count/2;
+	j:=bullet_dmg/4;
+	if j>8 then j:=8;
+	for i:=0 to tmp2 do begin
+		screenmemory[i] := 103 +j;
 		if i<k then
 			zeropage1[i] := YELLOW
 		else
@@ -1080,43 +1085,41 @@ begin
 	// Call sid
 //	call(SIDFILE_1_PLAY);
 	// Make sure upper part of screen renders text
-	time:=time +#1;
+	time:=time +1;
 	setRegularColorMode();
-	poke(MULTICOLOR_CHAR_COL, #0, BLACK);
-	waitForRaster(#1);
+	poke(MULTICOLOR_CHAR_COL, 0, BLACK);
+	waitForRaster(1);
 	// Set regular text font
-	poke(VIC_DATA_LOC, #0, @charmapText);
+	poke(VIC_DATA_LOC, 0, @charmapText);
 	// Wait until level starts
 	PrintTextColor();
 	UpdateBullet();
 	UpdateEntities();
 
-	waitforRaster(#67);
+	waitforRaster(67);
 	// Set multi color & level font
 
-	poke(MULTICOLOR_CHAR_COL, #0, current_background);
-	poke(VIC_DATA_LOC, #0, @charmapLevel);
+	poke(MULTICOLOR_CHAR_COL, 0, current_background);
+	poke(VIC_DATA_LOC, 0, @charmapLevel);
 	setMulticolorMode();
 	RenderHealthBar();
-/*	moveto(#33, #24, @screen1hi);
-	printnumber(bullet_count);*/
 	RenderBulletBar();
-	moveto(#36, #1, @screen1hi);
+	moveto(36, 1, @screen1hi);
 	printnumber(player_score);
 
 	UpdatePlayer();
 	
 
-	waitForRaster(#243);
+	waitForRaster(243);
 	// Go back to regular font
 	
-	poke(MULTICOLOR_CHAR_COL, #0, BLACK);
-	poke(VIC_DATA_LOC, #0, @charmapText);
+	poke(MULTICOLOR_CHAR_COL, 0, BLACK);
+	poke(VIC_DATA_LOC, 0, @charmapText);
 
 
-	waitForRaster(#255);
+	waitForRaster(255);
 	// Make sure multicolor font is loaded afterwards
-	poke(VIC_DATA_LOC, #0, @charmapLevel);
+	poke(VIC_DATA_LOC, 0, @charmapLevel);
 		
 	// Acknowledge interrupt
 
@@ -1127,61 +1130,40 @@ begin
 
 end;
 
-/*
-procedure Intro();
-begin
-	setmulticolormode();
-	setbitmapmode();
-	setbank(VIC_BANK3);
-	poke(VIC_DATA_LOC, #0,#$18);
-	copyimagecolordata(intro_image_color,#2);
-
-	while joystickbutton<>#1 do begin
-		Joystick();
-		WaitForRaster(#1);
-		WaitForRaster(#250);
-	//	call(SIDFILE_1_PLAY);
-	end;
-	setTextMode();
-	setbank(VIC_BANK0);
-
-end;
-
-*/
 
 procedure InitNewGame();
 begin
-	m_posx:=#0;
-	m_posy:=#0;
+	m_posx:=0;
+	m_posy:=0;
 
 	// Initial map rendering
 	@levelpointer := levels;
 	ResetLevels();
 	@levelpointer := levels;
 	RenderLevel(m_posx, m_posy, @screen1hi);
-	current_background := peek(MULTICOLOR_CHAR_COL,#0);
+	current_background := peek(MULTICOLOR_CHAR_COL,0);
 	LoadEntities();
 	InitEntities();
 
 	// Initial sprite position
-	spritex := #160;
-	spritey := #100;
+	spritex := 160;
+	spritey := 100;
 
-	player_speed := #1;
+	player_speed := 1;
 
-	sprite1_counter := #1;
-	bullet_wait := #0;
-	player_score := #0;
-	joystick_pressed := #0;
-	bullet_dmg:=#4;
-	bullet_count :=#8;
+	sprite1_counter := 1;
+	bullet_wait := 0;
+	player_score := 0;
+	joystick_pressed := 0;
+	bullet_dmg:=4;
+	bullet_count :=8;
 
-	player_health := #30;
-	player_maxhealth := #30;
+	player_health := 30;
+	player_maxhealth := 30;
 
-	bullet_max := #10;
+	bullet_max := 10;
 
-	frameCounter:=#0;
+	frameCounter:=0;
 
 	setmulticolormode();
 	// Remember to implement resetting all "isdead" flag. also, make this part of flags bit.
@@ -1189,7 +1171,7 @@ end;
 
 
 
-@define y_start "#2"
+@define y_start "2"
 
 procedure Plasma();
 var
@@ -1202,33 +1184,33 @@ begin
 	c2y:=ay;
 	
 
-	for x:=#2 to #9 do begin 
+	for x:=2 to 9 do begin 
 		siny[x]:=  sine[c2x] + sine[c2y];// + shiftx;
-		c2x:=c2x+#4;
-		c2y:=c2y+#9;
+		c2x:=c2x+4;
+		c2y:=c2y+9;
 	end;
 
-	ax:=ax+#3;
-	ay:=ay-#5;
+	ax:=ax+3;
+	ay:=ay-5;
 
 
-	for x:=#0 to #40 do begin 
+	for x:=0 to 40 do begin 
 		sinx[x] := sine[c2x] + sine[c2y];
-		c2x:=c2x+#3;
-		c2y:=c2y+#7;
+		c2x:=c2x+3;
+		c2y:=c2y+7;
 
 	end;
-	moveto(#0,#3, #$44);
+	moveto(0,3, $44);
 	
-	for y:=#3 to #8 do begin
+	for y:=3 to 8 do begin
 		val:=siny[y];
-		for x:=#0 to #39 do begin
+		for x:=0 to 39 do begin
 			k:=screenmemory[x];
-			if k<>#47 then
-				screenmemory[x]:=(sinx[x] +val)/#8 + #80;
+			if k<>47 then
+				screenmemory[x]:=(sinx[x] +val)/8 + 80;
 
 		end;
-		incscreenx(#40);
+		incscreenx(40);
 	end;
 
 		
@@ -1241,16 +1223,16 @@ interrupt MainScreen();
 
 begin
 	Joystick();
-//	if val=#1 then
+//	if val=1 then
 		call(SIDFILE_1_PLAY);
 	
-	if player_health<>#0 then 
-		player_health:=player_health-#1;
+	if player_health<>0 then 
+		player_health:=player_health-1;
 
 	Plasma();
 
-	if (joystickbutton=#1 and player_health=#0) then begin
-		val:=#0;
+	if (joystickbutton=1 and player_health=0) then begin
+		val:=0;
 		clearsound();
 		InitSprites();
 		PrintText();
@@ -1262,11 +1244,11 @@ begin
 		setbank(VIC_BANK1);
 
 		DisableInterrupts();
-		RasterIRQ(rasterUpdateGame(), #0);
+		RasterIRQ(rasterUpdateGame(), 0);
 		enableInterrupts();
 	end;
 
-//	waitforraster(#100);
+//	waitforraster(100);
 
 	kernalinterrupt();
 end;
@@ -1277,15 +1259,13 @@ begin
 
 	//initsid(SIDFILE_1_INIT);
 //	Intro();
-
-	
 	// TURN OFF Kernal Basic! WHOO!
-	togglebit($1, #0, #0);
+	togglebit(^$1, 0, 0);
 	InitMainScreen();
 	InitSid(SIDFILE_1_INIT);
 	// Hook that raster!
 	DisableInterrupts();
-	RasterIRQ(MainScreen(), #100);
+	RasterIRQ(MainScreen(), 100);
 	enableInterrupts();
 	Loop();
 end.

@@ -8,7 +8,7 @@ begin
 
 	setmulticolormode();
 	setbitmapmode();
-	poke(VIC_DATA_LOC, #0,#$18);
+	poke(VIC_DATA_LOC, 0,$18);
 	setbank(VIC_BANK1);
 	copyimagecolordata(image_color,1);
 

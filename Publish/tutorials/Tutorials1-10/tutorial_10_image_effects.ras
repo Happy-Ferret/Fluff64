@@ -15,19 +15,19 @@ var
 interrupt Update();
 begin
 	
-	waitForRaster(#30);
+	waitForRaster(30);
 	SetBank(VIC_BANK1);
-	poke(VIC_DATA_LOC, #0,#$18);
+	poke(VIC_DATA_LOC, 0,$18);
 	SetBitmapMode();
 	SetMultiColorMode();
-	if joystickbutton=#1 then wait :=#10;
-	if wait<>#0 then begin
-		if wait&#1=#0 then
+	if joystickbutton=1 then wait :=10;
+	if wait<>0 then begin
+		if wait&1=0 then
 		begin
 			TransformColors(fade1, $4400);
 			TransformColors(fade1, $D800);
 		end;
-		wait:=wait-#1;
+		wait:=wait-1;
 	end;
 	
 	Joystick();
@@ -35,27 +35,27 @@ begin
 	val := ypos;
 	
 	waitNoRaster(val);
-	waitNoRaster(#1);
+	waitNoRaster(1);
 	SetBank(VIC_BANK0);
-	poke(VIC_DATA_LOC, #0,orgChar);
+	poke(VIC_DATA_LOC, 0,orgChar);
 	
 	SetTextMode();
 	SetRegularColorMode();
 	
 	
-	if val<#215 then begin
+	if val<215 then begin
 		ypos:=ypos+vy;
 		vy:=vy+dy;
 	end
 	else
 	begin
-		ypos:=#214;
-		vy:=vy/#2;
-		vy:=#255 - vy;
-		if vy>#252 then begin
-			ypos := #216;
-			vy:=#0;
-			dy:=#0;
+		ypos:=214;
+		vy:=vy/2;
+		vy:=255 - vy;
+		if vy>252 then begin
+			ypos := 216;
+			vy:=0;
+			dy:=0;
 		end;
 	end;
 	
@@ -65,16 +65,16 @@ end;
 
 
 begin
-	ypos:=#0;
-	dy:=#1;
-	vy:=#0;
-	wait:=#0;
-	orgChar := peek(VIC_DATA_LOC, #0);
-	poke(VIC_DATA_LOC, #0,#$18);
-	copyimagecolordata(image_color,#1);
+	ypos:=0;
+	dy:=1;
+	vy:=0;
+	wait:=0;
+	orgChar := peek(VIC_DATA_LOC, 0);
+	poke(VIC_DATA_LOC, 0,$18);
+	copyimagecolordata(image_color,1);
 	
 	DisableInterrupts();
-	RasterIRQ(Update(), #0);
+	RasterIRQ(Update(), 0);
 	EnableInterrupts();
 	//Loop();
 	

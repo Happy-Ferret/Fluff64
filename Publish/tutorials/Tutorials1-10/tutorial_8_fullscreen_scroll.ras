@@ -15,23 +15,23 @@ var
 // Print a single line at the top of the screen on the current bank
 procedure PrintLine();
 begin
-	j:=sine[time*#1]/#8;
-	k:=sine[j*time/#64]/#2;
-	for i:=#0 to #40 do begin
-		val:=val/#32+#64 - #4;
+	j:=sine[time*1]/8;
+	k:=sine[j*time/64]/2;
+	for i:=0 to 40 do begin
+		val:=val/32+64 - 4;
 		// Chose the center of a nice sine functions so that the background looks
 		// like a canal		
-		val:=sine[(i*#4 + j+k)+#30]/#16 + #64 - #4;
+		val:=sine[(i*4 + j+k)+30]/16 + 64 - 4;
 
 
-		if val<#64 then
-			val:=#$20;
+		if val<64 then
+			val:=$20;
 
-		if g_currentBank=#1 then
-			poke($0400, i, val)
+		if g_currentBank=1 then
+			poke(^$0400, i, val)
 		else
-			poke($4400, i, val);
-		
+			poke(^$4400, i, val);
+	
 	end;
 
 end;
@@ -39,10 +39,10 @@ end;
 // Print a line of colors at $D800
 procedure printColor();
 begin
-	colorShift:=#0;
-	color:=fade[(time/#16 + colorShift)&#15];
-	for i:=#0 to #40 do begin
-		poke($D800,i,color);
+	colorShift:=0;
+	color:=fade[(time/16 + colorShift)&15];
+	for i:=0 to 40 do begin
+		poke(^$D800,i,color);
 	end;
 
 end;
@@ -51,18 +51,18 @@ end;
 // Raster update
 interrupt Update();
 begin
-	time:=time+#1;
-	a:=(time*#4)&#1;
+	time:=time+1;
+	a:=(time*4)&1;
 
-	if a=#0 then begin
+	if a=0 then begin
 		VerticalScroll();
 		
 		// Only print a new color line when scrolling index is 0
-		if g_vscroll=#0 then 
+		if g_vscroll=0 then 
 			printColor();
 		
 		// Only print a new line when scrolling index is 7
-		if g_vscroll=#7 then 
+		if g_vscroll=7 then 
 			PrintLine();
 
 	end;
@@ -74,21 +74,21 @@ end;
 
 procedure Setup();
 begin
-	copyfullscreen($27FF,$27FF+$4000);
+	copyfullscreen(^$27FF,^$27FF+^$4000);
 
-	poke(SCREEN_BG_COL, #0, #0);
-	poke(SCREEN_FG_COL, #0, #0);
+	poke(SCREEN_BG_COL, 0, 0);
+	poke(SCREEN_FG_COL, 0, 0);
 
-	hideBorderY(#0);
+	hideBorderY(0);
 end;
 
 
 begin
-	time:=#0;	
+	time:=0;	
 	Setup();
 
 	disableinterrupts();
-	RasterIRQ(Update(), #1);
+	RasterIRQ(Update(), 1);
 	enableinterrupts();
 
 end.

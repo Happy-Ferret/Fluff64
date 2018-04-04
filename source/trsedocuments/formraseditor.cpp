@@ -381,3 +381,15 @@ void FormRasEditor::on_leSearch_textChanged(const QString &arg1)
 {
     SearchInSource();
 }
+
+void FormRasEditor::on_btnReplace_clicked()
+{
+    QString orgstr = ui->leSearch->text();
+    QString replacestr = ui->leReplace->text();
+
+    QString source = ui->txtEditor->toPlainText();
+    source = source.replace(orgstr, replacestr);
+
+    SetText(source);
+
+}

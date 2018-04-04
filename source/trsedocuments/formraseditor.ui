@@ -21,7 +21,7 @@
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
-    <layout class="QGridLayout" name="gridLayout_2" rowstretch="50,1,1,11" columnstretch="1">
+    <layout class="QGridLayout" name="gridLayout_2" rowstretch="50,0,0,0,0" columnstretch="0">
      <property name="sizeConstraint">
       <enum>QLayout::SetMaximumSize</enum>
      </property>
@@ -39,6 +39,13 @@
        </item>
       </layout>
      </item>
+     <item row="4" column="0">
+      <widget class="QTextEdit" name="txtOutput">
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
      <item row="0" column="0">
       <widget class="CodeEditor" name="txtEditor">
        <property name="lineWrapMode">
@@ -47,13 +54,6 @@
       </widget>
      </item>
      <item row="3" column="0">
-      <widget class="QTextEdit" name="txtOutput">
-       <property name="readOnly">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="0">
       <widget class="QLabel" name="lblLight">
        <property name="autoFillBackground">
         <bool>true</bool>
@@ -62,6 +62,20 @@
         <string/>
        </property>
       </widget>
+     </item>
+     <item row="2" column="0">
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <item>
+        <widget class="QPushButton" name="btnReplace">
+         <property name="text">
+          <string>Replace</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="leReplace"/>
+       </item>
+      </layout>
      </item>
     </layout>
    </item>

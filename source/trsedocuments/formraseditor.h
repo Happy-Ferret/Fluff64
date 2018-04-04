@@ -69,6 +69,7 @@ private slots:
 
     void on_leSearch_textChanged(const QString &arg1);
 
+    void on_btnReplace_clicked();
 };
 
 #endif // FORMRASEDITOR_H
