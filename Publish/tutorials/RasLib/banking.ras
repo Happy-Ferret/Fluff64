@@ -2,6 +2,7 @@
 procedure Banking_Vars();
 var
 	g_currentBank:byte;
+	g_dataLoc : byte=$1a;
     temp_colorCopy : array[40] of byte;
 
 begin
@@ -56,7 +57,7 @@ begin
 	else 
 		SetBank(VIC_BANK0);
 
-	poke(VIC_DATA_LOC, 0, $1A);
+	poke(VIC_DATA_LOC, 0, g_dataLoc);
 
 	g_currentBank:=(g_currentBank+1)&1;
 end;

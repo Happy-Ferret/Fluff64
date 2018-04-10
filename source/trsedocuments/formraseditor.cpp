@@ -27,7 +27,11 @@ void FormRasEditor::ExecutePrg(QString fileName, QString emulator)
     }
     QProcess process;
     process.waitForFinished();
+#ifdef _WIN32
+    QProcess::execute("taskkill /im \"x64.exe\" /f");
+#endif
     process.startDetached(emulator, QStringList() << fileName);
+//    process.pi
     QString output(process.readAllStandardOutput());
 
 }
@@ -35,6 +39,7 @@ void FormRasEditor::ExecutePrg(QString fileName, QString emulator)
 void FormRasEditor::InitDocument(WorkerThread *t, CIniFile *ini, CIniFile* pro)
 {
     TRSEDocument::InitDocument(t,ini, pro);
+    FillFromIni();
     setupEditor();
 }
 
@@ -51,6 +56,11 @@ void FormRasEditor::setupEditor()
 
     UpdateFromIni();
 //    ui->txtEditor->setTabStopWidth(m_iniFile->getInt("tab_width") * metrics.width(' '));
+
+}
+
+void FormRasEditor::Compress()
+{
 
 }
 
@@ -71,6 +81,13 @@ void FormRasEditor::Build()
         QProcess process;
         process.start(m_iniFile->getString("dasm"), QStringList()<<(filename +".asm") << ("-o"+filename+".prg"));
         process.waitForFinished();
+        //process;
+        QProcess processCompress;
+        if (m_iniFile->getdouble("perform_crunch")==1) {
+            QString fn = (filename +".prg");
+            processCompress.start(m_iniFile->getString("exomizer"), QStringList()<< "sfx" << "$0900" << fn<< "-o" << fn  );
+            processCompress.waitForFinished();
+        }
         QString output(process.readAllStandardOutput());
         QString size = QString::number(QFile(filename+".prg").size());
 
@@ -79,6 +96,12 @@ void FormRasEditor::Build()
 
         if (output.toLower().contains("error")) {
             m_buildSuccess = false;
+            if (output.toLower().contains("branch out of range")) {
+                Messages::messages.DisplayMessage(Messages::messages.BRANCH_ERROR);
+                output += "<br>Please check your <b>onpage/offpage</b> keywords.";
+
+            }
+            else
             if (output.toLower().contains("reverse-indexed")) {
                 Messages::messages.DisplayMessage(Messages::messages.MEMORY_OVERLAP_ERROR);
                 output += "<br>Please reorganize your binary inclusions in ascending order of memory locations.";
@@ -93,10 +116,13 @@ void FormRasEditor::Build()
             if (output=="") {
                 Messages::messages.DisplayMessage(Messages::messages.NO_DASM);
 
-                output = "Could not find Dasm.exe. Did you set the correct environment variables?";
+                output = output + "\nCould not find Dasm.exe. Did you set the correct environment variables?";
             }
 
         }
+
+
+
         if (m_buildSuccess)
             output +="<br>Assembled file size: <b>" + size + "</b> bytes";
 
@@ -185,6 +211,18 @@ void FormRasEditor::keyPressEvent(QKeyEvent *e)
         ui->leSearch->setText("");
         ui->leSearch->setFocus();
         m_searchFromPos =ui->txtEditor->textCursor().position();
+    }
+
+    if (e->key()==Qt::Key_F1) {
+
+
+        QTextCursor tc = ui->txtEditor->textCursor();
+        tc.select(QTextCursor::WordUnderCursor);
+        QString word = tc.selectedText();
+
+        DialogHelp* dh = new DialogHelp(this, word);
+        dh->show();
+
     }
 
     if (e->key() == Qt::Key_S &&  (QApplication::keyboardModifiers() & Qt::ControlModifier)) {
@@ -342,6 +380,41 @@ bool FormRasEditor::BuildStep()
     return interpreter.Build(Interpreter::MOS6502, path);
 }
 
+void FormRasEditor::FillFromIni()
+{
+    ui->chkPostOpt->setChecked(m_iniFile->getdouble("post_optimize")==1);
+    ui->chkExomize->setChecked(m_iniFile->getdouble("perform_crunch")==1);
+}
+
+void FormRasEditor::FillToIni()
+{
+    if (ui->chkPostOpt->isChecked())
+        m_iniFile->setFloat("post_optimize",1);
+    else
+        m_iniFile->setFloat("post_optimize",0);
+
+    if (ui->chkExomize->isChecked())
+        m_iniFile->setFloat("perform_crunch",1);
+    else
+        m_iniFile->setFloat("perform_crunch",0);
+
+
+    m_iniFile->Save();
+}
+
+void FormRasEditor::Reload()
+{
+    if (!m_currentSourceFile.contains(".asm"))
+        return;
+    int pos = ui->txtEditor->textCursor().position();
+
+    Load(m_currentSourceFile);
+    QTextCursor tc = ui->txtEditor->textCursor();
+    tc.setPosition(pos);
+    ui->txtEditor->setTextCursor(tc);
+
+}
+
 void FormRasEditor::Save(QString filename)
 {
     if (QFile::exists(filename))
@@ -392,4 +465,14 @@ void FormRasEditor::on_btnReplace_clicked()
 
     SetText(source);
 
+}
+
+void FormRasEditor::on_chkExomize_stateChanged(int arg1)
+{
+    FillToIni();
+}
+
+void FormRasEditor::on_chkPostOpt_stateChanged(int arg1)
+{
+    FillToIni();
 }

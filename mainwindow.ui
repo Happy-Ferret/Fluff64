@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>Turbo Rascal Syntax error, &quot;;&quot; expected but &quot;BEGIN&quot; Version 0.001 Pre-pre-alpha</string>
+   <string>Turbo Rascal Syntax error, &quot;;&quot; expected but &quot;BEGIN&quot; Version 0.003 Pre-pre-alpha</string>
   </property>
   <property name="autoFillBackground">
    <bool>true</bool>
@@ -183,6 +183,7 @@
     <addaction name="actionOpen_project"/>
     <addaction name="actionSave_As"/>
     <addaction name="actionDelete_file"/>
+    <addaction name="actionClose_current_project"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -202,6 +203,7 @@
     <property name="title">
      <string>Help</string>
     </property>
+    <addaction name="actionHelp_F1"/>
     <addaction name="actionAbout"/>
    </widget>
    <widget class="QMenu" name="menuWindow">
@@ -300,6 +302,16 @@
   <action name="actionOpen_project">
    <property name="text">
     <string>Open project</string>
+   </property>
+  </action>
+  <action name="actionClose_current_project">
+   <property name="text">
+    <string>Close current project</string>
+   </property>
+  </action>
+  <action name="actionHelp_F1">
+   <property name="text">
+    <string>Help F1</string>
    </property>
   </action>
  </widget>

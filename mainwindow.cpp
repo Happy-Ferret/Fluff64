@@ -150,6 +150,7 @@ void MainWindow::keyReleaseEvent(QKeyEvent *e)
 
 
 
+
 void MainWindow::LoadDocument(QString fileName)
 {
     for (TRSEDocument* d: m_documents) {
@@ -207,8 +208,11 @@ void MainWindow::RefreshFileList()
 {
     fileSystemModel = new CustomFileSystemModel(this);
     QString rootPath= getProjectPath();
-    if (rootPath=="")
+    if (rootPath=="") {
+        ui->treeFiles->setModel(nullptr);
             return;
+
+    }
     fileSystemModel->setReadOnly(true);
     fileSystemModel->setRootPath(rootPath);
     fileSystemModel->setFilter(QDir::NoDotAndDotDot |
@@ -283,15 +287,16 @@ void MainWindow::SaveAs()
 
 }
 
-void MainWindow::RemoveTab(int idx)
+void MainWindow::RemoveTab(int idx, bool save)
 {
     if (idx==0)
         return;
     idx--;
     TRSEDocument* doc = m_documents[idx];
-
-    m_currentProject.m_ini.removeFromList("open_files", doc->m_currentFileShort);
-    m_currentProject.Save();
+    if (save) {
+        m_currentProject.m_ini.removeFromList("open_files", doc->m_currentFileShort);
+        m_currentProject.Save();
+    }
 
     m_documents[idx]->Destroy();
     m_documents.remove(idx);
@@ -312,7 +317,7 @@ void MainWindow::CloseAll()
 {
     qDebug() << "Close all";
     while (ui->tabMain->count()!=1) {
-        RemoveTab(1);
+        RemoveTab(1, false);
     }
 }
 
@@ -361,6 +366,9 @@ void MainWindow::on_tabMain_currentChanged(int index)
         m_updateThread->SetCurrentImage(&imageedit->m_work, &imageedit->m_toolBox, imageedit->getLabelImage());
     }
     m_currentDoc = (TRSEDocument*)ui->tabMain->widget(index);
+
+    m_currentDoc->Reload();
+
 }
 
 void MainWindow::on_btnSave_3_clicked()
@@ -618,4 +626,17 @@ void MainWindow::on_actionAuto_ident_triggered()
 {
     if (m_currentDoc!=nullptr)
         m_currentDoc->AutoFormat();
+}
+
+void MainWindow::on_actionClose_current_project_triggered()
+{
+    CloseAll();
+    m_currentProject.Close();
+    RefreshFileList();
+}
+
+void MainWindow::on_actionHelp_F1_triggered()
+{
+    DialogHelp* dh = new DialogHelp(this, "");
+    dh->show();
 }

@@ -35,6 +35,8 @@ private slots:
 
     void on_btnDasm_clicked();
 
+    void on_btnExomizer_clicked();
+
 private:
     Ui::DialogTRSESettings *ui;
 };

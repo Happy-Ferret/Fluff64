@@ -227,11 +227,17 @@ void CodeEditor::keyPressEvent(QKeyEvent *e)
                break;
            }
         }
+    if ((e->modifiers() & Qt::ControlModifier)) {
+        c->popup()->hide();
+        QPlainTextEdit::keyPressEvent(e);
+        return;
+    }
 
 
     if (!(e->modifiers() & Qt::ControlModifier))
-    if (e->key()==Qt::Key_Tab || e->key()==Qt::Key_Backtab || e->key()==Qt::Key_Space || e->key()==Qt::Key_Backspace) {
+    if (e->key()==Qt::Key_Tab || e->key()==Qt::Key_Backtab || e->key()==Qt::Key_Space || e->key()==Qt::Key_Backspace || e->key()==Qt::Key_Escape) {
         QPlainTextEdit::keyPressEvent(e);
+        c->popup()->hide();
         return;
     }
 

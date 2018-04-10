@@ -16,6 +16,7 @@ void DialogTRSESettings::FillFromIni()
 {
     ui->leDasm->setText(m_ini->getString("dasm"));
     ui->leEmulator->setText(m_ini->getString("emulator"));
+    ui->leExomizer->setText(m_ini->getString("exomizer"));
 
     QDir directory("themes/");
     QStringList themes = directory.entryList(QStringList() << "*.ini");
@@ -40,6 +41,7 @@ void DialogTRSESettings::FillFromIni()
 void DialogTRSESettings::FillToIni()
 {
     m_ini->setString("dasm", ui->leDasm->text());
+    m_ini->setString("exomizer", ui->leExomizer->text());
     m_ini->setString("emulator", ui->leEmulator->text());
     m_ini->setString("theme", ui->cmbTheme->currentText() + ".ini");
 
@@ -65,6 +67,14 @@ void DialogTRSESettings::on_btnEmulator_clicked()
     QString filename = QFileDialog::getOpenFileName(this,
         tr("Emulator location"), m_ini->getString("project_path"), "*.exe");
     ui->leEmulator->setText(filename);
+
+}
+
+void DialogTRSESettings::on_btnExomizer_clicked()
+{
+    QString filename = QFileDialog::getOpenFileName(this,
+        tr("Exomizer location"), m_ini->getString("project_path"), "*.exe");
+    ui->leExomizer->setText(filename);
 
 }
 

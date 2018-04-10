@@ -1,20 +1,24 @@
-program Lines;
+program Tutorial11_Lines;
 var
 	i, j,k,val: byte=5;
 	@define address zeropage1
 	@define bitmapstart "$2000"
 	
+	// Currently, putpixel2 and putpixel3 are supported
 	@define putpixel "putpixel2();"
 	
 	@include "../RasLib/bitmapgraphics.ras"
-	// 1080
 
+
+/*
+  switch between bank 0 and 1
+*/
 procedure SwitchDrawBank();
 begin
 	if bmg_currbank=0 then begin
 		bmg_currbank := $40;
 		SetBank(VIC_BANK0);
-		clearbitmap($6400, 22);
+		clearbitmap($6400, 22); // Clear a certain window only
 	end
 	
 	else
@@ -65,15 +69,12 @@ begin
 		
 	end;
 	
-	
-	
-	
 	kernalinterrupt();
 end;
 
 begin
 	initmoveto();
-	bmg_currbank :=0;
+	bmg_currbank :=0; // Current bitmap bank (added to high bit of putpixel)
 	SetupPixelTables();
 	inczp(zeropage1,10);
 	poke(VIC_DATA_LOC, 0,$18);
@@ -94,13 +95,8 @@ begin
 	//	ClearBitmapB2();
 
 
-	DisableInterrupts();
+	DisableCIAInterrupts();
 	RasterIRQ(UpdateRaster(), 0);
 	EnableInterrupts();
 	
-	
 end.
-
-
-
-

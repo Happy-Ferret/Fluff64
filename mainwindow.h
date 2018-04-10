@@ -45,6 +45,12 @@ public:
         for (QString s: l) path+=s+"/";
         m_ini.setString("project_path", path);
     }
+    void Close() {
+        m_ini = CIniFile();
+        m_filename = "";
+
+    }
+
     void Save() {
         m_ini.Save(m_filename);
     }
@@ -115,6 +121,8 @@ public:
     void keyPressEvent(QKeyEvent* e);
     void keyReleaseEvent(QKeyEvent *e);
 
+
+
     WorkerThread* m_updateThread;
 
     void LoadDocument(QString fileName);
@@ -149,7 +157,7 @@ public slots:
     void UpdateRecentProjects();
     void SaveAs();
 
-    void RemoveTab(int);
+    void RemoveTab(int, bool save=true);
     void LoadProject(QString filename);
 
     void CloseAll();
@@ -195,6 +203,10 @@ private slots:
     void on_actionAbout_triggered();
 
     void on_actionAuto_ident_triggered();
+
+    void on_actionClose_current_project_triggered();
+
+    void on_actionHelp_F1_triggered();
 
 private:
 

@@ -43,6 +43,7 @@ public:
     int NO_PROJECT = 4;
     int ALPHA_WARNING = 5;
     int CHARSET_WARNING = 6;
+    int BRANCH_ERROR = 7;
 
     QMap<int, Message> m_messages;
     CIniFile* m_iniFile;

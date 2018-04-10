@@ -39,6 +39,16 @@ void Messages::InitMessages()
     m_messages[CHARSET_WARNING] = Message(CHARSET_WARNING, Message::Msg,
                                       "In order to display anything in the level editor, you first need to load and set a (binary) charset from the <b>charset</b> tab.");
 
+    m_messages[BRANCH_ERROR] = Message(BRANCH_ERROR, Message::Error,
+                                      "Branching error!<br><br>In order to circument the +-127-byte branching limitations, the TRSE compiler tries to automatically decide whether to use short conditional jumps "
+                                       "(bcs, bne etc) or long jumps (jmp). However, this does not always work, so you will sometimes need to explicitly specify whether "
+                                       "the branch is an <b>offpage</b>(&gt;127 bytes) or <b>onpage</b> (&lt;127 bytes) branch. The syntax is as follows:<br>"
+                                       "<br>"
+                                       "if a>b onpage then ...  // force onpage &gt;127 bytes brach<br>"
+                                       "if a>b offpage then ...  // force offpage &lt;127 bytes brach (slower)<br>"
+
+                                       );
+
     m_messages[ALPHA_WARNING] = Message(ALPHA_WARNING, Message::Msg,
                                       "Ah. Hi there! <br><br>Welcome to this pre-pre-alpha release of Turbo Rascal Syntax Error. However, be warned: "
                                       "this version is probably riddled with bugs and will occasionally crash. Not really meant for production. "

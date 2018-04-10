@@ -1,7 +1,22 @@
+program AstroBurger;
+var  
+   index: byte; 
+
+
+/*
+
+Nothing here yet.
+
+*/
+
 
 /*
    Renders a .flf level at map pos x,y
 */
+
+@define levelpointer zeropage2
+@define colorpointer zeropage3
+
 procedure RenderLevel(m_li, m_lj, m_screen: byte);
 var
    m_rl_width, m_rl_height : byte;
@@ -45,7 +60,7 @@ begin
 //	m_rl_val := m_rl_val;// + m_width; 
 
 	// Skip levels
-	if m_rl_pos<>0 then
+
 	for m_rl_j:=0 to m_rl_pos do begin
 			inczp(@levelpointer,m_rl_val);
 			inczp(@levelpointer,m_rl_val);
@@ -106,3 +121,8 @@ begin
 	// levelpointer now points to chunk data!
 
 end;
+
+
+begin
+
+end.

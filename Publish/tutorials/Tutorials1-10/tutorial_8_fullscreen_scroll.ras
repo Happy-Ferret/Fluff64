@@ -80,6 +80,7 @@ begin
 	poke(SCREEN_FG_COL, 0, 0);
 
 	hideBorderY(0);
+	g_dataLoc := $1a;
 end;
 
 
@@ -87,7 +88,7 @@ begin
 	time:=0;	
 	Setup();
 
-	disableinterrupts();
+	disableCIAinterrupts();
 	RasterIRQ(Update(), 1);
 	enableinterrupts();
 

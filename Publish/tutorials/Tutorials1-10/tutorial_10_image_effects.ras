@@ -73,7 +73,7 @@ begin
 	poke(VIC_DATA_LOC, 0,$18);
 	copyimagecolordata(image_color,1);
 	
-	DisableInterrupts();
+	DisableCIAInterrupts();
 	RasterIRQ(Update(), 0);
 	EnableInterrupts();
 	//Loop();

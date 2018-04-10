@@ -44,6 +44,9 @@ public:
 
     }
 
+    virtual void Reload() {}
+
+
     virtual void Destroy() = 0;
 
 };

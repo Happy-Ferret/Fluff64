@@ -270,6 +270,7 @@ begin
 	time:=0;	
 	score:=0;
 	Setup();
+	g_dataLoc:=$1a;
 	ClearScreen($20, SCREEN_CHAR_LOC);
 	ClearScreen($20, $4400);
 	ClearScreen($0F, SCREEN_COL_LOC);
@@ -280,7 +281,7 @@ begin
 
 	InitializeSprites();
 
-	disableinterrupts();
+	disableCIAinterrupts();
 	RasterIRQ(Update(), 0);
 	enableinterrupts();
 

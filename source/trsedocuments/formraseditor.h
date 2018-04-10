@@ -10,6 +10,7 @@
 #include "source/parser.h"
 #include "source/interpreter.h"
 #include <QElapsedTimer>
+#include "source/dialoghelp.h"
 
 namespace Ui {
     class FormRasEditor;
@@ -38,6 +39,7 @@ public:
     static void ExecutePrg(QString fileName, QString emulator);
     void InitDocument(WorkerThread *t, CIniFile *ini, CIniFile* iniProject) override;
     void setupEditor();
+    void Compress();
     void Build() override;
     void Setup();
     void Run() override;
@@ -49,6 +51,10 @@ public:
     void UpdateFromIni() override;
     void AutoFormat() override;
     bool BuildStep();
+    void FillFromIni();
+    void FillToIni();
+
+    void Reload();
 
     void Save(QString filename) override;
     void Load(QString filename) override;
@@ -70,6 +76,8 @@ private slots:
     void on_leSearch_textChanged(const QString &arg1);
 
     void on_btnReplace_clicked();
+    void on_chkExomize_stateChanged(int arg1);
+    void on_chkPostOpt_stateChanged(int arg1);
 };
 
 #endif // FORMRASEDITOR_H
