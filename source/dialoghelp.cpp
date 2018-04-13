@@ -56,10 +56,14 @@ void DialogHelp::FillItems(int curidx)
 
 void DialogHelp::FillHelpText()
 {
+    if (m_curItem==-1)
+        m_curItem=0;
     if (m_curTopic>=m_helper.m_topics.m_topics.count())
         return;
     if (m_curItem>=m_helper.m_topics.m_topics[m_curTopic]->m_topics.count())
         return;
+
+
     QString s = m_helper.m_topics.m_topics[m_curTopic]->m_topics[m_curItem]->m_info;
     ui->txtHelp->setText(s);
 }
@@ -166,10 +170,20 @@ void DialogHelp::on_leSearch_textChanged(const QString &arg1)
                 m_curItem = j;
                 FillItems(m_curTopic);
                 FillHelpText();
+                m_curTopic = i;
+                m_curItem = j;
                 ui->lstTopic->setCurrentRow (m_curTopic);
                 ui->lstItems->setCurrentRow(m_curItem);
             }
         }
 
     }
+}
+
+void DialogHelp::on_lstItems_currentRowChanged(int currentRow)
+{
+    m_curItem = currentRow;
+    FillHelpText();
+
+
 }

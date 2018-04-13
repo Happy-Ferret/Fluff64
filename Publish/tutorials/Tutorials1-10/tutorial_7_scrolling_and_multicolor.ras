@@ -103,10 +103,13 @@ end;
 
 begin
 	Setup();
-
+	preventirq();
+	setmemoryconfig(1,1,0);
 	DisableCIAInterrupts();
-	RasterIRQ(UpdateRaster(), 0);
-	EnableInterrupts();
+	RasterIRQ(UpdateRaster(), 0,1);
+	enablerasterirq();
+	enableirq();
+	
 
 	Loop();
 

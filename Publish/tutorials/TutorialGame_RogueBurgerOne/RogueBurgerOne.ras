@@ -1,4 +1,4 @@
-program Tutorial13;
+program RogueBurgerOne;
 var
 	//	intro_image_color: IncBin("images/lemonspawn_color.bin", "$3000");  // $800
 	music1 : incsid("music/fliptape.sid", "2");
@@ -1075,8 +1075,9 @@ end;
 
 
 
-interrupt GameOverLoop();
+procedure GameOverLoop();
 begin
+	startirq(1);
 	setRegularColormode();
 	poke(VIC_DATA_LOC, 0, @charmapText);
 	val:=val+1;
@@ -1099,12 +1100,12 @@ begin
 	
 	if joystickbutton=1 then begin
 		InitMainScreen();
-		RasterIRQ(MainScreen(), 0);
+		RasterIRQ(MainScreen(), 0, 1);
 	end;
 	
 	
 	waitForRaster(200);
-	kernalInterrupt();
+	closeirq();
 end;
 
 
@@ -1116,7 +1117,6 @@ end;
 // Funky sprite flashing and noises on game over
 procedure InitGameOver();
 begin
-	rasterIRQ(GameOverLoop(), 1);
 	for i:=0 to 100 do begin
 		poke(SPRITE_COLOR, 0, i);
 		poke(SPRITE_COLOR, 1, i);
@@ -1132,6 +1132,7 @@ begin
 		
 		waitForRaster(255);
 	end;
+	rasterIRQ(GameOverLoop(), 0,1);
 	
 	InitSid(SIDFILE_1_INIT);
 	
@@ -1332,9 +1333,10 @@ begin
 end;
 
 
-interrupt MainScreen();
+procedure MainScreen();
 
 begin
+	startirq(1);
 	Joystick();
 	//	if val=1 then
 		call(SIDFILE_1_PLAY);
@@ -1357,13 +1359,14 @@ begin
 		setbank(VIC_BANK1);
 		
 		disableciainterrupts();
-		RasterIRQ(rasterUpdateGame(), 0);
-		enableInterrupts();
+		RasterIRQ(rasterUpdateGame(), 0,1);
+		enablerasterirq();
+		enableirq();
 	end;
 	
 	//	waitforraster(100);
-	
-	kernalinterrupt();
+
+	closeirq();	
 end;
 
 
@@ -1373,14 +1376,16 @@ begin
 	//initsid(SIDFILE_1_INIT);
 	//	Intro();
 	// TURN OFF Kernal Basic! WHOO!
-	togglebit(^$1, 0, 0);
+	preventirq();
+	setmemoryconfig(1,1,0);
 	InitMainScreen();
 	InitSid(SIDFILE_1_INIT);
 	// Hook that raster!
 	//DisableInterrupts();
 	disableciainterrupts();
-	RasterIRQ(MainScreen(), 100);
-	enableInterrupts();
+	RasterIRQ(MainScreen(), 100,1);
+	enablerasterirq();
+	enableirq();
 	Loop();
 end.
 

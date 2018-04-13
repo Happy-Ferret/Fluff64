@@ -30,6 +30,7 @@ void Messages::InitMessages()
                                    "tool, but for now you need to manually reorganize your code blocks and include files.");
 
     m_messages[NO_DASM] = Message(NO_DASM, Message::Error, "You need to download the Dasm assembler (http://dasm-dillon.sourceforge.net/) and specify the location of dasm.exe in the TRSE settings panel.");
+    m_messages[NO_EXOMIZER] = Message(NO_EXOMIZER, Message::Error, "In order to use Exomizer, you need to download the exe file and  specify the location of exomizer.exe in the TRSE settings panel.");
     m_messages[NO_EMULATOR] = Message(NO_EMULATOR, Message::Error,
                                       "You need to download a c64 emulator (such as Vice) and specify the location in the TRSE settings panel.");
 

@@ -49,8 +49,11 @@ end;
 
 
 // Raster update
-interrupt Update();
+procedure Update();
+
 begin
+	startirq(1);
+	hideBorderY(0);
 	time:=time+1;
 	a:=(time*4)&1;
 
@@ -68,8 +71,7 @@ begin
 	end;
 
 
-
-	kernalinterrupt();
+	closeirq();
 end;
 
 procedure Setup();
@@ -87,9 +89,10 @@ end;
 begin
 	time:=0;	
 	Setup();
-
+	preventirq();
 	disableCIAinterrupts();
-	RasterIRQ(Update(), 1);
-	enableinterrupts();
-
+	RasterIRQ(Update(),0 ,1);
+	enablerasterirq();
+	enableirq();
+	Loop();
 end.

@@ -297,10 +297,9 @@ end;
 */
 begin
 	InitAll();
-	DisableCIAInterrupts();
 	while 1=1 do
 		RasterUpdate();
-	EnableInterrupts();
+
 	Loop();
 end.
 

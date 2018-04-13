@@ -12,9 +12,9 @@ var
 	9,  11, 8, 0, 11, 5, 6, 12);
 	
 	
-interrupt Update();
+procedure Update();
 begin
-	
+	startirq(1);
 	waitForRaster(30);
 	SetBank(VIC_BANK1);
 	poke(VIC_DATA_LOC, 0,$18);
@@ -59,7 +59,7 @@ begin
 		end;
 	end;
 	
-	kernalInterrupt();
+	closeirq();
 end;
 
 
@@ -72,10 +72,10 @@ begin
 	orgChar := peek(VIC_DATA_LOC, 0);
 	poke(VIC_DATA_LOC, 0,$18);
 	copyimagecolordata(image_color,1);
-	
+	preventirq();
 	DisableCIAInterrupts();
-	RasterIRQ(Update(), 0);
-	EnableInterrupts();
+	RasterIRQ(Update(),0, 1);
+	enablerasterirq();
 	//Loop();
 	
 end.

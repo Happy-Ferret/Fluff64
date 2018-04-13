@@ -1,0 +1,45 @@
+program Tutorial_13_stable_raster;
+var
+	a,b:byte;
+
+procedure IRQ1();
+//procedure IRQ2();
+
+
+procedure IRQ0();
+begin
+	StartIRQ(1);
+	SCREEN_BG_COL:=RED;
+	RasterIRQ(IRQ1(),$40,1);
+	CloseIRQ();
+end;
+
+
+procedure IRQ2();
+begin
+	StartIRQ(1);
+	SCREEN_BG_COL:=YELLOW;
+	
+	RasterIRQ(IRQ0(),$00,1);
+	CloseIRQ();
+end;
+
+
+procedure IRQ1();
+begin
+	StartIRQ(1);
+	SCREEN_BG_COL:=GREEN;
+
+	RasterIRQ(IRQ2(),$80,1);
+	CloseIRQ();
+end;
+
+
+begin
+	DisableCIAInterrupts();
+	SetMemoryConfig(1,1,0);
+	RasterIRQ(IRQ0(),$00,1);
+	EnableRasterIRQ();
+	enableirq();
+	Loop(); 
+end.

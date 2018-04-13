@@ -29,6 +29,7 @@ end;
 
 interrupt UpdateRaster();
 begin
+	startirq(1);
 	UpdateScreen();
 
 	time:=time+1;
@@ -45,8 +46,8 @@ begin
 	colorIndex:=0;
 	Bars();
 	
-	kernalInterrupt();
-
+	//kernalInterrupt();
+	closeirq();
 end;
 
 
@@ -103,10 +104,12 @@ begin
 	mainloop:=1;
 	time:=0;
 
-	
+	preventirq();
 	DisableCiaInterrupts();
-	RasterIRQ(UpdateRaster(), 199);
-	EnableInterrupts();
+	setmemoryconfig(1,1,0);
+	RasterIRQ(UpdateRaster(), 0,1);
+	enablerasterirq();
+	enableirq();
 
 	Loop();
 

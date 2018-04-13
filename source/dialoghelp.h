@@ -55,6 +55,8 @@ private slots:
 
     void on_leSearch_textChanged(const QString &arg1);
 
+    void on_lstItems_currentRowChanged(int currentRow);
+
 private:
     Ui::DialogHelp *ui;
 };

@@ -240,7 +240,6 @@ void CodeEditor::keyPressEvent(QKeyEvent *e)
         c->popup()->hide();
         return;
     }
-
         bool isShortcut = ((e->modifiers() & Qt::ControlModifier) && e->key() == Qt::Key_Space); // CTRL+E
         if (!c || !isShortcut) // do not process the shortcut when we have a completer
             QPlainTextEdit::keyPressEvent(e);

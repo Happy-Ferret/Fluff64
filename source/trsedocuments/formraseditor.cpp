@@ -85,6 +85,8 @@ void FormRasEditor::Build()
         QProcess processCompress;
         if (m_iniFile->getdouble("perform_crunch")==1) {
             QString fn = (filename +".prg");
+            if (!QFile::exists(m_iniFile->getString("exomizer")))
+                Messages::messages.DisplayMessage(Messages::messages.NO_EXOMIZER);
             processCompress.start(m_iniFile->getString("exomizer"), QStringList()<< "sfx" << "$0900" << fn<< "-o" << fn  );
             processCompress.waitForFinished();
         }

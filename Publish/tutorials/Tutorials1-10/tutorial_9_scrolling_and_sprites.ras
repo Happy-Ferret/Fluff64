@@ -221,8 +221,10 @@ end;
 
 
 
-interrupt Update();
+procedure Update();
 begin
+	startirq(1);
+	hidebordery(0);
 	time:=time+1;
 
 
@@ -244,7 +246,7 @@ begin
 	MoveMonster();
 
 
-	kernalinterrupt();
+	closeirq();
 end;
 
 procedure Setup();
@@ -280,9 +282,13 @@ begin
 	printString(" SCORE:", 1, 10);
 
 	InitializeSprites();
-
+	preventirq();
 	disableCIAinterrupts();
-	RasterIRQ(Update(), 0);
-	enableinterrupts();
+	RasterIRQ(Update(), 0,1);
+	enablerasterirq();
+	enableirq();
+
+	loop();
+
 
 end.
