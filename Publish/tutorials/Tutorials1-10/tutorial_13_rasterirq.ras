@@ -2,11 +2,10 @@ program Tutorial_13_stable_raster;
 var
 	a,b:byte;
 
-procedure IRQ1();
-//procedure IRQ2();
+interrupt IRQ1();
 
 
-procedure IRQ0();
+interrupt IRQ0();
 begin
 	StartIRQ(1);
 	SCREEN_BG_COL:=RED;
@@ -15,7 +14,7 @@ begin
 end;
 
 
-procedure IRQ2();
+interrupt IRQ2();
 begin
 	StartIRQ(1);
 	SCREEN_BG_COL:=YELLOW;
@@ -25,7 +24,7 @@ begin
 end;
 
 
-procedure IRQ1();
+interrupt IRQ1();
 begin
 	StartIRQ(1);
 	SCREEN_BG_COL:=GREEN;

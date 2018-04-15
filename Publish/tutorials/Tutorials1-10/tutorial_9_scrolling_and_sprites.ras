@@ -170,7 +170,8 @@ end;
 procedure MoveMonster();
 begin
 	spritepos(monster_x, monster_y, @_monsterSprite);
-	monster_x:=sine[time]/2 + 80;	
+	monster_x:=sine[time]/2 + 80;
+		
 
 
 	val:=getBit(SPRITE_COLLISION, @_monsterSprite);

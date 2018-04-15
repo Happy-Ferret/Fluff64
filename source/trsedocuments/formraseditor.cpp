@@ -66,6 +66,7 @@ void FormRasEditor::Compress()
 
 void FormRasEditor::Build()
 {
+    SaveCurrent();
 
     if (BuildStep())
         {
