@@ -153,6 +153,9 @@ void MainWindow::keyReleaseEvent(QKeyEvent *e)
 
 void MainWindow::LoadDocument(QString fileName)
 {
+    if (!QFile::exists( getProjectPath() + "/" +fileName))
+        return;
+
     for (TRSEDocument* d: m_documents) {
         if (d->m_currentFileShort==fileName) {
             ui->tabMain->setCurrentWidget(d);
