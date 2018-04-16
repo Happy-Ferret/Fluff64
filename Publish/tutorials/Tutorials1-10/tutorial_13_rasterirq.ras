@@ -18,7 +18,6 @@ interrupt IRQ2();
 begin
 	StartIRQ(1);
 	SCREEN_BG_COL:=YELLOW;
-	
 	RasterIRQ(IRQ0(),$00,1);
 	CloseIRQ();
 end;

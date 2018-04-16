@@ -75,8 +75,8 @@ cont:
 	end;
 
 	for i:=0 to 40 do begin
-		screenmemory[i]:=rands[i+shiftx]+64;
-		screenmemory[i+40]:=rands[i-shiftx]+64;
+		screenmemory[i]:=rands[i+shiftx];
+		screenmemory[i+40]:=rands[i-shiftx];
 	end;
 
 end;
@@ -87,7 +87,7 @@ procedure InitRandom();
 begin
 	for i:=0 to 0 do begin
 		rand(0,255,val);
-		rands[i]:=val/16;
+		rands[i]:=val/16+64;
 	end;
 
 end;
