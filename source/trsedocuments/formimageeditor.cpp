@@ -629,11 +629,10 @@ void FormImageEditor::on_tabWidget_2_currentChanged(int index)
 
 void FormImageEditor::on_btnLoadCharmap_clicked()
 {
-    C64FullScreenChar* charImage = dynamic_cast<C64FullScreenChar*>(m_work.m_currentImage->m_image);
 
-    ImageLevelEditor* editor = dynamic_cast<ImageLevelEditor*>(m_work.m_currentImage->m_image);
+    MultiColorImage* mci = dynamic_cast<MultiColorImage*>(m_work.m_currentImage->m_image);
 
-    if (editor==nullptr && charImage==nullptr)
+    if (mci==nullptr)
         return;
 
 
@@ -644,7 +643,7 @@ void FormImageEditor::on_btnLoadCharmap_clicked()
         return;
 
 
-    editor->LoadCharset(fileName);
+    mci->LoadCharset(fileName);
     m_iniFile->setString("current_charset", fileName);
     m_iniFile->Save();
     updateCharSet();
