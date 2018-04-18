@@ -161,6 +161,7 @@ void FormImageEditor::Load(QString filename)
     if (filename=="")
         return;
 */
+
     LImage* img = LImageIO::Load(filename);
 
     m_work.New(img, filename);
