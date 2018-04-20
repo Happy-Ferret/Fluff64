@@ -1,2 +1,2 @@
 project_path = C:/Users/leuat/OneDrive/Documents/GitHub/Fluff64/Publish/tutorials/TutorialGame_RogueBurgerOne/
-open_files = ,RogueBurgerOne.ras
+open_files = ,charsets/charset_text.flf, RogueBurgerOne.ras, player.ras, introscreen.ras, enitities.ras

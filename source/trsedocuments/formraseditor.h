@@ -63,10 +63,19 @@ public:
 
     void Destroy() override {}
 
+    void GotoLine(int ln) override;
+
     Ui::FormRasEditor* UI(){return ui;}
+
+    void SetOutputText(QString txt);
+
 
 private:
     Ui::FormRasEditor *ui;
+
+signals:
+    void OpenOtherFile(QString filename, int ln);
+
 
 private slots:
     void on_leSearch_textChanged();

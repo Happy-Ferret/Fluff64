@@ -17,6 +17,8 @@ public:
 
     QString m_fileExtension;
 
+    QString m_outputText;
+
     WorkerThread* m_updateThread;
     CIniFile* m_iniFile;
     CIniFile* m_projectIniFile;
@@ -31,6 +33,7 @@ public:
         Save(m_currentSourceFile);
         Data::data.blink = true;
     }
+    virtual void GotoLine(int ln) {}
     virtual void Build() {}
     virtual void Run() {}
 

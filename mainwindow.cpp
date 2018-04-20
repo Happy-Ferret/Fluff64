@@ -184,6 +184,7 @@ void MainWindow::LoadDocument(QString fileName)
     m_currentProject.Save();
 
 
+
     editor->setFocus();
     editor->showMaximized();
     ui->tabMain->setCurrentWidget(editor);
@@ -193,6 +194,9 @@ void MainWindow::LoadDocument(QString fileName)
     ui->tabMain->setTabsClosable(true);
     m_documents.append(editor);
     m_currentDoc = editor;
+
+
+    connect(m_currentDoc, SIGNAL(OpenOtherFile(QString, int )), this, SLOT(ForceOpenFile(QString , int)));
 
 
 }
@@ -239,6 +243,20 @@ void MainWindow::OnQuit()
 {
     m_iniFile.setVec("splitpos", QVector3D(ui->splitter->sizes()[0],ui->splitter->sizes()[1],0));
     m_iniFile.Save();
+}
+
+void MainWindow::ForceOpenFile(QString s, int ln)
+{
+    s.remove(getProjectPath());
+    if (s.startsWith("/"))
+        s = s.remove(0,1);
+    QString txt = m_currentDoc->m_outputText;
+
+    LoadDocument(s);
+    m_currentDoc->GotoLine(ln);
+    FormRasEditor* fe = dynamic_cast<FormRasEditor*>(m_currentDoc);
+    if (fe!=nullptr)
+        fe->SetOutputText(txt);
 }
 
 void MainWindow::closeWindowSlot()

@@ -1,0 +1,310 @@
+procedure MainScreen();
+
+procedure drawBurger(db_type:byte);
+var 
+	drawBurgerCount: byte = 0;
+	currentBurger,dbx, dby : byte = 0;
+begin
+
+	dbx:=34;
+	dby:=0;
+	if (db_type=1) then begin
+		dbx:=0;
+		dby:=3;
+	end;
+	if (db_type=2) then begin
+		dbx:=6;
+		dby:=3;
+	end;
+	if (db_type=3) then begin
+		dbx:=0;
+		dby:=3;
+	end;
+
+	for i:=0 to 6 do begin
+		k:=dbx + dby*40 + i;
+		screenmemory[i]:=k;
+		screenmemory[i+40]:=k+40;
+		screenmemory[i+80]:=k+80;
+		screenmemory[i+120]:=k+120;
+	end;
+
+end;
+
+procedure InitMainScreen();
+begin
+	poke(VIC_DATA_LOC, 0, @charmapText);
+	poke(SCREEN_BG_COL, 0, 0);
+	poke(SCREEN_FG_COL, 0, 0);
+	SetBank(VIC_BANK1);
+	setregularcolormode();
+	ClearScreen(@clearchar, $0400);
+	ClearScreen(@clearchar, $4400);
+	ClearScreen(@clearchar, $8400);
+	ClearScreen(11, SCREEN_COL_LOC);
+	joystickbutton:=0;
+	moveto(5, 10, $D8);
+	fill(^$D800 + ^15*^40, LIGHT_GREY, 80);
+
+	zeropage5:=screenmemory;
+	zeropage1:=IntroText;
+	moveto(5, 10, $44);
+	j:=10;
+	// Draw burgers
+	/*for i:=34 to 40 do begin
+		for j:=0 to 4 do begin
+			k:=j*8 + 5 + i;
+			screenmemory[k]:=i;
+			screenmemory[k+40]:=i+40;
+			screenmemory[k+80]:=i+80;
+			screenmemory[k+120]:=i+120;
+		end;
+	end;
+	moveto(0, 3, $44);
+
+	
+	for i:=0 to 25 do begin
+		poke(@screenmem1, i, i + 120);
+		poke(@screenmem1+ ^40, i, i + 160);
+		poke(@screenmem2, i, i + 120);
+		poke(@screenmem2+ ^40, i, i + 160);
+		//	val := fade[i&15];
+		val := LIGHT_RED;
+		poke(^$D800, i,val );
+		poke(^$D800+ ^40, i, val);
+	end;
+	*/
+	
+	
+	/*	moveto(0, 3, $D8);
+	zeropage5:=screenmemory;
+	moveto(0, 3, $44);
+	for i:=10 to 15 do begin
+		for k:=0 to 40 do begin
+			j:=screenmemory[k];
+			if j<>$20 then begin
+				screenmemory[k]:=47;
+				zeropage5[k]:=LIGHT_RED
+			end;
+		end;
+		incscreenx(40);
+		inczp(zeropage5, 40);
+	end;
+	*/
+	
+	player_health:=20;
+	val:=1;
+	
+end;
+
+@define y_start "3"
+
+procedure Plasma();
+var
+	c,c2x, c2y,ax, ay,x,y : byte;
+	siny : array[25] of byte;
+	sinx : array[40] of byte;
+	
+begin
+	c2x:=ax;
+	c2y:=ay;
+	
+	
+	for x:=2 to 9 do begin
+		siny[x]:=  sine[c2x] + sine[c2y];// + shiftx;
+		c2x:=c2x+4;
+		c2y:=c2y+9;
+	end;
+	
+	ax:=ax+3;
+	ay:=ay-5;
+	
+	
+	for x:=0 to 40 do begin
+		sinx[x] := sine[c2x] + sine[c2y];
+		c2x:=c2x+3;
+		c2y:=c2y+7;
+		
+	end;
+	moveto(0,8, $44);
+	
+	for y:=3 to 8 do begin
+		val:=siny[y];
+		for x:=5 to 35 do begin
+			k:=screenmemory[x];
+			screenmemory[x]:=(sinx[x] +val)/8 + 80;
+			
+		end;
+		inczp(screenmemory,40);
+	end;
+	
+	
+	
+	
+end;
+
+
+procedure InitSprites();
+begin
+	
+	// Black and yellow are our colors
+	poke(SPRITE_MULTICOLOR_REG1, 0, BLACK);
+	poke(SPRITE_MULTICOLOR_REG2, 0, YELLOW);
+	
+	poke(SPRITE_BITMASK,0, %00000001);
+	
+	poke(SPRITE_COLOR,0, RED);
+	
+	poke(SPRITE_MULTICOLOR, 0, $FF); // ALL multicolor
+end;
+
+
+
+interrupt MainScreen();
+
+
+interrupt MainScreenScrollerEnds();
+var 
+	ms_scroll : byte=7;
+begin
+	startirq(@usekernal);
+	asm(" 
+		ldx #4
+		dex
+		bne *-1
+	");
+	SCREEN_FG_COL:=BLUE;
+	scrollx(0);
+	waitnoraster(1);
+	asm(" 
+		ldx #9
+		dex
+		bne *-1
+	");
+	SCREEN_FG_COL:=BLACK;
+	poke(VIC_DATA_LOC, 0, @charmapText);
+	setbank(VIC_BANK1);
+	RasterIRQ(MainScreen(),230, @usekernal);
+	if (ms_scroll=1) then begin
+		memcpy(^$8400 + ^40*^15, 1, ^$8400 + ^40*^15, 39);
+		memcpy(^$8400 + ^40*^16, 1, ^$8400 + ^40*^16, 39);
+	end;
+	closeirq();
+	
+end;
+
+
+interrupt MainScreenScroller();
+var 
+	ms_sshift : byte=0;
+begin
+	startirq(@usekernal);
+	asm(" 
+		ldx #4
+		dex
+		bne *-1
+	");
+	SCREEN_FG_COL:=BLUE;
+	poke(VIC_DATA_LOC, 0, $18);
+	setbank(VIC_BANK2);
+	waitnoraster(1);
+	asm(" 
+		ldx #13
+		dex
+		bne *-1
+	");
+	SCREEN_FG_COL:=BLACK;
+	
+	dec(ms_scroll);
+	dec(ms_scroll);
+	scrollx(ms_scroll);
+	MULTICOLOR_CHAR_COL[1]:=LIGHT_RED;
+	MULTICOLOR_CHAR_COL[2]:=BROWN;
+	
+	if (ms_scroll>127) then begin
+		val:=zeropage1[0];
+		moveto(0,15, $84);
+		if (val=$20) then val2:=val
+		else begin
+			if val>64 then val:=val-65;
+			if val>16 then val:=val+24;  
+			val:=val*2;
+		
+			val:=val + ms_sshift;
+			val2:=val+40;
+		end;
+
+		screenmemory[39]:=val;
+		screenmemory[39+40]:=val2;
+		ms_scroll := 7;
+		inc(ms_sshift);
+		if (ms_sshift=2) then begin
+			ms_sshift:=0;
+			inczp(zeropage1,1);
+			if (zeropage1[0]=0) then inczp(zeropage1,1);
+			if (zeropage1[0]=255) then zeropage1:=IntroText;
+	
+		end;
+
+
+	end;
+
+
+	RasterIRQ(MainScreenScrollerEnds(),190, @usekernal);
+
+	closeirq();
+end;
+
+
+
+interrupt MainScreen();
+
+begin
+	startirq(@usekernal);
+	Joystick();
+	//	if val=1 then
+	call(SIDFILE_1_PLAY);
+	
+	if player_health<>0 then
+		player_health:=player_health-1;
+	
+	Plasma();
+
+
+	inc(drawBurgerCount);
+	if (drawBurgerCount=11) then begin
+		drawBurgerCount:= 0;
+		moveto(17,0,$44);
+		drawBurger(currentBurger);
+		inc(currentBurger);
+		if (currentBurger=4) then currentBurger:=0;
+		
+	end;
+	
+	SCREEN_FG_COL:=BLACK;
+
+	if (joystickbutton=1 and player_health=0) then begin
+		val:=0;
+		clearsound();
+		InitSprites();
+		PrintText();
+		
+		InitNewGame();
+		
+		
+		// My VIC of chosing
+		setbank(VIC_BANK1);
+		
+		disableciainterrupts();
+		RasterIRQ(rasterUpdateGame(), 0,@usekernal);
+		enablerasterirq();
+		enableirq();
+	end
+	else
+		RasterIRQ(MainScreenScroller(), 166, @usekernal);
+
+
+	closeirq();	
+end;
+
+

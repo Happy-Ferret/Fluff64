@@ -137,15 +137,24 @@ void FormRasEditor::Build()
 
     }
     else {
-        ui->txtOutput->setText(ErrorHandler::e.m_teOut);
+        SetOutputText(ErrorHandler::e.m_teOut);
+        m_outputText = ErrorHandler::e.m_teOut;
         int ln = Pmm::Data::d.lineNumber;
-        QTextCursor cursor(ui->txtEditor->document()->findBlockByLineNumber(ln-1));
-        ui->txtEditor->setTextCursor(cursor);
+
+        emit OpenOtherFile(interpreter.recentError.file, ln);
+        GotoLine(ln);
         m_buildSuccess = false;
 
     }
     SetLights();
 }
+
+void FormRasEditor::SetOutputText(QString txt)
+{
+    ui->txtOutput->setText(ErrorHandler::e.m_teOut);
+
+}
+
 
 void FormRasEditor::Setup()
 {
@@ -212,13 +221,11 @@ void FormRasEditor::keyPressEvent(QKeyEvent *e)
 
     if (e->key()==Qt::Key_F && QApplication::keyboardModifiers() & Qt::ControlModifier) {
         ui->leSearch->setText("");
+        m_searchFromPos = ui->txtEditor->textCursor().position();
         ui->leSearch->setFocus();
-        m_searchFromPos =ui->txtEditor->textCursor().position();
     }
 
     if (e->key()==Qt::Key_F1) {
-
-
         QTextCursor tc = ui->txtEditor->textCursor();
         tc.select(QTextCursor::WordUnderCursor);
         QString word = tc.selectedText();
@@ -227,6 +234,23 @@ void FormRasEditor::keyPressEvent(QKeyEvent *e)
         dh->show();
 
     }
+
+    if (e->key()==Qt::Key_F2) {
+        QTextCursor tc = ui->txtEditor->textCursor();
+        tc.select(QTextCursor::WordUnderCursor);
+        QString word = tc.selectedText();
+        for (Node*n : parser.m_proceduresOnly) {
+            NodeProcedureDecl* np = dynamic_cast<NodeProcedureDecl*>(n);
+            if (np->m_procName.toLower()==word.toLower()) {
+                int ln=np->m_op.m_lineNumber;
+                QTextCursor cursor(ui->txtEditor->document()->findBlockByLineNumber(ln));
+                ui->txtEditor->setTextCursor(cursor);
+            }
+        }
+
+
+    }
+
 
     if (e->key() == Qt::Key_S &&  (QApplication::keyboardModifiers() & Qt::ControlModifier)) {
         //on_btnSave_2_clicked();
@@ -245,6 +269,13 @@ void FormRasEditor::keyPressEvent(QKeyEvent *e)
 
 
 }
+
+void FormRasEditor::GotoLine(int ln)
+{
+    QTextCursor cursor(ui->txtEditor->document()->findBlockByLineNumber(ln-1));
+    ui->txtEditor->setTextCursor(cursor);
+}
+
 
 
 void FormRasEditor::on_leSearch_textChanged()

@@ -140,6 +140,8 @@ public slots:
 
       void OnQuit();
 
+    void ForceOpenFile(QString s, int ln);
+
     void updateImage() {
         FormImageEditor* imageEdit = dynamic_cast<FormImageEditor*>(ui->tabMain->currentWidget());
         if (imageEdit==nullptr)
