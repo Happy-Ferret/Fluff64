@@ -171,7 +171,7 @@ end;
 Procedure PrintTextColor();
 begin
 	j:=time/4;
-	for i:=0 to 25 do begin
+	for i:=0 to 40 do begin
 		
 		val := LIGHT_GREY; //Yellow in MC//fade[(i+j)&15];
 		poke(^$D800,i,val);

@@ -36,7 +36,12 @@ begin
 	for i:=0 to no_entities do begin
 		if entity_type[i]<>0 then
 			begin
-			tmp2 := abs(entity_curpos_x[i] - fc_x) + abs(entity_curpos_y[i] -fc_y);
+			tmp2 := abs(entity_curpos_x[i] - fc_x);
+			tmp3 := abs(entity_curpos_y[i] - fc_y);
+			
+			tmp2:=tmp2/2 + tmp3/2;
+			
+			//tmp2 :=tmp2 + abs(entity_curpos_y[i] -fc_y);
 			if tmp2<val then begin
 				val:=tmp2;
 				j:=i;
@@ -71,7 +76,7 @@ begin
 		
 		
 		findCollider(bullet_x, bullet_y);
-		if val<8 then begin
+		if val<4 then begin
 			pointToEntityData(j);
 			togglebit(SPRITE_BITMASK, @bulletSprite, 0);
 			HitEntity(j, bullet_dmg);
@@ -98,6 +103,7 @@ begin
 	
 	if (joystickbutton=1 and (bullet_count<>0 and bullet_wait=0)) then begin
 		// Shoot!
+
 		bullet_x := spritex/2;
 		bullet_y := spritey;
 		bullet_dy := prev_dy*2;
@@ -198,10 +204,14 @@ begin
 	if val<@crashDistance onpage then begin
 		pointToEntityData(j);
 		player_health := player_health - zeropage5[@entity_damage];
+@ifndef immortal
 		if player_health >200 then
 			InitGameOver();
-		//		if player_health >200 then
-			//		player_health:=10;
+@endif
+@ifdef immortal
+				if player_health >200 then
+					player_health:=10;
+@endif
 		
 		if player_health>player_maxhealth then
 			player_health := player_maxhealth;

@@ -31,6 +31,11 @@ begin
 
 end;
 
+
+
+procedure InitSprites();
+
+
 procedure InitMainScreen();
 begin
 	poke(VIC_DATA_LOC, 0, @charmapText);
@@ -44,54 +49,57 @@ begin
 	ClearScreen(11, SCREEN_COL_LOC);
 	joystickbutton:=0;
 	moveto(5, 10, $D8);
-	fill(^$D800 + ^15*^40, LIGHT_GREY, 80);
+	fill(^$D800 + ^5*^40, LIGHT_GREY, 80);
+	//fill(^$D800 + ^0, LIGHT_GREEN, 160);
 
+	zeropage4:=CreditsText;
 	zeropage5:=screenmemory;
 	zeropage1:=IntroText;
 	moveto(5, 10, $44);
 	j:=10;
-	// Draw burgers
-	/*for i:=34 to 40 do begin
-		for j:=0 to 4 do begin
-			k:=j*8 + 5 + i;
-			screenmemory[k]:=i;
-			screenmemory[k+40]:=i+40;
-			screenmemory[k+80]:=i+80;
-			screenmemory[k+120]:=i+120;
-		end;
-	end;
-	moveto(0, 3, $44);
 
-	
+	// Draw side stuff
+	moveto(0, 00, $44);
+	zeropage2:=$D800;
 	for i:=0 to 25 do begin
-		poke(@screenmem1, i, i + 120);
-		poke(@screenmem1+ ^40, i, i + 160);
-		poke(@screenmem2, i, i + 120);
-		poke(@screenmem2+ ^40, i, i + 160);
-		//	val := fade[i&15];
-		val := LIGHT_RED;
-		poke(^$D800, i,val );
-		poke(^$D800+ ^40, i, val);
-	end;
-	*/
-	
-	
-	/*	moveto(0, 3, $D8);
-	zeropage5:=screenmemory;
-	moveto(0, 3, $44);
-	for i:=10 to 15 do begin
-		for k:=0 to 40 do begin
-			j:=screenmemory[k];
-			if j<>$20 then begin
-				screenmemory[k]:=47;
-				zeropage5[k]:=LIGHT_RED
+
+		if (i<5 or i>7) then begin
+			for j:=0 to 5 do begin
+				screenmemory[j]:=58;
+				zeropage2[j]:=BLUE;
+				screenmemory[j+35]:=58;
+				zeropage2[j+35]:=BLUE;
 			end;
+			screenmemory[3]:=59;
+			screenmemory[4]:=60;
+			screenmemory[35]:=61;
+			screenmemory[36]:=62;
 		end;
-		incscreenx(40);
-		inczp(zeropage5, 40);
+
+		inczp(screenmemory, 40);	
+		inczp(zeropage2, 40);	
 	end;
-	*/
-	
+	// Set up main colors
+	moveto(0,14,$D8);
+	for j:=0 to 10 do begin
+		for i:=6 to 34 do begin
+			screenmemory[i]:=@CreditsColors;
+		end;
+		inczp(screenmemory, 40);
+	end;
+
+	tmp:=275;
+	spritepos(tmp, 190, 0);
+	tmp:=70;
+	spritepos(tmp, 190, 1);
+//	InitSprites();
+	SPRITE_COLOR[0]:=RED;
+	SPRITE_COLOR[1]:=RED;
+	SPRITE_MULTICOLOR:=$FF;
+
+
+	InitSprites();
+
 	player_health:=20;
 	val:=1;
 	
@@ -126,12 +134,12 @@ begin
 		c2y:=c2y+7;
 		
 	end;
-	moveto(0,8, $44);
+	moveto(0,9, $44);
 	
 	for y:=3 to 8 do begin
 		val:=siny[y];
-		for x:=5 to 35 do begin
-			k:=screenmemory[x];
+		for x:=6 to 34 do begin
+			//k:=screenmemory[x];
 			screenmemory[x]:=(sinx[x] +val)/8 + 80;
 			
 		end;
@@ -184,10 +192,10 @@ begin
 	SCREEN_FG_COL:=BLACK;
 	poke(VIC_DATA_LOC, 0, @charmapText);
 	setbank(VIC_BANK1);
-	RasterIRQ(MainScreen(),230, @usekernal);
+	RasterIRQ(MainScreen(),130, @usekernal);
 	if (ms_scroll=1) then begin
-		memcpy(^$8400 + ^40*^15, 1, ^$8400 + ^40*^15, 39);
-		memcpy(^$8400 + ^40*^16, 1, ^$8400 + ^40*^16, 39);
+		memcpy(^$8400 + ^40*^5, 1, ^$8400 + ^40*^5, 39);
+		memcpy(^$8400 + ^40*^6, 1, ^$8400 + ^40*^6, 39);
 	end;
 	closeirq();
 	
@@ -205,7 +213,7 @@ begin
 		bne *-1
 	");
 	SCREEN_FG_COL:=BLUE;
-	poke(VIC_DATA_LOC, 0, $18);
+	poke(VIC_DATA_LOC, 0, @highCharMemoryPos);
 	setbank(VIC_BANK2);
 	waitnoraster(1);
 	asm(" 
@@ -223,7 +231,7 @@ begin
 	
 	if (ms_scroll>127) then begin
 		val:=zeropage1[0];
-		moveto(0,15, $84);
+		moveto(0,5, $84);
 		if (val=$20) then val2:=val
 		else begin
 			if val>64 then val:=val-65;
@@ -250,9 +258,77 @@ begin
 	end;
 
 
-	RasterIRQ(MainScreenScrollerEnds(),190, @usekernal);
+	RasterIRQ(MainScreenScrollerEnds(),110, @usekernal);
 
 	closeirq();
+end;
+
+
+procedure UpdateCredits();
+begin
+	k:=$44;
+	moveto(creditsX, creditsY, k);
+	val:=zeropage4[0];
+	if val=@cclear then creditsCounter:=0;
+	if (creditsCounter<>0) then begin
+		l:=creditsCounter&7;
+		screenmemory[1]:=138 + l;
+		dec(creditsCounter);
+		return();
+	end;
+	screenmemory[1]:=$20;
+
+
+	creditsCounter := @creditsCMax;
+
+
+	val:=zeropage4[0];
+	inczp(zeropage4,1);
+
+	if val=128 then SPRITE_BITMASK:=0;
+	if (val>129 and val<160) then begin 
+		SPRITE_BITMASK:=%00000011;
+		val2:=entity_sprites[val-129];
+		setspriteloc(0,val2,1);
+		setspriteloc(1,val2,1);
+	end;
+
+	if val=@cpause then begin
+		creditsCounter := @creditsCMax*16;
+		return();
+	end;
+
+	if val=0 then begin
+		zeropage4:=CreditsText;
+		return();
+	end;
+	if val=@cclear then begin
+		creditsX:=@creditsStartX;
+		creditsY:=@creditsStartY;
+
+		moveto(creditsX, creditsY, k);
+		// Clear screen
+		for j:=0 to 5 do begin
+			for i:=0 to 24 do begin
+				screenmemory[i]:=$20;
+			end;
+			inczp(screenmemory,40);
+		end;
+		return();
+	end;
+	if val=@newline then begin
+		creditsX:=@creditsStartX;
+		inc(creditsY);
+		return();
+	end;
+	inc(creditsX);
+
+	moveto(creditsX, creditsY, k);
+	if (val>64 and val<128) then val:=val-64;
+	screenmemory[0]:=val;
+	screenmemory[1]:=$20;
+	dec(creditsCounter);
+	
 end;
 
 
@@ -267,9 +343,11 @@ begin
 	
 	if player_health<>0 then
 		player_health:=player_health-1;
-	
-	Plasma();
 
+	val:=zeropage4[0];	
+	if val<>@cclear then
+		Plasma();
+	UpdateCredits();
 
 	inc(drawBurgerCount);
 	if (drawBurgerCount=11) then begin
@@ -288,20 +366,17 @@ begin
 		clearsound();
 		InitSprites();
 		PrintText();
-		
 		InitNewGame();
-		
-		
 		// My VIC of chosing
 		setbank(VIC_BANK1);
-		
-		disableciainterrupts();
+		//disableciainterrupts();
 		RasterIRQ(rasterUpdateGame(), 0,@usekernal);
-		enablerasterirq();
-		enableirq();
+		//enablerasterirq();
+		//enableirq();
+		
 	end
 	else
-		RasterIRQ(MainScreenScroller(), 166, @usekernal);
+		RasterIRQ(MainScreenScroller(), 86, @usekernal);
 
 
 	closeirq();	

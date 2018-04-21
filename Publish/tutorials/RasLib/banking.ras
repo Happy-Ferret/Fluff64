@@ -43,7 +43,7 @@ begin
 
 	else begin 
 		copyhalfscreen(^$D800+^14*^40 , ^$D800+^15*^40,10,1);
-		memcpy(temp_colorCopy, 0, ^$D800 + 14*40, 40);
+		memcpy(temp_colorCopy, 0, ^$D800 + ^14*^40, 40);
 
 	end;
 

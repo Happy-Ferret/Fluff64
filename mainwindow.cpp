@@ -250,6 +250,9 @@ void MainWindow::ForceOpenFile(QString s, int ln)
     s.remove(getProjectPath());
     if (s.startsWith("/"))
         s = s.remove(0,1);
+
+    if (s=="")
+        return;
     QString txt = m_currentDoc->m_outputText;
 
     LoadDocument(s);
