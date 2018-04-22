@@ -9,14 +9,16 @@ begin
 	
 	
 	sprite1_counter:=sprite1_counter-val;
+
+	if sprite1_counter>200 then
+		sprite1_counter := 31;
+
 	// Animation hits at 0 and 10
 	
 	i:=sprite1_counter/4;
 	k:=moveSprite[i];
 	setspriteloc(@playerSprite, moveSprite[i], @spritebank);
 	
-	if sprite1_counter=00 then
-		sprite1_counter := 32;
 	
 	
 	
@@ -80,15 +82,13 @@ begin
 			pointToEntityData(j);
 			togglebit(SPRITE_BITMASK, @bulletSprite, 0);
 			HitEntity(j, bullet_dmg);
-			
+			return();
 			
 		end;
-		//		waitnoraster(2);
-		//tmp2 := getbit(SPRITE_BG_COLLISION, @bulletSprite);
+		
 		BackgroundCollideBullet();
 		if tmp2=1 then begin
 			togglebit(SPRITE_BITMASK, @bulletSprite, 0);
-			//			poke(SPRITE_BITMASK, 0, 0);
 		end;
 		
 		
@@ -106,6 +106,7 @@ begin
 
 		bullet_x := spritex/2;
 		bullet_y := spritey;
+		
 		bullet_dy := prev_dy*2;
 		bullet_dx := prev_dx;
 		
@@ -160,7 +161,7 @@ begin
 	tmp2:=getbit(val, 3);
 */
 
-	k:=bullet_x - 15;
+	k:=bullet_x - 10;
 	i:=(k)/8;// -m_rl_startx;//-m_rl_startx;
 	//	i:=i-m_rl_starty;
 	j:=(bullet_y-53)/16;
@@ -175,13 +176,22 @@ end;
 procedure BackgroundCollide();
 begin
 	
-	tmp:=spritex - 15;
+	tmp:=spritex - 12;
+	tmp:=tmp +joystickright*8;
+	tmp:=tmp - joystickleft*8;
 	i:=(tmp)/16;// -m_rl_startx;//-m_rl_startx;
 	//	i:=i-m_rl_starty;
-	j:=(spritey-53)/16;
+	j:=(spritey-55);
+	j:=j+joystickdown*8;
+	j:=j-joystickup*8;
+	j:=j/16;
 	val := j*m_rl_width+i;
 	tmp2:=getbit(zeropage4[val], 3);
+	//if joystickup=1 then 
+//		k:=0-m
+	//k:=(joystickup + joystickdown)*m_rl_width;
 	
+
 	
 end;
 
@@ -201,17 +211,17 @@ begin
 	tmp2:=spritex/2;
 	findCollider(tmp2, spritey);
 	
-	if val<@crashDistance onpage then begin
+	if val<@crashDistance offpage then begin
 		pointToEntityData(j);
 		player_health := player_health - zeropage5[@entity_damage];
-@ifndef immortal
+		if (immortal=0) then begin
 		if player_health >200 then
 			InitGameOver();
-@endif
-@ifdef immortal
-				if player_health >200 then
-					player_health:=10;
-@endif
+		end
+		else begin // Immortal!
+			if player_health >200 then
+				player_health:=10;
+		end;
 		
 		if player_health>player_maxhealth then
 			player_health := player_maxhealth;
@@ -249,15 +259,12 @@ begin
 			prev_dy := joystickdown - joystickup;
 			prev_dx := 0;
 		end;
-		joystickdown:=joystickdown*player_speed;
-		joystickup:=joystickup*player_speed;
-		joystickleft:=joystickleft*player_speed;
-		joystickright:=joystickright*player_speed;
 		
 		
-		spritex:=spritex + joystickright;
-		spritex:=spritex - joystickleft;
-		spritey:=spritey + joystickdown - joystickup;
+
+		spritex:=spritex + joystickright*player_speed;
+		spritex:=spritex - joystickleft*player_speed;
+		spritey:=spritey + joystickdown*player_speed - joystickup*player_speed;
 		//end;
 		
 		// Get sprite collision
@@ -265,16 +272,16 @@ begin
 		
 		
 		
-		
-		BackgroundCollide();
-		UpdatePlayerSprite();
+		if (ignoreCollisions=0) then		
+			BackgroundCollide();
 		// If collision, abort abort
-			if tmp2=1 then begin
-			spritex:=spritex - joystickright;
-			spritex:=spritex + joystickleft;
-			spritey:=spritey - joystickdown + joystickup;
+		if tmp2=1 then begin
+			spritex:=spritex - joystickright*player_speed;
+			spritex:=spritex + joystickleft*player_speed;
+			spritey:=spritey - joystickdown*player_speed + joystickup*player_speed;
 			
 		end;
+//		UpdatePlayerSprite();
 		
 		
 		// Sprite border check, boring stuff, extract numbers to defines

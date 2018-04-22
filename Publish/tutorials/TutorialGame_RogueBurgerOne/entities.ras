@@ -275,6 +275,8 @@ begin
 		j:=getbit(val, @upgrade_speed_bit);
 		if j=0 then player_speed := player_speed +1;
 		
+		j:=getbit(val, @upgrade_scroll_bit);
+		if j=0 then inc(currentScroll);
 		
 		
 	end

@@ -264,11 +264,13 @@ begin
 end;
 
 
+
 procedure UpdateCredits();
 begin
-	k:=$44;
+	k:=$44; 
 	moveto(creditsX, creditsY, k);
 	val:=zeropage4[0];
+
 	if val=@cclear then creditsCounter:=0;
 	if (creditsCounter<>0) then begin
 		l:=creditsCounter&7;
@@ -285,16 +287,21 @@ begin
 	val:=zeropage4[0];
 	inczp(zeropage4,1);
 
-	if val=128 then SPRITE_BITMASK:=0;
+	if val=128 then begin
+		SPRITE_BITMASK:=0;
+		return();
+	end;
 	if (val>129 and val<160) then begin 
 		SPRITE_BITMASK:=%00000011;
 		val2:=entity_sprites[val-129];
 		setspriteloc(0,val2,1);
 		setspriteloc(1,val2,1);
+		//inczp(zeropage4,1);
+		return();
 	end;
 
 	if val=@cpause then begin
-		creditsCounter := @creditsCMax*16;
+		creditsCounter := @creditsCMax*8;
 		return();
 	end;
 

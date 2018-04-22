@@ -1,12 +1,12 @@
 program RogueBurgerOne;
 var
 	//	intro_image_color: IncBin("images/lemonspawn_color.bin", "$3000");  // $800
-	music1 : incsid("music/fliptape36.sid", "2");
 	// 3854
 	mainChar: IncBin("charsets/charset_text.bin","$4800"); // $800 bytes
 	
 	levelChar: IncBin("charsets/charset_level.bin","$5000");// $800 bytes
 	sprite0data : incbin("sprites/fastfood.bin", "$5800"); // will be $1000 bytes // locally 2000
+	music1 : incsid("music/fliptape60.sid", "2");
 	
 	multiColorChar: IncBin("charsets/lcharsetMC.bin", "$8800");
 	levels: IncBin("levels/levels.flf", "$9000"); // 2400 in hex
@@ -19,7 +19,7 @@ var
 	i, redraw, j,k,l,val2: byte;  // i is temp, redraw states that the map should be redrawn
 	time : byte;
 
-	currentScroll: byte=6;
+	currentScroll: byte=0;
 	keepbitmask : byte;
 	
 	keyPressedWait : byte;
@@ -36,14 +36,15 @@ var
 	current_background : byte;
 	TextRogueBurger: string = "ROGUE BURGER ONE";
 
-	IntroText : string = "    ROGUE BURGER ONE WAS THROWN INTO THE SEWERS AFTER BEING DISCARDED BY A DISGRUNTLED CUSTOMER         ";
-	IntroText1 : string =" ANGRY WITH THE WORLD SHE GREW UP IN  SHE SWORE TO HUNT DOWN ALL THE REMAINING FAST FOOD IN THE SEWERS OF OSLO       ";
-	IntroText2: string = "      BY SHOOTING THEM WITH PIZZA          "; 
-	IntroText3 : string =" WHILE UNDERTAKING THIS HUGE BURDEN    SHE CAME ACROSS NUMEROUS SACRED SCROLLS      THAT WAS ABOUT TO TELL A TALE ";
-	intro_dataEnd : byte = 255;
+	IntroText : string = (
+	"    ROGUE BURGER ONE WAS VICIOUSLY THROWN INTO THE SEWERS AFTER BEING DISCARDED BY A DISGRUNTLED CUSTOMER         ",
+	" ANGRY WITH THE WORLD SHE GREW UP IN  SHE SWORE TO HUNT DOWN THE REMAINING FAST FOOD IN THE SEWERS OF OSLO       ",
+	"  PUTTING THEM OUT OF THEIR MISERY          BY ATTACKING THEM WITH PIZZA          ",
+	" WHILE UNDERTAKING THIS HUGE BURDEN    SHE CAME ACROSS NUMEROUS SACRED SCROLLS      THAT WOULD CHANGE THE FATE OF HER FUTURE        ",
+		 255);
 
 	ScrollText1: string = "HALF A POOD OF FLESHY BITS";
-	ScrollText2: string = "                   ONIONS WITHOUT A FAULT";
+	ScrollText2: string = "                  ONIONS WITHOUT A FAULT";
 	ScrollText3: string = "A CULLINGLEY OF CHILI HITS";
 	ScrollText4: string = "                  TOMATOES AND SOME SALT";
 	ScrollText5: string = "MIX AND FRY ON AVERAGE HEAT";
@@ -70,31 +71,33 @@ var
 	@define cclear 253
 	@define cpause 252	
 
-	CreditsText : string = (129,@cclear, @cpause, "ROGUE BURGER ONE", @newline,@newline, "   INSTRUCTIONS", @cpause,@cpause,@cpause, @cclear,
-							"DONT DIE. ", @cpause, 
-							@newline, "  PICK UP AMMO", 135, @cpause, @cpause,
-							@newline, "    SHOOT STUFF", @cpause,@cpause,128,@cpause,
-							@cclear, "PICK UP BOOSTS", @cpause, @cpause,
+	// 136 = health upgrade
+	// 137 = ammp upgrade
+	// 138 = hotdog
+	// 135 = HEART
+	// 134 = AMMO
+
+	CreditsText : string = (129, @cpause,@cpause,@cpause,@cpause,@cclear, @cpause, "ROGUE BURGER ONE", @newline,@newline, "   INSTRUCTIONS", @cpause,@cpause,@cpause, @cclear,
+							"DONT DIE. ", 129, @cpause, @cpause,@cpause, 
+							@newline, "  PICK UP AMMO", 134, @cpause, @cpause,
+							@newline, "    SHOOT STUFF", 130, @cpause,@cpause,@cpause,128
+							@cclear, "FIND BOOSTS TO", @cpause, @cpause,
+							@newline, "  HEALTH", 135,  @cpause,@cpause
+							@newline, "    AMMO", 134,  @cpause,@cpause,@cpause,@cpause
+							@cclear, "PROCURE UPGRADES TO", 128, @cpause, @cpause,
 							@newline, "  HEALTH", 136, @cpause, @cpause,
-							@newline, "    AMMO", @cpause, @cpause,@cpause
-							@cclear, "PICK UP UPGRADES", @cpause, @cpause,
-							@newline, "  HEALTH", @cpause, @cpause,
-							@newline, "    AMMO", @cpause, @cpause,@cpause
-							@cclear, "SEARCH FOR ", @newline, "  SACRED SCROLLS", @cpause, @cpause,
-							@newline, "    PRESS J TO VIEW ", @cpause, @cpause,
+							@newline, "    PIZZA WEAPON", 137, @cpause,@cpause,@cpause,@cpause
+							@cclear, "SEARCH FOR ", @newline, "SACRED SCROLLS", 141,
+							@newline, "CONTAINING AN ANCIENT ", @newline,"  HIDDEN RECIPE", @cpause, @cpause,
+							@newline, "SPACE BAR TO VIEW ", @cpause, @cpause,@cpause,
 
-							@cclear, @cpause, "DEVELOPED BY", @newline,@newline  
+							128, @cclear, @cpause, "DEVELOPED BY", @newline,@newline  
 							"     LEMONSPAWN", @cpause, @cpause, @cclear,
-							"CODE BY", @cpause, @newline,@newline, " LEUAT", @cpause, @cpause, @cclear
-							"MUSIC BY", @cpause, @newline,@newline, "  RICHARD OF TND", @cpause, @cpause, @cclear
-							"GRAPHICS BY", @cpause, @newline,@newline, "  LEUAT", @cpause, @cpause, @cclear
-							"LEVEL DESIGN BY", @cpause, @newline,@newline, "   LEUAT", @cpause, @cpause, @cclear
+							"MUSIC BY", @newline,@newline, "  RICHARD OF TND", @cpause, @cpause, @cclear
+							"CODE GFX DESIGN LEVELS", @newline,"AND EVERYTHING ELSE", @newline, "BY", @cpause, "LEUAT", @cpause, @cpause, @cpause,@cclear
 							"DEVELOPED WITH", @newline, "  TURBO RASCAL", @newline,"    SYNTAX ERROR", @cpause, @cpause, @cclear
-							"WHICH IS ALSO ", @newline, "   CREATED BY", @newline, "    LEUAT", @newline, @cpause,@cpause,@newline,
-							"WHO WOULD HAVE GUESSED", @cpause, @cpause
-//							"EVERYTHING ELSE BY ", @cpause, @newline,@newline, "    LEUAT", @cpause, @cpause, @cclear
-							@cclear, "YOU PROBABLY GET",@newline, "THE IDEA BY NOW", @cpause, @cpause, @cclear
-
+							"VISIT", @newline, "  TURBORASCAL.COM", @newline,"    FOR GOODIES", @cpause, @cpause, @cclear
+							
 							);
 	
 
@@ -102,7 +105,7 @@ var
 	// Entity sprite locations in memory *64 on current bank
 	entity_sprites : array[8] of byte = (
 	$61, $60, $72, $73, $74, $66, $67, $68, $69,$6A,$6B, $6C,
-	$6D, $6E, $6F, $70, $71, $76 );
+	$6D, $6E, $6F, $70, $71, $76 ,    $77 , $78, $79);
 	
 	// pai = 1, 60
 	// ice cream = 2, 72
@@ -121,6 +124,7 @@ var
 	// croissant = 15, 70
 	// e = 16, 71
 	// shoe = 17, 76 , upgrade  bit 8
+	// Boss = 18, 19,20,21
 	
 	
 	fade : array [16] of byte = (11,6,6,12,4,14,15,1,1,15,14,4,12,6,6,11);
@@ -228,7 +232,10 @@ var
 	@define renderText2x2 zeropage1
 
 
-//	@define immortal true
+	//@define immortal true
+
+	immortal, ignoreCollisions : byte = 0;
+
 
 	
 //   Renders a .flf level at map pos x,y
@@ -343,14 +350,17 @@ begin
 	setbank(VIC_BANK1);
 //	poke(VIC_DATA_LOC, 0, @highCharMemoryPos);
 	poke(VIC_DATA_LOC, 0, @charmapText);
-	if (keypressed(KEY_J)=1 and keyPressedWait=0) offpage then begin
-		copyfullscreen(^$0400, ^$4400);
-		copyfullscreen(^$8000, ^$D800);
-		poke(SPRITE_BITMASK,0, keepbitmask);
-		keyPressedWait:=16;
-		RasterIRQ(rasterUpdateGame(), 1,@usekernal);
-		CloseIRQ();
-		returninterrupt();
+	if (keyPressedWait=0) then begin
+		if (keypressed(KEY_SPACE)=1)then begin
+			copyfullscreen(^$0400, ^$4400);
+			copyfullscreen(^$8000, ^$D800);
+			poke(SPRITE_BITMASK,0, keepbitmask);
+			keyPressedWait:=16;
+			RasterIRQ(rasterUpdateGame(), 1,@usekernal);
+			CloseIRQ();
+			returninterrupt();
+		end;
+
 	end;
 	inc(time);
 	y:=1;
@@ -385,7 +395,8 @@ begin
 	y:=1;
 	l:=3;
 
-	for i:=0 to 8 do begin
+	if (currentScroll<>0) then
+	for i:=0 to currentScroll do begin
 		moveto(0,y,$44);
 		if i=0 then printstring(ScrollText1,0,40);
 		if i=1 then printstring(ScrollText2,0,40);
@@ -414,26 +425,19 @@ begin
 	StartIRQ(@usekernal);
 	inc(time);
 
-	if (keypressed(KEY_J)=1 and keyPressedWait=0) then begin
-		PrepareScrollView();
-		RasterIRQ(RasterUpdateScrollView(), 1, @usekernal);
-		CloseIRQ();	
-		asm(" rti");
-	end;
-	if keyPressedWait<>0 then dec(keyPressedWait);
-	
 
 	//setRegularColorMode();
 	setMultiColorMode();
 	poke(MULTICOLOR_CHAR_COL, 0, BLACK);
-	waitForRaster(1);
+//	waitForRaster(1);
 	// Set regular text font
 	setbank(VIC_BANK2);
 	poke(VIC_DATA_LOC, 0, @highCharMemoryPos);
 	// Wait until level starts
-	PrintTextColor();
-	UpdateBullet();
+//	PrintTextColor();
 	UpdateEntities();
+
+
 	
 	waitforRaster(67);
 	// Set multi color & level font
@@ -448,12 +452,38 @@ begin
 	printnumber(player_score);
 	
 	UpdatePlayer();
+	UpdateBullet();
+
+
+
+	if (keyPressedWait=0) then begin
+		if (keypressed(KEY_SPACE)=1) then begin
+			PrepareScrollView();
+			RasterIRQ(RasterUpdateScrollView(), 1, @usekernal);
+			CloseIRQ();
+			returninterrupt();	
+		end;
+		if (keypressed(KEY_P)=1) then begin
+			keyPressedWait:=16;
+			immortal:=(immortal+1)&1;
+			//poke(SPRITE_MULTICOLOR_REG2,0,WHITE);
+			//Loop();
+		end;
+		if (keypressed(KEY_L)=1) then begin
+			keyPressedWait:=16;
+			ignoreCollisions:=(ignoreCollisions+1)&1;
+		end;
+
+	end;
+	if keyPressedWait<>0 then dec(keyPressedWait);
+	
 
 	waitForRaster(243);
 	// Go back to regular font
 	
 	poke(MULTICOLOR_CHAR_COL, 0, BLACK);
 	poke(VIC_DATA_LOC, 0, @charmapText);
+	UpdatePlayerSprite();
 	
 	
 	waitForRaster(255);
@@ -476,7 +506,9 @@ begin
 	
 
 	//copyfullscreen(^$B000,^$8400);
-
+	ClearScreen($20, $4400);
+	PrintText();
+	PrintTextColor();
 	// Initial map rendering
 	@levelpointer := levels;
 	ResetLevels();
@@ -486,11 +518,13 @@ begin
 	LoadEntities();
 	InitEntities();
 	
+
+	currentScroll:=0;
 	// Initial sprite position
 	spritex := 160;
 	spritey := 100;
 	
-	player_speed := 1;
+	player_speed := 2;
 	
 	sprite1_counter := 1;
 	bullet_wait := 0;
@@ -520,7 +554,6 @@ end;
 
 begin
 	
-	//initsid(SIDFILE_1_INIT);
 	//	Intro();
 	// TURN OFF Kernal Basic! WHOO!
 
