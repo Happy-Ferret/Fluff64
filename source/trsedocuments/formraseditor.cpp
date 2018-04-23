@@ -411,7 +411,7 @@ bool FormRasEditor::BuildStep()
     QString path = m_projectIniFile->getString("project_path") + "/";
     filename = m_currentSourceFile.split(".")[0];
 
-    return interpreter.Build(Interpreter::MOS6502, path);
+    return interpreter.Build(Interpreter::MOS6502, path ,m_iniFile->getStringList("zeropages"));
 }
 
 void FormRasEditor::FillFromIni()

@@ -14,6 +14,7 @@
 #include "source/dialogabout.h"
 #include "source/limage/limageio.h"
 #include <QMessageBox>
+#include "source/assembler/mos6502.h"
 
 #include "source/errorhandler.h"
 #include "source/parser.h"
@@ -48,13 +49,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     if (QFile::exists(m_iniFileName))
        m_iniFile.Load(m_iniFileName);
-    else
-    {
-        m_iniFile.setFloat("font_size", 12);
-        m_iniFile.setFloat("tab_width", 4);
-        m_iniFile.setString("theme", "dark_standard.ini");
-        m_iniFile.filename = m_iniFileName;
-    }
+
+    VerifyDefaults();
     QPoint p = ui->splitter->pos();
 //    p.setX();
     QVector3D sp = m_iniFile.getVec("splitpos");
@@ -144,6 +140,21 @@ void MainWindow::keyPressEvent(QKeyEvent *e)
 
 void MainWindow::keyReleaseEvent(QKeyEvent *e)
 {
+
+}
+
+void MainWindow::VerifyDefaults()
+{
+    if (!m_iniFile.contains("font_size"))
+        m_iniFile.setFloat("font_size", 12);
+    if (!m_iniFile.contains("tab_width"))
+        m_iniFile.setFloat("tab_width", 4);
+    if (!m_iniFile.contains("theme"))
+        m_iniFile.setString("theme", "dark_standard.ini");
+    if (!m_iniFile.contains("zeropages"))
+       m_iniFile.setStringList("zeropages", AsmMOS6502::m_defaultZeroPointers.split(","));
+
+    m_iniFile.filename = m_iniFileName;
 
 }
 

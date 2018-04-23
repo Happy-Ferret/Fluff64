@@ -11,6 +11,8 @@ var
 
 	rands : array[256] of byte;
 
+	zeropage1: pointer;
+
 /*
  	This tutorial shows a typical preferred coding method using the TRSE language: 
 	- First prototype in TRSE

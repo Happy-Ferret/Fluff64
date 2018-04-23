@@ -13,6 +13,8 @@ var
 
 	zpc,z : byte;
 
+	zeropage2, zeropage3, zeropage5, zeropage4: pointer;
+
 	//charset: IncBin("charsets/tutorial3.bin","@charmap");
 
 // Uses banking	

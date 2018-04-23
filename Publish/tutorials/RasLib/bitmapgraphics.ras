@@ -97,16 +97,18 @@ begin
 end;
 */
 procedure SetupPixelTables();
+var
+	bmg_zp: pointer;
 begin
 	bmg_low:=0;
 	bmg_high:=0;
 	bmg_k:=0;
 	bmg_index:=0;
-	zeropage2 := bmg_index;
+	bmg_zp := bmg_index;
 	
 	for bmg_i:=0 to 160 do begin
-		xtablelow[bmg_i] := zeropage2[0];
-		xtablehigh[bmg_i] := zeropage2[1];
+		xtablelow[bmg_i] := bmg_zp[0];
+		xtablehigh[bmg_i] := bmg_zp[1];
 		bmg_k:=bmg_k+2;
 		if bmg_k=8 then begin
 			bmg_index:=bmg_index+8;
@@ -119,8 +121,8 @@ begin
 	bmg_k:=0;
 	for bmg_i:=0 to 200 do begin
 		
-		ytablelow[bmg_i] := zeropage2[0];
-		ytablehigh[bmg_i] := zeropage2[1];
+		ytablelow[bmg_i] := bmg_zp[0];
+		ytablehigh[bmg_i] := bmg_zp[1];
 		bmg_k:=bmg_k+1;
 		bmg_index:=bmg_index+1;
 		if bmg_k=8 then begin

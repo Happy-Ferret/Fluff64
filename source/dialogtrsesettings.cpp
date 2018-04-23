@@ -17,6 +17,7 @@ void DialogTRSESettings::FillFromIni()
     ui->leDasm->setText(m_ini->getString("dasm"));
     ui->leEmulator->setText(m_ini->getString("emulator"));
     ui->leExomizer->setText(m_ini->getString("exomizer"));
+    ui->leZeropages->setText(  fromStringList(m_ini->getStringList("zeropages")));
 
     QDir directory("themes/");
     QStringList themes = directory.entryList(QStringList() << "*.ini");
@@ -33,8 +34,6 @@ void DialogTRSESettings::FillFromIni()
     ui->leFontSize->setText(QString::number((int)m_ini->getdouble("font_size")));
     ui->leTabWidth->setText(QString::number((int)m_ini->getdouble("tab_width")));
 
-
-
 }
 
 
@@ -47,6 +46,7 @@ void DialogTRSESettings::FillToIni()
 
     m_ini->setFloat("font_size", ui->leFontSize->text().toInt());
     m_ini->setFloat("tab_width", ui->leTabWidth->text().toInt());
+    m_ini->setStringList("zeropages", toStringList(ui->leZeropages->text()));
 
 }
 

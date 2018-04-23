@@ -36,11 +36,18 @@ var
 	current_background : byte;
 	TextRogueBurger: string = "ROGUE BURGER ONE";
 
+	zeropage1, zeropage2, zeropage3, zeropage4, zeropage5, zeropage6, zeropage7 : pointer;
+
+	@define levelointer zeropage7
+
+
+
 	IntroText : string = (
-	"    ROGUE BURGER ONE WAS VICIOUSLY THROWN INTO THE SEWERS AFTER BEING DISCARDED BY A DISGRUNTLED CUSTOMER         ",
-	" ANGRY WITH THE WORLD SHE GREW UP IN  SHE SWORE TO HUNT DOWN THE REMAINING FAST FOOD IN THE SEWERS OF OSLO       ",
-	"  PUTTING THEM OUT OF THEIR MISERY          BY ATTACKING THEM WITH PIZZA          ",
-	" WHILE UNDERTAKING THIS HUGE BURDEN    SHE CAME ACROSS NUMEROUS SACRED SCROLLS      THAT WOULD CHANGE THE FATE OF HER FUTURE        ",
+	"    ROGUE BURGER ONE WAS VICIOUSLY THROWN INTO THE SEWERS AFTER BEING DISCARDED BY A NORWEGIAN VEGAN         ",
+	" ANGRY WITH THE WORLD SHE GREW UP IN  ROGUE BURGER ONE SWORE TO HUNT DOWN THE SUFFERING FAST FOOD REVENANTS IN THE SEWERS BENEATH OSLO       ",
+	"  PUTTING THEM OUT OF THEIR MISERY BY SMITING THEM WITH PIZZA          ",
+	" WHILE UNDERTAKING THIS HUGE BURDEN  SHE CAME ACROSS A SCORE OF SACRED SCROLLS THAT WOULD FOREVER CHANGE HER DESTINY        ",
+	"WILL ROGUE BURGER ONE EVER FIND TRUE HAPPINESS            ONLY THE MOST AUDACIOUS ADVENTURER WILL EVER REVEAL THIS DIVINE SECRET         UNRAVELING A RECIPE FOR THE ULTIMATE DELIGHT             ",
 		 255);
 
 	ScrollText1: string = "HALF A POOD OF FLESHY BITS";
@@ -50,7 +57,7 @@ var
 	ScrollText5: string = "MIX AND FRY ON AVERAGE HEAT";
 	ScrollText6: string = "                      BUNS TO TOP IT OFF";
 	ScrollText7: string = "DEVOUR THE SAVORY DRIPPING MEAT";
-	ScrollText8: string = "                  AND SOME BEER TO QUAFF";
+	ScrollText8: string = "                  ICE COLD BEER TO QUAFF";
 
 
 /* Credits section 
@@ -59,7 +66,7 @@ var
 	creditsCounter: byte = 0;
 
 	@define creditsCMax 4 // Time of credz movement
-	@define creditsStartX 10
+	@define creditsStartX 9
 	@define creditsStartY 17
 
 	@define CreditsColors 3
@@ -77,26 +84,31 @@ var
 	// 135 = HEART
 	// 134 = AMMO
 
-	CreditsText : string = (129, @cpause,@cpause,@cpause,@cpause,@cclear, @cpause, "ROGUE BURGER ONE", @newline,@newline, "   INSTRUCTIONS", @cpause,@cpause,@cpause, @cclear,
+	CreditsText : string = (129, @cclear, @cpause,
+							"ROGUE BURGER ONE", @newline,
+							" 2018 LEMONSPAWN", @newline, 
+							"  VERSION 0000 0011", 
+							@cpause,@cpause,@cpause,@cpause,
+							@cclear, @cpause, "     ", @newline,@newline, "   INSTRUCTIONS", @cpause,@cpause,@cpause, @cclear,
 							"DONT DIE. ", 129, @cpause, @cpause,@cpause, 
-							@newline, "  PICK UP AMMO", 134, @cpause, @cpause,
-							@newline, "    SHOOT STUFF", 130, @cpause,@cpause,@cpause,128
-							@cclear, "FIND BOOSTS TO", @cpause, @cpause,
+							@newline, " PICK UP STUFF", 134, @cpause, @cpause,
+							@newline, "  SHOOT OTHER STUFF", 130, @cpause,@cpause,@cpause,128
+							@cclear, "FIND BOOSTS", @cpause, @cpause,
 							@newline, "  HEALTH", 135,  @cpause,@cpause
 							@newline, "    AMMO", 134,  @cpause,@cpause,@cpause,@cpause
-							@cclear, "PROCURE UPGRADES TO", 128, @cpause, @cpause,
+							@cclear, "PROCURE UPGRADES", 128, @cpause, @cpause,
 							@newline, "  HEALTH", 136, @cpause, @cpause,
 							@newline, "    PIZZA WEAPON", 137, @cpause,@cpause,@cpause,@cpause
 							@cclear, "SEARCH FOR ", @newline, "SACRED SCROLLS", 141,
-							@newline, "CONTAINING AN ANCIENT ", @newline,"  HIDDEN RECIPE", @cpause, @cpause,
+							@newline, "CONTAINING AN ANCIENT ", @newline,"SECRET RECIPE", @cpause, @cpause,
 							@newline, "SPACE BAR TO VIEW ", @cpause, @cpause,@cpause,
 
 							128, @cclear, @cpause, "DEVELOPED BY", @newline,@newline  
 							"     LEMONSPAWN", @cpause, @cpause, @cclear,
-							"MUSIC BY", @newline,@newline, "  RICHARD OF TND", @cpause, @cpause, @cclear
-							"CODE GFX DESIGN LEVELS", @newline,"AND EVERYTHING ELSE", @newline, "BY", @cpause, "LEUAT", @cpause, @cpause, @cpause,@cclear
+							"MUSIC BY", @newline,@newline, "  RICHARD OF TND", @cpause, @cpause,@cpause, @cclear
+							"CODE GFX DESIGN LEVELS", @newline,"AND EVERYTHING ELSE", @newline, "BY ", @cpause, "LEUAT", @cpause, @cpause, @newline, @cpause,@cclear
 							"DEVELOPED WITH", @newline, "  TURBO RASCAL", @newline,"    SYNTAX ERROR", @cpause, @cpause, @cclear
-							"VISIT", @newline, "  TURBORASCAL.COM", @newline,"    FOR GOODIES", @cpause, @cpause, @cclear
+							"VISIT", @newline, " TURBORASCAL.COM", @newline,"  FOR C64 CODING", @cpause, @cpause,  @cpause,  @cclear
 							
 							);
 	
@@ -226,7 +238,7 @@ var
 	@define sidchannel "SID_CHANNEL3"
 	
 	@define levelpointer "zeropage7"
-	@define colorpointer "zeropage4"
+	@define colorpointer zeropage4
 	
 
 	@define renderText2x2 zeropage1
@@ -510,21 +522,19 @@ begin
 	PrintText();
 	PrintTextColor();
 	// Initial map rendering
-	@levelpointer := levels;
-	ResetLevels();
-	@levelpointer := levels;
-	RenderLevel(m_posx, m_posy, @screen1hi);
+	ResetLevels(levels);
+	RenderLevel(levels,m_posx, m_posy, @screen1hi);
 	current_background := peek(MULTICOLOR_CHAR_COL,0);
 	LoadEntities();
 	InitEntities();
 	
 
-	currentScroll:=0;
+	currentScroll:=8;
 	// Initial sprite position
 	spritex := 160;
 	spritey := 100;
 	
-	player_speed := 2;
+	player_speed := 1;
 	
 	sprite1_counter := 1;
 	bullet_wait := 0;

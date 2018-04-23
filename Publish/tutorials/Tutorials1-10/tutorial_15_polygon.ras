@@ -21,7 +21,8 @@ var
 	gridz: array[@gridsq] of byte;
 	
 	
-	@define address zeropage1
+	addressPointer: pointer;
+	@define address addressPointer
 	@define bitmapstart "$6000"
 	
 	// Currently, putpixel2 and putpixel3 are supported
@@ -353,7 +354,7 @@ begin
 	initmoveto();
 	bmg_currbank :=0; // Current bitmap bank (added to high bit of putpixel)
 	SetupPixelTables();
-	inczp(zeropage1,10);
+	inczp(@address,10);
 	poke(VIC_DATA_LOC, 0,$18);
 	
 	setmulticolormode();

@@ -222,7 +222,7 @@ end;
 
 
 
-procedure Update();
+interrupt Update();
 begin
 	startirq(1);
 	hidebordery(0);

@@ -22,6 +22,21 @@ public:
         FillFromIni();
     }
 
+    QString fromStringList(QStringList lst) {
+        QString whole ="";
+        for (QString s: lst) {
+            whole+=s;
+            if (lst.last()!=s)
+                whole=whole+", ";
+        }
+        return whole;
+    }
+
+    QStringList toStringList(QString s) {
+        QStringList lst = s.split(",");
+        return lst;
+    }
+
 
     void FillFromIni();
     void FillToIni();

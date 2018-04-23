@@ -1,6 +1,7 @@
 program Tutorial11_Lines;
 var
 	i, j,k,val: byte=5;
+	zeropage1: pointer;
 	@define address zeropage1
 	@define bitmapstart "$2000"
 	

@@ -20,9 +20,6 @@ begin
 	setspriteloc(@playerSprite, moveSprite[i], @spritebank);
 	
 	
-	
-	
-	
 end;
 
 /*
@@ -331,9 +328,9 @@ begin
 			ClearText();
 			poke(SCREEN_FG_COL, 0, BLACK);
 			// Render me baby!
-			@levelpointer := levels;
+//			@levelpointer := levels;
 			// Defined in Levels.ras
-			RenderLevel(m_posx, m_posy, @screen2hi);
+			RenderLevel(levels, m_posx, m_posy, @screen2hi);
 			LoadEntities();
 			InitEntities();
 			

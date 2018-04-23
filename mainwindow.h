@@ -51,6 +51,7 @@ public:
 
     }
 
+
     void Save() {
         m_ini.Save(m_filename);
     }
@@ -120,6 +121,9 @@ public:
     void wheelEvent(QWheelEvent *event);
     void keyPressEvent(QKeyEvent* e);
     void keyReleaseEvent(QKeyEvent *e);
+
+    void VerifyDefaults();
+
 
 
 

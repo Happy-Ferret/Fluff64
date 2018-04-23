@@ -1,3 +1,2 @@
-project_path = C:/Users/leuat/OneDrive/Documents/GitHub/Fluff64/Publish/tutorials/TutorialGame_RogueBurgerOne/
-open_files = ,ending.ras, sprites/fastfood.flf, levels/levels.flf, RogueBurgerOne.ras, player.ras, introscreen.ras, entities.ras, rendering.ras, enitities.ras
+
 data_header = ,id, x, y, life, color, spread, sx, sy, isdead, damage, ammo, sound, upgrade

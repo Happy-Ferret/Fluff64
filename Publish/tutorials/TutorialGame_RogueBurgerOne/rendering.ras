@@ -30,7 +30,7 @@ begin
 end;
 
 
-procedure RenderLevel(m_li, m_lj, m_screen: byte);
+procedure RenderLevel(rl_levels: pointer; m_li, m_lj, m_screen: byte);
 var
    m_rl_width, m_rl_height : byte;
    m_rl_sizex, m_rl_sizey : byte;
@@ -41,29 +41,29 @@ var
 
 begin
 	// Fluff files have 13 byte headers
-	inczp(@levelpointer, 13); // Fluff header
+	inczp(rl_levels, 13); // Fluff header
 
 	// Read level header info
 
-	m_rl_sizex := @levelpointer[0];
-	m_rl_sizey := @levelpointer[1];
+	m_rl_sizex := rl_levels[0];
+	m_rl_sizey := rl_levels[1];
 
-	m_rl_width := @levelpointer[2];
-	m_rl_height := @levelpointer[3];
+	m_rl_width := rl_levels[2];
+	m_rl_height := rl_levels[3];
 
-	m_rl_startx := @levelpointer[4];
-	m_rl_starty := @levelpointer[5];
+	m_rl_startx := rl_levels[4];
+	m_rl_starty := rl_levels[5];
 
 
-	m_rl_chunks := @levelpointer[6];
-	m_rl_chunksize := @levelpointer[7];
+	m_rl_chunks := rl_levels[6];
+	m_rl_chunksize := rl_levels[7];
 
-	m_rl_dataSize := @levelpointer[8];
+	m_rl_dataSize := rl_levels[8];
 
 	
 	// Go past header
 
-	inczp(@levelpointer, 9);
+	inczp(rl_levels, 9);
 
 	// Calculate position in level layout
 
@@ -75,9 +75,9 @@ begin
 	// Skip levels
 	if m_rl_pos<>0 then
 	for m_rl_j:=0 to m_rl_pos do begin
-			inczp(@levelpointer,m_rl_val);
-			inczp(@levelpointer,m_rl_val);
-			inczp(@levelpointer,m_rl_dataSize);
+			inczp(rl_levels,m_rl_val);
+			inczp(rl_levels,m_rl_val);
+			inczp(rl_levels,m_rl_dataSize);
 	end;
 
 	// Set screen position 
@@ -89,7 +89,7 @@ begin
 	
 	for m_rl_j:=0 to m_rl_height do begin
 		for m_rl_i:=0 to m_rl_width do begin
-			m_rl_val := peek(@levelpointer,m_rl_i);
+			m_rl_val := peek(rl_levels,m_rl_i);
 			m_rl_idx:=m_rl_i*2;
 
 			screenmemory[m_rl_idx]:=m_rl_val;
@@ -98,15 +98,15 @@ begin
 			screenmemory[m_rl_idx+41]:=m_rl_val+41;
 		 end;
 		incscreenx(80);
-		inczp(@levelpointer,m_rl_width);
+		inczp(rl_levels,m_rl_width);
 	end;
 	// Then colors
 	moveto(m_rl_startx, m_rl_starty, $D8);
 //	call(SIDFILE_1_PLAY);
-	@colorpointer:=@levelpointer;
+	@colorpointer:=rl_levels;
 	for m_rl_j:=0 to m_rl_height do begin
 		for m_rl_i:=0 to m_rl_width do begin
-			m_rl_val := peek(@levelpointer,m_rl_i)&7 + 8;
+			m_rl_val := peek(rl_levels,m_rl_i)&7 + 8;
 			m_rl_idx:=m_rl_i*2;
 	
 			screenmemory[m_rl_idx]:=m_rl_val;
@@ -118,19 +118,21 @@ begin
 
 	 	end;
 		incscreenx(80);
-		inczp(@levelpointer, m_rl_width);
+		inczp(rl_levels, m_rl_width);
 	
 	end;
 	// Set multicolor colors
 	//call(SIDFILE_1_PLAY);
-	m_rl_val :=  peek(@levelpointer,0);
+	m_rl_val :=  peek(rl_levels,0);
 	poke(MULTICOLOR_CHAR_COL, 0, m_rl_val);
-	m_rl_val :=  peek(@levelpointer,1);
+	m_rl_val :=  peek(rl_levels,1);
 	poke(MULTICOLOR_CHAR_COL, 2, m_rl_val); 
-	m_rl_val :=  peek(@levelpointer,2);
+	m_rl_val :=  peek(rl_levels,2);
 	poke(MULTICOLOR_CHAR_COL, 1, m_rl_val);
 
-	inczp(@levelpointer, 3);
+	inczp(rl_levels, 3);
+
+	@levelpointer:= rl_levels;
 	// levelpointer now points to chunk data!
 
 end;
@@ -143,21 +145,21 @@ Renders a .flf level at map pos x,y
 
 //Goes through all data and resets the isdead flag to 0
 
-procedure ResetLevels();
+procedure ResetLevels(rl_levelp:pointer);
 begin
-	inczp(@levelpointer, 13); // Fluff header
-	inczp(@levelpointer, 9); // Level designer header
+	inczp(rl_levelp, 13); // Fluff header
+	inczp(rl_levelp, 9); // Level designer header
 	m_rl_val := m_rl_width*m_rl_height;
 	k:=m_rl_sizex*m_rl_sizey;
 	if k<>0 then	
 	for m_rl_j:=0 to k do begin
-		inczp(@levelpointer,m_rl_val); // Data
-		inczp(@levelpointer,m_rl_val); // Colors
-		inczp(@levelpointer,3); // MC/BG Colors
+		inczp(rl_levelp,m_rl_val); // Data
+		inczp(rl_levelp,m_rl_val); // Colors
+		inczp(rl_levelp,3); // MC/BG Colors
 		
 		for i:=0 to m_rl_chunks do begin
-			@levelpointer[@entity_isdead]:=0;
-			inczp(@levelpointer,m_rl_chunksize);
+			rl_levelp[@entity_isdead]:=0;
+			inczp(rl_levelp,m_rl_chunksize);
 		end;
 		//			inczp(@levelpointer,m_rl_dataSize);
 	end;

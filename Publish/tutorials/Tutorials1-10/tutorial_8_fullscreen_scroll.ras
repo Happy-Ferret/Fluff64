@@ -49,7 +49,7 @@ end;
 
 
 // Raster update
-procedure Update();
+interrupt Update();
 
 begin
 	startirq(1);
@@ -91,7 +91,7 @@ begin
 	Setup();
 	preventirq();
 	disableCIAinterrupts();
-	RasterIRQ(Update(),0 ,1);
+	RasterIRQ(Update(),1 ,1);
 	enablerasterirq();
 	enableirq();
 	Loop();
