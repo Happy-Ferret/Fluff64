@@ -59,7 +59,7 @@ begin
 			screenmemory[x]:=(sinx[x] +val)/8 + 64;
 		end;
 		// Increase x by 40 (next row)
-		incscreenx(40);
+		inczp(screenmemory, 40);
 	end;
 
 
@@ -79,7 +79,7 @@ begin
 
 		end;
 		// Inc screen x by 40
-		incscreenx(40);
+		inczp(screenmemory, 40);
 	end;
 
 @endif

@@ -49,7 +49,6 @@ var
 */
 procedure CopyHScreen(ul_:byte);
 begin
-
 	if g_currentBank=0 then begin
 		if ul_=0 then
 			copyhalfscreen(^$0400 + ^520, ^$4400 -^1 + ^520,12, 1)

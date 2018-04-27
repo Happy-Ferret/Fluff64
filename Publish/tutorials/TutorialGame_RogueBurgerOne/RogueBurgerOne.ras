@@ -38,7 +38,14 @@ var
 
 	zeropage1, zeropage2, zeropage3, zeropage4, zeropage5, zeropage6, zeropage7 : pointer;
 
+	// Scroller vars
+	ms_sshift : byte=0;
+	ms_scroll : byte=7;
+
+
+
 	@define levelointer zeropage7
+
 
 
 
@@ -48,7 +55,7 @@ var
 	"  PUTTING THEM OUT OF THEIR MISERY BY SMITING THEM WITH PIZZA          ",
 	" WHILE UNDERTAKING THIS HUGE BURDEN  SHE CAME ACROSS A SCORE OF SACRED SCROLLS THAT WOULD FOREVER CHANGE HER DESTINY        ",
 	"WILL ROGUE BURGER ONE EVER FIND TRUE HAPPINESS            ONLY THE MOST AUDACIOUS ADVENTURER WILL EVER REVEAL THIS DIVINE SECRET         UNRAVELING A RECIPE FOR THE ULTIMATE DELIGHT             ",
-		 255);
+		0);
 
 	ScrollText1: string = "HALF A POOD OF FLESHY BITS";
 	ScrollText2: string = "                  ONIONS WITHOUT A FAULT";
@@ -58,6 +65,9 @@ var
 	ScrollText6: string = "                      BUNS TO TOP IT OFF";
 	ScrollText7: string = "DEVOUR THE SAVORY DRIPPING MEAT";
 	ScrollText8: string = "                  ICE COLD BEER TO QUAFF";
+
+
+	EndingText: string = ("    ROGUE BURGER ONE FINALLY MANAGED TO FIND HER HAPPINESS  ");
 
 
 /* Credits section 
@@ -87,7 +97,7 @@ var
 	CreditsText : string = (129, @cclear, @cpause,
 							"ROGUE BURGER ONE", @newline,
 							" 2018 LEMONSPAWN", @newline, 
-							"  VERSION 0000 0011", 
+							"  VERSION 0000 0100", 
 							@cpause,@cpause,@cpause,@cpause,
 							@cclear, @cpause, "     ", @newline,@newline, "   INSTRUCTIONS", @cpause,@cpause,@cpause, @cclear,
 							"DONT DIE. ", 129, @cpause, @cpause,@cpause, 
@@ -107,7 +117,12 @@ var
 							"     LEMONSPAWN", @cpause, @cpause, @cclear,
 							"MUSIC BY", @newline,@newline, "  RICHARD OF TND", @cpause, @cpause,@cpause, @cclear
 							"CODE GFX DESIGN LEVELS", @newline,"AND EVERYTHING ELSE", @newline, "BY ", @cpause, "LEUAT", @cpause, @cpause, @newline, @cpause,@cclear
-							"DEVELOPED WITH", @newline, "  TURBO RASCAL", @newline,"    SYNTAX ERROR", @cpause, @cpause, @cclear
+							"DEVELOPED WITH", @newline, "  TURBO RASCAL", @newline,"    SYNTAX ERROR", @cpause, @cpause,@cpause, @cclear
+							"ROGUE BURGER ONE FULL", @newline, "SOURCE CODE IS INCLUDED", @newline,"IN THE TURBO RASCAL", 
+							@newline, "DOWNLOAD PACKAGE", @cpause, @cpause, @cpause,@cclear,
+							"IN ADDITION TO SEVERAL", @newline, "OTHER TUTORIALS ON", @newline,"HOW TO DEVELOP GAMES", 
+							@newline, "AND DEMOS FOR THE ", @newline,"COMMODORE 64 IN 2018", @cpause, @cpause,@cpause, @cclear,
+							
 							"VISIT", @newline, " TURBORASCAL.COM", @newline,"  FOR C64 CODING", @cpause, @cpause,  @cpause,  @cclear
 							
 							);
@@ -270,6 +285,7 @@ procedure MainScreen();
 @include "entities.ras"
 @include "player.ras"
 @include "introscreen.ras"
+@include "gameoverwon.ras"
 
 
 
@@ -280,78 +296,6 @@ begin
 	printnumber(db_val);
 end;
 
-
-interrupt GameOverLoop();
-begin
-	startirq(@usekernal);
-	setRegularColormode();
-	poke(VIC_DATA_LOC, 0, @charmapText);
-	val:=val+1;
-	moveto(15,10, @screen1hi);
-	printstring("GAME OVER", 0, 20);
-	moveto(15,13, @screen1hi);
-	printstring("SCORE", 0, 20);
-	moveto(21,13, @screen1hi);
-	printnumber(player_score);
-	moveto(0,10, $D8);
-	j:=fade[val&15];
-	k:=fade[(val+2)&15];
-	for i:=0 to 39 do begin
-		screenmemory[i] := j;
-		screenmemory[i+120] := k;
-	end;
-	
-	call(SIDFILE_1_PLAY);
-	Joystick();
-	
-	if joystickbutton=1 then begin
-		InitMainScreen();
-		RasterIRQ(MainScreen(), 0, @usekernal);
-	end;
-	
-	
-	waitForRaster(200);
-	closeirq();
-end;
-
-
-
-
-
-
-
-// Funky sprite flashing and noises on game over
-procedure InitGameOver();
-begin
-	for i:=0 to 100 do begin
-		poke(SPRITE_COLOR, 0, i);
-		poke(SPRITE_COLOR, 1, i);
-		waitForRaster(1);
-		val:=120-i;
-		PlaySound(SID_CHANNEL3,
-		15,  // Volume
-		val,  // Hi byte frequency
-		0*16+0,  // Attack voice 1
-		5*16 + 6,   // Sustain = 16*15 + release=6
-		1 +SID_NOISE,  // Waveform
-		SID_SAW);  // waveform
-		
-		waitForRaster(255);
-	end;
-	rasterIRQ(GameOverLoop(), 0,@usekernal);
-	
-	InitSid(SIDFILE_1_INIT);
-	
-	Setbank(VIC_BANK1);
-	poke(SPRITE_BITMASK, 0, 0);
-	ClearScreen($20, $4400);
-	ClearScreen($02, SCREEN_COL_LOC);
-	poke(VIC_DATA_LOC, 0, @charmapText);
-	poke(SCREEN_BG_COL, 0, BLACK);
-	
-	
-	
-end;
 
 
 
@@ -485,16 +429,23 @@ begin
 			keyPressedWait:=16;
 			ignoreCollisions:=(ignoreCollisions+1)&1;
 		end;
+		if (keypressed(KEY_U)=1) then begin
+			InitGameWon();
+			RasterIRQ(RasterGameWon(), 1, @usekernal);
+			CloseIRQ();	
+			returninterrupt();
+		end;
 
 	end;
 	if keyPressedWait<>0 then dec(keyPressedWait);
 	
 
-	waitForRaster(243);
+	waitForRaster(242);
+	wait(9);
 	// Go back to regular font
 	
-	poke(MULTICOLOR_CHAR_COL, 0, BLACK);
 	poke(VIC_DATA_LOC, 0, @charmapText);
+	poke(MULTICOLOR_CHAR_COL, 0, BLACK);
 	UpdatePlayerSprite();
 	
 	
@@ -529,12 +480,12 @@ begin
 	InitEntities();
 	
 
-	currentScroll:=8;
+	currentScroll:=0;
 	// Initial sprite position
 	spritex := 160;
 	spritey := 100;
 	
-	player_speed := 1;
+	player_speed := 4;
 	
 	sprite1_counter := 1;
 	bullet_wait := 0;

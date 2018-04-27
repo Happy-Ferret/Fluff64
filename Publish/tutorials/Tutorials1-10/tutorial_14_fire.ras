@@ -72,7 +72,7 @@ cont:
 				sta (screenmemory),y		
 			");			
 
-		incscreenx(160);
+		inczp(screenmemory, 160);
 		inczp(zeropage1,160);
 	end;
 

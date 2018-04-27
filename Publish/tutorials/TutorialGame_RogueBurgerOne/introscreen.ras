@@ -97,7 +97,8 @@ begin
 	SPRITE_COLOR[1]:=RED;
 	SPRITE_MULTICOLOR:=$FF;
 
-
+	SPRITE_STRETCH_X:=0;
+	SPRITE_STRETCH_Y:=0;
 	InitSprites();
 
 	player_health:=20;
@@ -172,8 +173,6 @@ interrupt MainScreen();
 
 
 interrupt MainScreenScrollerEnds();
-var 
-	ms_scroll : byte=7;
 begin
 	startirq(@usekernal);
 	asm(" 
@@ -203,8 +202,6 @@ end;
 
 
 interrupt MainScreenScroller();
-var 
-	ms_sshift : byte=0;
 begin
 	startirq(@usekernal);
 	asm(" 
@@ -229,34 +226,8 @@ begin
 	MULTICOLOR_CHAR_COL[1]:=LIGHT_RED;
 	MULTICOLOR_CHAR_COL[2]:=BROWN;
 	
-	if (ms_scroll>127) then begin
-		val:=zeropage1[0];
-		moveto(0,5, $84);
-		if (val=$20) then val2:=val
-		else begin
-			if val>64 then val:=val-65;
-			if val>16 then val:=val+24;  
-			val:=val*2;
-		
-			val:=val + ms_sshift;
-			val2:=val+40;
-		end;
-
-		screenmemory[39]:=val;
-		screenmemory[39+40]:=val2;
-		ms_scroll := 7;
-		inc(ms_sshift);
-		if (ms_sshift=2) then begin
-			ms_sshift:=0;
-			inczp(zeropage1,1);
-			if (zeropage1[0]=0) then inczp(zeropage1,1);
-			if (zeropage1[0]=255) then zeropage1:=IntroText;
-	
-		end;
-
-
-	end;
-
+	RenderScrollerText(5);
+	if (zeropage1[0]=0) then zeropage1:=IntroText;
 
 	RasterIRQ(MainScreenScrollerEnds(),110, @usekernal);
 
