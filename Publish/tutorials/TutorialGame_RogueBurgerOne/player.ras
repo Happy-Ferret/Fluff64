@@ -211,6 +211,16 @@ begin
 	if val<@crashDistance offpage then begin
 		pointToEntityData(j);
 		player_health := player_health - zeropage5[@entity_damage];
+		if (entity_type[j]>18) then begin
+			if currentScroll>8 then begin
+				InitGameWon();
+				RasterIRQ(RasterGameWon(), 1, @usekernal);
+				return();
+
+			end;
+
+		end;
+
 		if (immortal=0) then begin
 		if player_health >200 then
 			InitGameOver();

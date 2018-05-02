@@ -67,7 +67,8 @@ var
 	ScrollText8: string = "                  ICE COLD BEER TO QUAFF";
 
 
-	EndingText: string = ("    ROGUE BURGER ONE FINALLY MANAGED TO FIND HER HAPPINESS  ");
+	EndingText: string = (	"    ROGUE BURGER ONE FINALLY MANAGED TO FIND HAPPINESS TOGETHER WITH HER NEWFOUND FRIENDS         ",
+							"  SHE WAS SOON EATEN BY A HAPPY PLAYER         IF THERE IS A POINT TO THIS STORY PLEASE LET US KNOW            " );
 
 
 /* Credits section 
@@ -127,6 +128,28 @@ var
 							
 							);
 	
+
+
+	EndingTextWriter : string = (@cclear, @cpause,
+							"THANKS FOR PLAYING",@newline,
+							" ROGUE BURGER ONE", @newline,
+							"  2018 LEMONSPAWN", @cpause,@cpause,@cpause,@cclear, 
+							"THIS GAME WAS DEVELOPED", @newline,
+							"AS AN EXAMPLE OF WHAT", @newline,
+							"IS POSSIBLE TO CREATE", @newline, 
+							"WITH TURBO RASCAL ", @newline,
+							"SYNTAX ERROR", @cpause,@cpause,@cpause, @cclear,
+							"ALL CONTENT WITH THE",@newline,
+							"EXCEPTION OF THE TITLE",@newline,
+							"MUSIC WAS CREATED",@newline,
+							"USING TRSE", @cpause,@cpause,@cpause, @cclear
+							"THE ENTIRE GAME SOURCE",@newline,
+							"CODE WITH ALL RESOURCES",@newline,
+							"ARE INCLUDED WHEN YOU ",@newline,
+							"DOWNLOAD THE TRSE SUITE", @cpause,@cpause,@cpause, @cclear,
+							"PRESS BUTTON TO RESET", @cpause,@cpause,@cpause,@cpause,@cpause,@cpause,@cpause,@cpause,@cpause);
+
+
 
 	
 	// Entity sprite locations in memory *64 on current bank
@@ -283,9 +306,10 @@ procedure MainScreen();
 
 @include "rendering.ras"
 @include "entities.ras"
+@include "gameoverwon.ras"
+
 @include "player.ras"
 @include "introscreen.ras"
-@include "gameoverwon.ras"
 
 
 
@@ -410,6 +434,11 @@ begin
 	UpdatePlayer();
 	UpdateBullet();
 
+	if (keypressed(KEY_ENTER)=1) then begin
+	
+		SCREEN_BG_COL:=RED;
+	end;
+	
 
 
 	if (keyPressedWait=0) then begin
@@ -485,7 +514,7 @@ begin
 	spritex := 160;
 	spritey := 100;
 	
-	player_speed := 4;
+	player_speed := 1;
 	
 	sprite1_counter := 1;
 	bullet_wait := 0;

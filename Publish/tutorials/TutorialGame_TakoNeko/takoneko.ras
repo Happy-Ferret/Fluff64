@@ -1,0 +1,397 @@
+program TakoNeko;
+var  
+//	levels: IncBin("levels/takonekolevel.flf", "$1100"); // 2400 in hex
+/*	levels: IncBin("levels/test2.flf", "$1500"); // 2400 in hex
+	levelChar: IncBin("charsets/charset_intro.bin","$4000");// $800 bytes
+	levelChar2: IncBin("charsets/charset_intro.bin","$8000");// $800 bytes
+*/
+
+	levels: IncBin("levels/takonekolevel.flf", "$1500"); // 2400 in hex
+	levelChar: IncBin("charsets/charset_takoneko.bin","$4000");// $800 bytes
+
+//	sprite0data : incbin("sprites/fastfood.bin", "$5800"); // will be $1000 bytes // locally 2000
+
+
+	levelChar2: IncBin("charsets/charset_takoneko.bin","$8000");// $800 bytes
+
+
+
+	spritex:integer;
+	spritey:byte;
+
+	m_posx, m_posy : byte;
+
+
+	m_levelInit : byte = 0;
+
+	m_currentPos : byte=19;
+	m_currentAb : byte=0;
+
+	g_currentBank: byte=0;
+
+	vscroll: byte=7;
+	zeropage3: pointer;
+
+	moveSprite : array[8] of byte = ($61,$62,$63,$64,$65, $64,$63,$62); 
+
+//	test:pointer;
+//	test2:pointer;
+	i,j,k,time, val:byte=0;
+	sprite1_counter: byte=1;
+
+
+@define usekernal "0"
+
+/*
+   Renders a .flf level at map pos x,y
+*/
+
+@define playerSprite "0"
+@define charmapLevel "$20"
+@define charmapText "$12"
+
+@define screen1hi "$48"
+@define screenmem1 "^$4800"
+
+@define screen2hi "$88"
+@define screenmem2 "^$8800"
+
+@define colorpointer zeropage3
+
+@define spritebank "1"
+
+
+procedure CopyHScreen(ul_:byte);
+begin
+	if g_currentBank=0 then begin
+		if ul_=0 then
+			copyhalfscreen(@screenmem2 + ^520, @screenmem1 -^1 + ^520,12, 1,0)
+		else
+			copyhalfscreen(@screenmem2, @screenmem1 -^1, 13, 1,0);
+
+	end;
+	if g_currentBank=1 then begin
+		if ul_=0 then 
+			copyhalfscreen(@screenmem1+^520, @screenmem2 - ^1 + ^520, 12, 1,0)
+		else
+			copyhalfscreen(@screenmem1, @screenmem2 - ^1,13, 1,0);
+	end;
+
+end;
+
+procedure CopyHScreenCol(ul2_:byte);
+begin
+	asm(";crash");
+		if ul2_=0 then 
+			copyhalfscreen(^$D800+^520+^1, ^$D800 + ^520, 11, 1,0)
+		else
+			copyhalfscreen(^$D800+^1+^40*^2, ^$D800 +^40*^2,11, 1,0);
+
+//		copyfullscreen(^$D800+^1,^$D800);
+
+end;
+
+
+procedure SwitchBank();
+begin
+	if g_currentBank=0 then 
+		SetBank(VIC_BANK1)
+	else 
+		SetBank(VIC_BANK2);
+
+
+//	SetBank(VIC_BANK2);
+//	poke(VIC_DATA_LOC, 0, g_dataLoc);
+	poke(VIC_DATA_LOC, 0, @charmapLevel);
+
+	g_currentBank:=(g_currentBank+1)&1;
+end;
+
+
+
+
+procedure RenderLevel(levelpointer:pointer; m_li, m_lj, m_screen, m_li_from, m_li_to, m_li_shift, m_li_ab: byte);
+var
+   m_rl_width, m_rl_height : byte;
+   m_rl_sizex, m_rl_sizey : byte;
+   m_rl_startx, m_rl_starty : byte;
+   m_rl_dataSize, m_rl_pos : byte;
+   m_rl_i, m_rl_j, m_rl_val, m_rl_val2, m_rl_idx: byte;
+   m_rl_chunksize, m_rl_chunks : byte;
+
+begin
+	// Fluff files have 13 byte headers
+	inczp(levelpointer, 13); // Fluff header
+
+	// Read level header info
+
+	m_rl_sizex := levelpointer[0];
+	m_rl_sizey := levelpointer[1];
+
+	m_rl_width := levelpointer[2];
+	m_rl_height := levelpointer[3];
+
+	m_rl_startx := levelpointer[4];
+	m_rl_starty := levelpointer[5];
+
+
+	m_rl_chunks := levelpointer[6];
+	m_rl_chunksize := levelpointer[7];
+
+	m_rl_dataSize := levelpointer[8];
+
+	
+	// Go past header
+
+	inczp(levelpointer, 9);
+
+	// Calculate position in level layout
+
+	m_rl_pos := m_rl_sizex*m_lj + m_li;
+	
+	m_rl_val := m_rl_width*m_rl_height;
+//	m_rl_val := m_rl_val;// + m_width; 
+
+
+
+	// Skip levels
+	if m_rl_pos<>0 then
+	for m_rl_j:=0 to m_rl_pos do begin
+			inczp(levelpointer,m_rl_val);
+			inczp(levelpointer,m_rl_val);
+			inczp(levelpointer,m_rl_dataSize);
+	end;
+
+	// Set screen position 
+
+	moveto(m_rl_startx, m_rl_starty, m_screen);
+	
+	// Fill screen with chars
+	//call(SIDFILE_1_PLAY);
+
+
+	for m_rl_j:=0 to m_rl_height do begin
+		for m_rl_i:=m_li_from to m_li_to do begin
+			m_rl_val := levelpointer[m_rl_i-m_li_shift] + m_li_ab;
+			m_rl_idx:=m_rl_i*2;
+			screenmemory[m_rl_idx+40]:=m_rl_val+40;
+			screenmemory[m_rl_idx]:=m_rl_val;
+		 end;
+		inczp(screenmemory, 80);
+		inczp(levelpointer,m_rl_width);
+	end;
+	m_levelInit := 1;
+	// Then colors
+end;
+
+
+procedure RenderColor();
+begin
+
+	if (m_levelInit=0) then return();
+
+	moveto(m_rl_startx, m_rl_starty, $D8);
+//	call(SIDFILE_1_PLAY);
+	@colorpointer:=levelpointer;
+	for m_rl_j:=0 to m_rl_height do begin
+		for m_rl_i:=m_li_from to m_li_to do begin
+			m_rl_val := levelpointer[m_rl_i-m_li_shift]&7 + 8;
+			m_rl_idx:=m_rl_i*2;
+			screenmemory[m_rl_idx+40]:=m_rl_val;
+			screenmemory[m_rl_idx]:=m_rl_val;
+	
+	 	end;
+		inczp(screenmemory, 80);
+		inczp(levelpointer, m_rl_width);
+	
+	end;
+	// Set multicolor colors
+	//call(SIDFILE_1_PLAY);
+
+	inczp(levelpointer, 3);
+	// levelpointer now points to chunk data!
+
+
+end;
+
+
+procedure UpdatePlayerSprite();
+begin
+	spritepos(spritex, spritey, @playerSprite);
+
+	val := joystickup+joystickdown+joystickleft+joystickright;
+	if val<>0 then 
+		val:=1;
+
+
+	sprite1_counter:=sprite1_counter-val;
+	// Animation hits at 0 and 10
+
+	i:=sprite1_counter/4;
+	k:=moveSprite[i];
+	setspriteloc(@playerSprite, moveSprite[i], @spritebank);
+
+	if sprite1_counter=00 then
+		sprite1_counter := 32;
+	
+
+
+
+end;
+
+interrupt RasterGame();
+begin
+	startirq(@usekernal);
+	SCREEN_FG_COL:=BLUE;
+	inc(time);
+	poke(VIC_DATA_LOC, 0, @charmapLevel);
+	//UpdatePlayerSprite();
+
+
+	if (vscroll=6) then begin
+		RenderColor();
+		
+		inc(m_currentAb);
+		if (m_currentAb=2) then begin
+			dec(m_currentPos);
+			m_currentAb:=0;
+			if (m_currentPos>127) then begin
+				m_currentPos:=19;
+				inc(m_posx);
+			end;
+		end;
+
+	end;
+
+
+		
+	scrollx(vscroll);
+
+	dec(vscroll);
+	if (vscroll>128) then begin
+		vscroll:=7;
+	end;
+
+	//if g_hscroll=0 then 
+	//	printColor();
+		
+	//if g_hscroll=0 then 
+	//	PrintLine();
+
+
+
+
+	if (vscroll=2) then
+		CopyHScreen(0);
+
+	if (vscroll=4) then
+		CopyHScreen(1);
+
+	hideborderx(0);
+
+
+
+	if (vscroll=7) then begin
+		val:=@screen1hi;
+		if (g_currentBank=1) then val:=@screen2hi;
+		moveto(0,1, val);
+		screenmemory[39]:=$20;
+		RenderLevel(levels, m_posx, m_posy, val,19,20,m_currentPos, m_currentAb);
+	end;
+
+
+	waitforraster(190);
+	SCREEN_FG_COL:=BLACK;
+	
+	
+	waitforraster(220);
+
+	if (vscroll=7) then begin
+		SwitchBank();
+		CopyHScreenCol(0);
+		CopyHScreenCol(1);
+	end;
+	closeirq();
+end;
+
+
+
+procedure InitSprites();
+begin
+
+	// Black and yellow are our colors
+	poke(SPRITE_MULTICOLOR_REG1, 0, BLACK);
+	poke(SPRITE_MULTICOLOR_REG2, 0, YELLOW);
+
+    poke(SPRITE_BITMASK,0, %00000001);
+
+	poke(SPRITE_COLOR,0, RED);
+
+	poke(SPRITE_MULTICOLOR, 0, $FF); // ALL multicolor
+
+end;
+
+
+/*
+
+
+
+ SCROLLING STUFF
+
+
+*/
+/*
+  Copies half upper/lower screen to 1 char left
+
+*/
+
+
+
+
+procedure InitNewGame();
+begin
+	m_posx:=0;
+	m_posy:=0;
+
+	// Initial map rendering
+//	ResetLevels();
+//	levelpointer := levels;
+	setbank(VIC_BANK2);
+	setmulticolormode();
+	poke(VIC_DATA_LOC, 0, @charmapLevel);
+	levelpointer := levels;
+	clearscreen($20,@screenmem2);
+	clearscreen($20,@screenmem1);
+
+
+	m_posx:=0;
+	// Initial sprite position
+	spritex := 160;
+	spritey := 100;
+
+	SCREEN_BG_COL:=BLACK;
+
+	poke(MULTICOLOR_CHAR_COL, 0, BLACK);
+	poke(MULTICOLOR_CHAR_COL, 2, LIGHT_BLUE); 
+	poke(MULTICOLOR_CHAR_COL, 1, DARK_GREY);
+
+	SCREEN_BG_COL:=BLUE;
+	poke(MULTICOLOR_CHAR_COL, 0, BLUE);
+	poke(MULTICOLOR_CHAR_COL, 2, LIGHT_RED); 
+	poke(MULTICOLOR_CHAR_COL, 1, DARK_GREY);
+
+
+//	InitSprites();
+end;
+
+
+
+begin
+	setmemoryconfig(1,@usekernal,0);
+	DisableCIAInterrupts();
+	InitNewGame();
+	RasterIRQ(RasterGame(), 1, @usekernal);
+	enableirq();
+	enablerasterirq();
+	Loop();
+end.

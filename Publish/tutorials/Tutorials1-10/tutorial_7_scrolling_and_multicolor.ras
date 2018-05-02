@@ -32,6 +32,7 @@ end;
 
 interrupt UpdateRaster();
 begin
+	startirq(0);
 	// increase global time
 	time:=time+1;
 	// increase text shift only every 8th step due to scrolling 
@@ -83,7 +84,7 @@ begin
 
 	PrintText();
 	// call system kernel
-	kernalinterrupt();
+	closeirq();	
 end;
 
 
@@ -104,9 +105,9 @@ end;
 begin
 	Setup();
 	preventirq();
-	setmemoryconfig(1,1,0);
+	setmemoryconfig(1,0,0);
 	DisableCIAInterrupts();
-	RasterIRQ(UpdateRaster(), 0,1);
+	RasterIRQ(UpdateRaster(), 0,0);
 	enablerasterirq();
 	enableirq();
 	
