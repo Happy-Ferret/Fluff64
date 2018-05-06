@@ -15,38 +15,7 @@
   </property>
   <layout class="QGridLayout" name="gridLayout_3">
    <item row="0" column="0">
-    <layout class="QGridLayout" name="gridLayout" columnstretch="2,1">
-     <item row="2" column="1">
-      <layout class="QHBoxLayout" name="horizontalLayout_2">
-       <item>
-        <widget class="QCheckBox" name="chkGrid">
-         <property name="text">
-          <string>Grid (z)</string>
-         </property>
-         <property name="checked">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="chkBackgroundArea">
-         <property name="text">
-          <string>Collision area (x)</string>
-         </property>
-         <property name="checked">
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="lblPosition">
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
+    <layout class="QGridLayout" name="gridLayout" rowstretch="0,0,0" columnstretch="2,1">
      <item row="1" column="0">
       <widget class="QGroupBox" name="groupBox">
        <property name="title">
@@ -111,7 +80,7 @@
      <item row="1" column="1">
       <widget class="QTabWidget" name="tabWidget_2">
        <property name="currentIndex">
-        <number>0</number>
+        <number>2</number>
        </property>
        <widget class="QWidget" name="tab_2">
         <attribute name="title">
@@ -376,10 +345,10 @@
                </property>
               </widget>
              </item>
-             <item row="2" column="0">
-              <widget class="QPushButton" name="btnCharsetFull">
+             <item row="4" column="1">
+              <widget class="QPushButton" name="btnCharsetPaste">
                <property name="text">
-                <string>Full character set</string>
+                <string>Paste</string>
                </property>
               </widget>
              </item>
@@ -397,10 +366,24 @@
                </property>
               </widget>
              </item>
-             <item row="4" column="1">
-              <widget class="QPushButton" name="btnCharsetPaste">
+             <item row="2" column="0">
+              <widget class="QPushButton" name="btnCharsetFull">
                <property name="text">
-                <string>Paste</string>
+                <string>Full character set</string>
+               </property>
+              </widget>
+             </item>
+             <item row="5" column="0">
+              <widget class="QPushButton" name="btnFlipVert">
+               <property name="text">
+                <string>Flip vertical</string>
+               </property>
+              </widget>
+             </item>
+             <item row="5" column="1">
+              <widget class="QPushButton" name="btnFlipHorisontal">
+               <property name="text">
+                <string>Flip horizontal</string>
                </property>
               </widget>
              </item>
@@ -454,9 +437,51 @@
       </widget>
      </item>
      <item row="2" column="0">
-      <widget class="QLabel" name="label">
+      <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <item>
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>WSAD to move around levels and charsets</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="lblMode">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+   <item row="1" column="0">
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="QCheckBox" name="chkGrid">
        <property name="text">
-        <string>WSAD to move around levels and charsets</string>
+        <string>Grid (z)</string>
+       </property>
+       <property name="checked">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="chkBackgroundArea">
+       <property name="text">
+        <string>Collision area (x)</string>
+       </property>
+       <property name="checked">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="lblPosition">
+       <property name="text">
+        <string/>
        </property>
       </widget>
      </item>

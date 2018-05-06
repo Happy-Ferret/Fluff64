@@ -2,7 +2,9 @@ program Tutorial7;
 var
 	xscroll, x,y, val, i: byte;
 	textshift, wobbleShift: byte;
-	text: array[255] of byte;
+	text: string =("               WHY AM I DOING THIS WHEN I SHOULD BE SLEEPING        I WANT SMOOTH HARDWARE SCROLLING IRL  ",
+	           "     THIS SCOLLING DOESN'T END PROPERLY ");
+
 	time: byte;
 	colorIndex:byte;
 	fade : array [16] of byte = (11,6,6,12,4,14,15,1,1,15,14,4,12,6,6,11); 
@@ -96,8 +98,6 @@ begin
 
 	setbank(VIC_BANK1);
 	copyimagecolordata(image_color,1);
-
-	text:="                WHY AM I DOING THIS WHEN I SHOULD BE SLEEPING        I WANT SMOOTH HARDWARE SCROLLING IRL                  THIS SCOLLING DOESN'T END PROPERLY";
 
 
 end;

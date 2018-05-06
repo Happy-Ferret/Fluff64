@@ -5,7 +5,7 @@ var
 	dy, vy, val, orgChar : byte;
 	ypos:byte;
 	x,y : byte;
-	fadeStep, wait : byte;
+	fadeStep, wwait : byte;
 	
 	fade1 : array[16] of byte =
 	(0, 15, 9, 6, 2, 12, 12, 9 ,
@@ -20,14 +20,14 @@ begin
 	poke(VIC_DATA_LOC, 0,$18);
 	SetBitmapMode();
 	SetMultiColorMode();
-	if joystickbutton=1 then wait :=10;
-	if wait<>0 then begin
-		if wait&1=0 then
+	if (joystickbutton=1) then wwait :=10;
+	if wwait<>0 then begin
+		if wwait&1=0 then
 		begin
 			TransformColors(fade1, $4400);
 			TransformColors(fade1, $D800);
 		end;
-		wait:=wait-1;
+		dec(wwait);
 	end;
 	
 	Joystick();
@@ -68,8 +68,9 @@ begin
 	ypos:=0;
 	dy:=1;
 	vy:=0;
-	wait:=0;
+	wwait:=0;
 	orgChar := peek(VIC_DATA_LOC, 0);
+	clearscreen($20,^$0400);
 	poke(VIC_DATA_LOC, 0,$18);
 	copyimagecolordata(image_color,1);
 	preventirq();

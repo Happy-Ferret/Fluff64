@@ -17,10 +17,13 @@ FormImageEditor::FormImageEditor(QWidget *parent) :
     m_grid.Initialize(320*2,200*2);
     m_grid.CreateGrid(40,25,m_gridColor,4, 1, QPoint(0,0));
     m_fileExtension = "flf";
+    Data::data.currentColor=1;
 
 
     m_grid.ApplyToLabel(ui->lblGrid);
-   // updateCharSet();
+    updateCharSet();
+    ui->lblGrid->setVisible(ui->chkGrid->isChecked());
+
 }
 
 FormImageEditor::~FormImageEditor()
@@ -48,6 +51,9 @@ void FormImageEditor::mouseReleaseEvent(QMouseEvent *e)
         m_updateThread->m_currentButton = 0;
     else
         m_updateThread->m_currentButton = -1;
+
+    updateCharSet();
+
 }
 
 void FormImageEditor::wheelEvent(QWheelEvent *event)
@@ -178,7 +184,6 @@ void FormImageEditor::Load(QString filename)
 
     ui->lblImageName->setText(m_currentFileShort);
 
-
 }
 
 void FormImageEditor::Save(QString filename)
@@ -203,6 +208,11 @@ Ui::Formimageeditor *FormImageEditor::getUi() const
 QLabel* FormImageEditor::getLabelImage()
 {
     return ui->lblImage;
+}
+
+void FormImageEditor::UpdateCurrentMode()
+{
+    ui->lblMode->setText(m_work.m_currentImage->m_image->GetCurrentModeString());
 }
 void FormImageEditor::UpdatePalette()
 {
@@ -231,6 +241,14 @@ void FormImageEditor::UpdatePalette()
 
     ui->btnExportBin->setVisible(m_work.m_currentImage->m_image->m_supports.binarySave);
     ui->btnImportBin->setVisible(m_work.m_currentImage->m_image->m_supports.binaryLoad);
+
+    ui->cmbMC1->setVisible(m_work.m_currentImage->m_image->m_supports.displayMC1);
+    ui->cmbMC2->setVisible(m_work.m_currentImage->m_image->m_supports.displayMC2);
+    ui->cmbBorderMain_3->setVisible(m_work.m_currentImage->m_image->m_supports.displayForeground);
+    ui->layoutColorsEdit_3->setEnabled(m_work.m_currentImage->m_image->m_supports.displayColors);
+
+
+
 //    ui->btnLoad->setVisible(m_work.m_currentImage->m_image->m_supports.flfLoad);
 //    ui->btnSave->setVisible(m_work.m_currentImage->m_image->m_supports.flfSave);
 //    ui->btnExportAsm->setVisible(m_work.m_currentImage->m_image->m_supports.asmExport);
@@ -273,8 +291,27 @@ void FormImageEditor::on_btnExportAsm_clicked()
     //fileName.remove(".bin");
 
     mi->ExportAsm(fileName);
-//    mi->ExportRasBin(fileName, "");
+    //    mi->ExportRasBin(fileName, "");
 }
+
+void FormImageEditor::on_btnFlipVert_clicked()
+{
+    m_work.m_currentImage->m_image->FlipVertical();
+
+    Data::data.forceRedraw = true;
+    Data::data.Redraw();
+
+}
+
+void FormImageEditor::on_btnFlipHorisontal_clicked()
+{
+    m_work.m_currentImage->m_image->FlipHorizontal();
+
+    Data::data.forceRedraw = true;
+    Data::data.Redraw();
+
+}
+
 
 
 /*void FormImageEditor::on_btnSave_clicked()
@@ -354,6 +391,7 @@ void FormImageEditor::on_btnCharsetFull_clicked()
 
     ci->m_currentMode = CharsetImage::Mode::FULL_IMAGE;
     Data::data.forceRedraw = true;
+    UpdateCurrentMode();
 }
 
 void FormImageEditor::on_btnCharset1x1_clicked()
@@ -362,8 +400,10 @@ void FormImageEditor::on_btnCharset1x1_clicked()
     if (ci==nullptr)
         return;
 
+    m_updateThread->m_zoom = 1.0;
     ci->m_currentMode = CharsetImage::Mode::CHARSET1x1;
     Data::data.forceRedraw = true;
+    UpdateCurrentMode();
 
 }
 
@@ -373,9 +413,10 @@ void FormImageEditor::on_btnCharset2x2_clicked()
     if (ci==nullptr)
         return;
 
+    m_updateThread->m_zoom = 1.0;
     ci->m_currentMode = CharsetImage::Mode::CHARSET2x2;
     Data::data.forceRedraw = true;
-
+    UpdateCurrentMode();
 }
 
 void FormImageEditor::on_btnCharset2x2Repeat_clicked()
@@ -383,8 +424,10 @@ void FormImageEditor::on_btnCharset2x2Repeat_clicked()
     CharsetImage* ci = dynamic_cast<CharsetImage*>(m_work.m_currentImage->m_image);
     if (ci==nullptr)
         return;
+    m_updateThread->m_zoom = 1.0;
 
     ci->m_currentMode = CharsetImage::Mode::CHARSET2x2_REPEAT;
+    UpdateCurrentMode();
     Data::data.forceRedraw = true;
 
 }
@@ -442,6 +485,7 @@ void FormImageEditor::on_btnSaveAs_clicked()
 
 void FormImageEditor::updateCharSet()
 {
+    UpdateCurrentMode();
     CharsetImage* charmap = m_work.m_currentImage->m_image->getCharset();
     ImageLevelEditor* le = dynamic_cast<ImageLevelEditor*>(m_work.m_currentImage->m_image);
     if (le!=nullptr && charmap==nullptr) {
@@ -533,6 +577,9 @@ void FormImageEditor::SetMCColors()
     m_work.m_currentImage->m_image->SetColor(b, 2);
 
     updateCharSet();
+    Data::data.Redraw();
+    Data::data.forceRedraw = true;
+
 }
 
 void FormImageEditor::UpdateLevels()

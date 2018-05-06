@@ -57,7 +57,7 @@ public:
 
     QLabel* getLabelImage();
 
-
+    void UpdateCurrentMode();
 
 
 private:
@@ -66,6 +66,8 @@ private:
 private slots:
     void on_btnExportAsm_clicked();
 
+    void on_btnFlipVert_clicked();
+    void on_btnFlipHorisontal_clicked();
 
     void SelectCharacter(int j);
 

@@ -240,7 +240,7 @@
   </action>
   <action name="actionImage">
    <property name="text">
-    <string>Image</string>
+    <string>Image/Charset/Sprite</string>
    </property>
   </action>
   <action name="actionSearch">

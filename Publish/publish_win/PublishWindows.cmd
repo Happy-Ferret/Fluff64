@@ -15,6 +15,7 @@ move bin trse
 xcopy /e  ..\tutorials\RasLib trse\RasLib\
 xcopy /e  ..\tutorials\Tutorials1-10\* trse\Tutorials1-10\
 xcopy /e  ..\tutorials\TutorialGame_RogueBurgerOne\* trse\TutorialGame_RogueBurgerOne\
+xcopy /e  ..\tutorials\TutorialGame_TakoNeko\* trse\TutorialGame_TakoNeko\
 copy C:\Users\leuat\OneDrive\Documents\GitHub\Fluff64\Strapper\build-strapper-Desktop_Qt_5_10_1_MSVC2017_64bit-Release\release\strapper.exe trse\trse.exe
 xcopy /e dll\* trse\
 xcopy start.cmd trse\

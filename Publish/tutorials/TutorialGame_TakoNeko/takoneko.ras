@@ -6,20 +6,29 @@ var
 	levelChar2: IncBin("charsets/charset_intro.bin","$8000");// $800 bytes
 */
 
-	levels: IncBin("levels/takonekolevel.flf", "$1500"); // 2400 in hex
+	levels: IncBin("levels/takonekolevel.flf", "$2000"); // 2400 in hex
 	levelChar: IncBin("charsets/charset_takoneko.bin","$4000");// $800 bytes
+	sprites0: IncBin("sprites/takoneko.bin", "$4C00");
 
 //	sprite0data : incbin("sprites/fastfood.bin", "$5800"); // will be $1000 bytes // locally 2000
 
 
 	levelChar2: IncBin("charsets/charset_takoneko.bin","$8000");// $800 bytes
+	sprites1: IncBin("sprites/takoneko.bin", "$8C00");
+	regularChar: IncBin("charsets/charset_text.bin","$C000");// $800 bytes
 
 
+	@define pspritepos $40
 
-	spritex:integer;
+	background:byte=0;
+
+	tmp2, blockx, blocky, scroll, direction:byte=0;
+
+	spritex, tmp:integer;
+	speedup, speeddown:byte=0;
 	spritey:byte;
-
-	m_posx, m_posy : byte;
+	perform:byte;
+	m_posx, m_posy, m_tmp : byte;
 
 
 	m_levelInit : byte = 0;
@@ -29,15 +38,62 @@ var
 
 	g_currentBank: byte=0;
 
-	vscroll: byte=7;
+	vscroll: byte=6;
 	zeropage3: pointer;
 
-	moveSprite : array[8] of byte = ($61,$62,$63,$64,$65, $64,$63,$62); 
+	moveSpriteRight : array[8] of byte = ($30,$31,$32,$31,$30, $31,$32,$31); 
+	moveSpriteLeft : array[8] of byte = ($35,$36,$37,$36,$35, $36,$37,$36); 
+	moveSpriteLeftIdle : byte = $34; 
+	moveSpriteRightIdle : byte = $33; 
+
+
+
+
+	
 
 //	test:pointer;
 //	test2:pointer;
 	i,j,k,time, val:byte=0;
 	sprite1_counter: byte=1;
+
+	mask: array[255] of byte=(
+	1,1,1,1,0,0,0,0,0,0,  0,0,1,1,1,1,1,1,1,1,   1,1,1,1,1,1,1,1,1,1,  1,0,0,0,0,1,1,1,1,1,
+	1,1,1,1,0,0,0,0,0,0,  0,0,1,1,1,1,1,1,1,1,   1,1,1,1,1,1,1,1,1,1,  1,0,0,0,0,1,1,1,1,1,
+	0,0,0,0,0,0,0,0,0,0,  0,0,1,1,1,1,1,1,1,1,   1,1,1,1,1,1,1,1,1,1,  1,0,0,1,1,1,1,1,1,1,
+	0,0,0,0,0,0,0,0,0,0,  0,0,1,1,1,1,1,1,1,1,   1,1,1,1,1,1,1,1,1,1,  1,0,0,1,1,1,1,1,1,1,
+	0,0,0,0,0,0,0,0,0,0,  0,0,0,0,0,0,0,0,0,0,   0,0,0,0,0,0,0,0,0,0,  0,0,0,0,0,0,0,0,0,0,
+	0,0,0,0,0,0,0,0,0,0,  0,0,0,0,0,0,0,0,0,0,   0,0,0,0,0,0,0,0,0,0,  0,0,0,0,0,0,0,0,0,0);
+
+	catText:pointer;
+
+	@define newline 254
+	@define cclear 253
+	@define cpause 252	
+
+	// 136 = health upgrade
+	// 137 = ammp upgrade
+	// 138 = hotdog
+	// 135 = HEART
+	// 134 = AMMO
+
+	storyText : string = (129, @cclear, @cpause,
+							"I AM CAT", @newline,
+							" 2018 LEMONSPAWN", @newline, 
+							"  I AM CUTE", 
+							@cpause,@cpause,@cpause,@cpause,
+							@cclear, @cpause, "WHAT SHOULD I DO SLEEP ZZZZ", @cpause,@cpause,@cpause, @cclear,
+							"DONT DIE. SLEEP. ", @cpause, @cpause,@cpause, 
+							@newline, "EAT.", @cpause, @cpause,
+							@newline, "FIND FRIENDS", @cpause,@cpause,@cpause);
+
+
+	@define creditsCMax 4 // Time of credz movement
+
+	@define CreditsColors 3
+	@define creditsStartX 2
+	@define creditsStartY 20
+	creditsX: byte= @creditsStartX;
+	creditsY: byte= @creditsStartY;
 
 
 @define usekernal "0"
@@ -58,21 +114,21 @@ var
 
 @define colorpointer zeropage3
 
-@define spritebank "1"
+@define spritebank "2"
 
 
 procedure CopyHScreen(ul_:byte);
 begin
 	if g_currentBank=0 then begin
 		if ul_=0 then
-			copyhalfscreen(@screenmem2 + ^520, @screenmem1 -^1 + ^520,12, 1,0)
+			copyhalfscreen(@screenmem2 + ^520, @screenmem1 -^1 + ^520,5, 1,0)
 		else
 			copyhalfscreen(@screenmem2, @screenmem1 -^1, 13, 1,0);
 
 	end;
 	if g_currentBank=1 then begin
 		if ul_=0 then 
-			copyhalfscreen(@screenmem1+^520, @screenmem2 - ^1 + ^520, 12, 1,0)
+			copyhalfscreen(@screenmem1+^520, @screenmem2 - ^1 + ^520, 5, 1,0)
 		else
 			copyhalfscreen(@screenmem1, @screenmem2 - ^1,13, 1,0);
 	end;
@@ -83,7 +139,7 @@ procedure CopyHScreenCol(ul2_:byte);
 begin
 	asm(";crash");
 		if ul2_=0 then 
-			copyhalfscreen(^$D800+^520+^1, ^$D800 + ^520, 11, 1,0)
+			copyhalfscreen(^$D800+^520+^1, ^$D800 + ^520, 5, 1,0)
 		else
 			copyhalfscreen(^$D800+^1+^40*^2, ^$D800 +^40*^2,11, 1,0);
 
@@ -100,14 +156,10 @@ begin
 		SetBank(VIC_BANK2);
 
 
-//	SetBank(VIC_BANK2);
-//	poke(VIC_DATA_LOC, 0, g_dataLoc);
 	poke(VIC_DATA_LOC, 0, @charmapLevel);
 
 	g_currentBank:=(g_currentBank+1)&1;
 end;
-
-
 
 
 procedure RenderLevel(levelpointer:pointer; m_li, m_lj, m_screen, m_li_from, m_li_to, m_li_shift, m_li_ab: byte);
@@ -121,6 +173,149 @@ var
 
 begin
 	// Fluff files have 13 byte headers
+	inczp(levelpointer, 9+13);
+
+	m_rl_pos := m_rl_sizex*m_lj + m_li;
+	
+	m_rl_val := m_rl_width*m_rl_height;
+//	m_rl_val := m_rl_val;// + m_width; 
+
+	// Skip levels
+	if m_rl_pos<>0 then
+	for m_rl_j:=0 to m_rl_pos do begin
+			inczp(levelpointer,m_rl_val);
+			inczp(levelpointer,m_rl_val);
+			inczp(levelpointer,m_rl_dataSize);
+	end;
+
+	// Set screen position 
+
+	moveto(m_rl_startx, m_rl_starty, m_screen);
+	
+	// Fill screen with chars
+	//call(SIDFILE_1_PLAY);
+
+	for m_rl_j:=0 to m_rl_height do begin
+		for m_rl_i:=m_li_from to m_li_to do begin
+			m_rl_val := levelpointer[m_rl_i-m_li_shift] + m_li_ab;
+			m_rl_idx:=m_rl_i*2;
+			screenmemory[m_rl_idx+40]:=m_rl_val+40;
+			screenmemory[m_rl_idx]:=m_rl_val;
+		 end;
+		inczp(screenmemory, 80);
+		inczp(levelpointer,m_rl_width);
+	end;
+	m_levelInit := 1;
+	// Then colors
+end;
+
+procedure RenderFullLevel();
+begin
+	// Fluff files have 13 byte headers
+	inczp(levelpointer, 9+13);
+
+	m_rl_pos := m_rl_sizex*m_lj + m_li;
+	
+	m_rl_val := m_rl_width*m_rl_height;
+//	m_rl_val := m_rl_val;// + m_width; 
+
+	// Skip levels
+	if m_rl_pos<>0 then
+	for m_rl_j:=0 to m_rl_pos do begin
+			inczp(levelpointer,m_rl_val);
+			inczp(levelpointer,m_rl_val);
+			inczp(levelpointer,m_rl_dataSize);
+	end;
+
+	// Set screen position 
+
+	moveto(m_rl_startx, m_rl_starty, m_screen);
+	
+	// Fill screen with chars
+	//call(SIDFILE_1_PLAY);
+
+	for m_rl_j:=0 to m_rl_height do begin
+		for m_rl_i:=0 to m_rl_width do begin
+			m_rl_val := levelpointer[m_rl_i];
+			m_rl_idx:=m_rl_i*2;
+			screenmemory[m_rl_idx+40]:=m_rl_val+40;
+			screenmemory[m_rl_idx]:=m_rl_val;
+			screenmemory[m_rl_idx+41]:=m_rl_val+41;
+			screenmemory[m_rl_idx+1]:=m_rl_val+1;
+		 end;
+		inczp(screenmemory, 80);
+		inczp(levelpointer,m_rl_width);
+	end;
+
+	moveto(m_rl_startx, m_rl_starty, $D8);
+	@colorpointer:=levelpointer;
+	for m_rl_j:=0 to m_rl_height do begin
+		for m_rl_i:=0 to m_rl_width do begin
+			m_rl_val := levelpointer[m_rl_i]&7 + 8;
+			m_rl_val:=m_rl_val|16;	
+			m_rl_idx:=m_rl_i*2;
+			screenmemory[m_rl_idx+40]:=m_rl_val;
+			screenmemory[m_rl_idx]:=m_rl_val;
+			screenmemory[m_rl_idx+41]:=m_rl_val;
+			screenmemory[m_rl_idx+1]:=m_rl_val;
+	
+	 	end;
+		inczp(screenmemory, 80);
+		inczp(levelpointer, m_rl_width);
+	
+	end;
+end;
+
+procedure BackgroundCollide();
+begin
+	
+	tmp:=spritex - 12;
+	//tmp:=tmp +joystickright*8;
+	//tmp:=tmp - joystickleft*8;
+	i:=(tmp)/8;// -m_rl_startx;//-m_rl_startx;
+	
+	//	i:=i-m_rl_starty;
+	j:=(spritey-42);
+//	j:=j+joystickdown*8;
+//	j:=j-joystickup*8;
+	j:=j/8;
+	val := j*m_rl_width+i;
+	if g_currentBank=0 then
+	moveto(i-1,j, $88)
+	else
+	moveto(i-1,j, $48);
+	//tmp2:=getbit(@colorpointer[val], 3);
+	val:=screenmemory[41]; // down
+	tmp2:=mask[val];
+	blockx:=0;
+	blocky:=0;
+	
+	if (tmp2=1) then begin
+		blocky:=1;
+	end;
+	val:=screenmemory[ 1 + joystickright - joystickleft]; // down
+	tmp2:=mask[val];
+	
+	if (tmp2=1) then begin
+		blockx:=1;
+	end;
+	//if joystickup=1 then 
+//		k:=0-m
+	//k:=(joystickup + joystickdown)*m_rl_width;
+	
+	//moveto(i-3,j, $88);
+	//screenmemory[0]:=10;
+	
+	
+end;
+
+
+
+
+
+
+procedure ReadLevelheader();
+begin
 	inczp(levelpointer, 13); // Fluff header
 
 	// Read level header info
@@ -143,47 +338,109 @@ begin
 	
 	// Go past header
 
-	inczp(levelpointer, 9);
+	//inczp(levelpointer, 9);
 
 	// Calculate position in level layout
 
-	m_rl_pos := m_rl_sizex*m_lj + m_li;
-	
-	m_rl_val := m_rl_width*m_rl_height;
-//	m_rl_val := m_rl_val;// + m_width; 
 
 
 
-	// Skip levels
-	if m_rl_pos<>0 then
-	for m_rl_j:=0 to m_rl_pos do begin
-			inczp(levelpointer,m_rl_val);
-			inczp(levelpointer,m_rl_val);
-			inczp(levelpointer,m_rl_dataSize);
-	end;
-
-	// Set screen position 
-
-	moveto(m_rl_startx, m_rl_starty, m_screen);
-	
-	// Fill screen with chars
-	//call(SIDFILE_1_PLAY);
-
-
-	for m_rl_j:=0 to m_rl_height do begin
-		for m_rl_i:=m_li_from to m_li_to do begin
-			m_rl_val := levelpointer[m_rl_i-m_li_shift] + m_li_ab;
-			m_rl_idx:=m_rl_i*2;
-			screenmemory[m_rl_idx+40]:=m_rl_val+40;
-			screenmemory[m_rl_idx]:=m_rl_val;
-		 end;
-		inczp(screenmemory, 80);
-		inczp(levelpointer,m_rl_width);
-	end;
-	m_levelInit := 1;
-	// Then colors
 end;
 
+// Updates the sprite & the sprite animation
+procedure UpdatePlayerSpriteMovement();
+begin
+	
+	val := joystickup+joystickdown+joystickleft+joystickright;
+	if val<>0 then
+		val:=1;
+
+	
+	sprite1_counter:=sprite1_counter-val;
+
+	if sprite1_counter>200 then
+		sprite1_counter := 31;
+
+	// Animation hits at 0 and 10
+	
+	i:=sprite1_counter/4;
+
+	if (joystickleft =0 and joystickright=0) then begin
+		if direction=0 then k:=moveSpriteLeftIdle
+		else k:=moveSpriteRightIdle;
+	end;
+
+	if (joystickleft=1) then begin 
+		k:=moveSpriteLeft[i]; 
+		direction:=0; 
+	end;
+	if (joystickright=1) then begin 
+		k:=moveSpriteRight[i]; 
+		direction:=1; 
+	end;
+
+
+//	setspriteloc(@playerSprite, moveSprite[i], 1);
+	poke(^$47F8 + ^$0400,@playerSprite,k); 
+	poke(^$87F8 + ^$0400,@playerSprite,k); 
+	
+	
+end;
+
+
+
+
+procedure UpdatePlayer();
+begin
+	Joystick();
+	BackgroundCollide();
+	if (joystickup=1 and blocky=1) then begin
+		speedup:=64;
+		blocky:=0;
+		speeddown:=0;
+	end;
+
+	speeddown:=speeddown+2;
+
+	if speedup<>0 then dec(speedup);;
+	if speedup<>0 then dec(speedup);;
+
+	if (blocky=0) then begin
+		tmp2:=speeddown/16;
+		spritey:=spritey+tmp2;
+		tmp2:=speedup/16;
+		spritey:=spritey-tmp2;
+		
+		//SCREEN_BG_COL:=BLACK;
+	end
+	else
+		speeddown:=0;
+
+	if (blockx=1) then begin
+		joystickright:=0;
+		joystickleft:=0;
+		//SCREEN_BG_COL:=RED;
+	end;
+
+	spritex:=spritex + joystickright-joystickleft;
+
+	scroll:=0;
+	if (spritex<160) then begin
+		
+	end
+	else
+	begin
+		spritex:=160;
+		if joystickright=1 then scroll:=1;
+		joystickleft:=0;
+	end;
+
+//	if joystickdown=1 then spritey:=spritey+1;
+//	if joystickup=1 then spritey:=spritey-1;
+	spritepos(spritex, spritey, 0);
+	UpdatePlayerSpriteMovement();
+
+end;
 
 procedure RenderColor();
 begin
@@ -196,6 +453,7 @@ begin
 	for m_rl_j:=0 to m_rl_height do begin
 		for m_rl_i:=m_li_from to m_li_to do begin
 			m_rl_val := levelpointer[m_rl_i-m_li_shift]&7 + 8;
+			if (levelpointer[m_rl_i-m_li_shift]>7) then m_rl_val:=m_rl_val|16;
 			m_rl_idx:=m_rl_i*2;
 			screenmemory[m_rl_idx+40]:=m_rl_val;
 			screenmemory[m_rl_idx]:=m_rl_val;
@@ -208,6 +466,12 @@ begin
 	// Set multicolor colors
 	//call(SIDFILE_1_PLAY);
 
+	/*poke(MULTICOLOR_CHAR_COL, 0, levelpointer[0]);
+	poke(MULTICOLOR_CHAR_COL, 2, levelpointer[1]);
+	poke(MULTICOLOR_CHAR_COL, 1, levelpointer[2]);
+
+	background:=levelpointer[0];
+*/
 	inczp(levelpointer, 3);
 	// levelpointer now points to chunk data!
 
@@ -215,41 +479,85 @@ begin
 end;
 
 
-procedure UpdatePlayerSprite();
+/*procedure UpdateText();
 begin
-	spritepos(spritex, spritey, @playerSprite);
-
-	val := joystickup+joystickdown+joystickleft+joystickright;
-	if val<>0 then 
-		val:=1;
-
-
-	sprite1_counter:=sprite1_counter-val;
-	// Animation hits at 0 and 10
-
-	i:=sprite1_counter/4;
-	k:=moveSprite[i];
-	setspriteloc(@playerSprite, moveSprite[i], @spritebank);
-
-	if sprite1_counter=00 then
-		sprite1_counter := 32;
-	
-
-
+	moveto(1,20,$C8);
+	printstring("SO QT I IS KITTEN",0,40);
 
 end;
+*/
+procedure UpdateCredits();
+var
+	creditsCounter,l:byte=0;
+begin
+	k:=$C8; 
+	moveto(creditsX, creditsY, k);
+	val:=catText[0];
+
+	if val=@cclear then creditsCounter:=0;
+	if (creditsCounter<>0) then begin
+		l:=creditsCounter&7;
+		screenmemory[1]:=138 + l;
+		dec(creditsCounter);
+		return();
+	end;
+	screenmemory[1]:=$20;
+
+
+	creditsCounter := @creditsCMax;
+
+
+	val:=catText[0];
+	inczp(catText,1);
+
+
+	if val=@cpause then begin
+		creditsCounter := @creditsCMax*8;
+		return();
+	end;
+
+	if val=0 then begin
+		catText:=storyText;
+		return();
+	end;
+	if val=@cclear then begin
+		creditsX:=@creditsStartX;
+		creditsY:=@creditsStartY;
+
+		// Clear screen
+		fill(^$C800 + ^20*^40, $20, 120);
+
+		return();
+	end;
+	if val=@newline then begin
+		creditsX:=@creditsStartX;
+		inc(creditsY);
+		return();
+	end;
+	inc(creditsX);
+
+	moveto(creditsX, creditsY, k);
+	if (val>64 and val<128) then val:=val-64;
+	screenmemory[0]:=val;
+	screenmemory[1]:=$20;
+	dec(creditsCounter);
+	
+end;
+
+
+
+
 
 interrupt RasterGame();
 begin
 	startirq(@usekernal);
-	SCREEN_FG_COL:=BLUE;
+	SCREEN_FG_COL:=background;
 	inc(time);
 	poke(VIC_DATA_LOC, 0, @charmapLevel);
-	//UpdatePlayerSprite();
-
-
-	if (vscroll=6) then begin
+//	UpdatePlayerSprite();
+	if (vscroll=6 and perform=1) then begin
 		RenderColor();
+		perform:=0;
 		
 		inc(m_currentAb);
 		if (m_currentAb=2) then begin
@@ -260,17 +568,23 @@ begin
 				inc(m_posx);
 			end;
 		end;
-
 	end;
 
 
-		
 	scrollx(vscroll);
+		
 
-	dec(vscroll);
+//	dec(vscroll);
+	if (scroll=1) then begin	
+		dec(vscroll);
+		perform:=1;
+	end;
 	if (vscroll>128) then begin
 		vscroll:=7;
+		//perform:=1;
 	end;
+
+
 
 	//if g_hscroll=0 then 
 	//	printColor();
@@ -280,37 +594,58 @@ begin
 
 
 
-
-	if (vscroll=2) then
+	
+	if (vscroll=2 and perform=1) then begin
 		CopyHScreen(0);
+		perform :=0;
+	end;
 
-	if (vscroll=4) then
+	if (vscroll=4 and perform=1) then begin
 		CopyHScreen(1);
+		perform:=0;
+	end;
+
+	
 
 	hideborderx(0);
 
+	
 
-
-	if (vscroll=7) then begin
+	if (vscroll=7 and perform=1) then begin
 		val:=@screen1hi;
 		if (g_currentBank=1) then val:=@screen2hi;
 		moveto(0,1, val);
 		screenmemory[39]:=$20;
 		RenderLevel(levels, m_posx, m_posy, val,19,20,m_currentPos, m_currentAb);
+		perform:=1;
 	end;
 
+	UpdateCredits();
 
-	waitforraster(190);
-	SCREEN_FG_COL:=BLACK;
+	waitforraster(193);
+	wait(13);
+	SCREEN_FG_COL:=GREEN;
+	scrollx(0);
+	setbank(VIC_BANK3);
 	
-	
-	waitforraster(220);
+	UpdatePlayer();
 
-	if (vscroll=7) then begin
+
+	waitforraster(235);
+	if g_currentBank=0 then 
+		SetBank(VIC_BANK2)
+	else 
+		SetBank(VIC_BANK1);
+
+
+	if (vscroll=7 and perform=1) then begin
 		SwitchBank();
 		CopyHScreenCol(0);
 		CopyHScreenCol(1);
+		perform:=0;
 	end;
+
+
 	closeirq();
 end;
 
@@ -321,13 +656,21 @@ begin
 
 	// Black and yellow are our colors
 	poke(SPRITE_MULTICOLOR_REG1, 0, BLACK);
-	poke(SPRITE_MULTICOLOR_REG2, 0, YELLOW);
+	poke(SPRITE_MULTICOLOR_REG2, 0, DARK_GREY);
 
     poke(SPRITE_BITMASK,0, %00000001);
 
-	poke(SPRITE_COLOR,0, RED);
+	poke(SPRITE_COLOR,0, PURPLE);
 
 	poke(SPRITE_MULTICOLOR, 0, $FF); // ALL multicolor
+
+
+
+/*	setspriteloc(0,$F4,2);
+	setspriteloc(1,$F4,2);
+	setspriteloc(2,$F4,2);
+*/
+	spritepos(spritex,spritey,0);
 
 end;
 
@@ -362,26 +705,39 @@ begin
 	levelpointer := levels;
 	clearscreen($20,@screenmem2);
 	clearscreen($20,@screenmem1);
+	clearscreen($20,^$C800);
+	fill(^$D800 + ^20*^40, 240,0);
 
-
-	m_posx:=0;
+	levelpointer:=levels;
+	ReadLevelheader();
+	levelpointer:=levels;
+	m_screen:=@screen2hi;
+	m_li:=0;
+	m_lj:=0;
+	RenderFullLevel();
+	m_posx:=1;
 	// Initial sprite position
 	spritex := 160;
-	spritey := 100;
+	spritey := 100;	
 
-	SCREEN_BG_COL:=BLACK;
+	speedup:=0;
+
 
 	poke(MULTICOLOR_CHAR_COL, 0, BLACK);
 	poke(MULTICOLOR_CHAR_COL, 2, LIGHT_BLUE); 
 	poke(MULTICOLOR_CHAR_COL, 1, DARK_GREY);
-
 	SCREEN_BG_COL:=BLUE;
+	background := SCREEN_BG_COL;
+	SCREEN_BG_COL:=BLACK;
+
 	poke(MULTICOLOR_CHAR_COL, 0, BLUE);
 	poke(MULTICOLOR_CHAR_COL, 2, LIGHT_RED); 
 	poke(MULTICOLOR_CHAR_COL, 1, DARK_GREY);
 
+	catText:=storyText;
 
-//	InitSprites();
+
+	InitSprites();
 end;
 
 

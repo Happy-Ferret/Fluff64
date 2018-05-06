@@ -237,14 +237,15 @@ begin
 	if g_vscroll=0 then 
 		PrintLine();
 
-
-	VerticalScroll();
-
-
 	MovePlayer();
 	UpdatePlayers();
 	MoveBullet();
 	MoveMonster();
+
+
+	VerticalScroll();
+
+
 
 
 	closeirq();

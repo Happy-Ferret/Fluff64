@@ -1,2 +1,2 @@
-project_path = C:/Users/leuat/OneDrive/Documents/GitHub/Fluff64/Publish/TutorialGame_TakoNeko/
-open_files = ,takoneko.ras, charsets/charset_game.flf, levels/takonekoLevel.flf
+project_path = C:/Users/leuat/OneDrive/Documents/GitHub/Fluff64/Publish/tutorials/TutorialGame_TakoNeko/
+open_files = ,levels/takonekoLevel.flf, levels/levels.flf, sprites/takoneko.flf, takoneko.ras
