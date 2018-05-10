@@ -146,9 +146,12 @@ void FormImageEditor::UpdateImage()
     if (!ui->tblData->hasFocus())
         ui->lblImage->setFocus();
 
+
+    QString currentChar = "   Current char: $" + QString::number(m_work.m_currentImage->m_image->m_currencChar,16);
+    currentChar+=" (" + QString::number(m_work.m_currentImage->m_image->m_currencChar) + ")";
     ui->lblPosition->setText("Position: " +
                              QString::number(m_updateThread->m_currentPosInImage.x()) + ", " +
-                             QString::number(m_updateThread->m_currentPosInImage.y()));
+                             QString::number(m_updateThread->m_currentPosInImage.y()) + currentChar);
 
 
     m_grid.ApplyToLabel(ui->lblGrid);
