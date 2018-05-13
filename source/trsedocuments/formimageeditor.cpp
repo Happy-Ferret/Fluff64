@@ -185,7 +185,13 @@ void FormImageEditor::Load(QString filename)
 
     m_work.m_currentImage->m_image->BuildData(ui->tblData, m_projectIniFile->getStringList("data_header"));
 
+    m_imageEffects.Init(m_work.m_currentImage->m_image);
+
     ui->lblImageName->setText(m_currentFileShort);
+
+    ui->cmbEffect->clear();
+    ui->cmbEffect->addItems(m_imageEffects.getStringList());
+
 
 }
 
@@ -195,12 +201,45 @@ void FormImageEditor::Save(QString filename)
 
 }
 
+void FormImageEditor::FillImageEffect()
+{
+    if (m_currentImageEffect==nullptr)
+        return;
+    int row=0;
+    for (QString key: m_currentImageEffect->m_params.keys()) {
+        QLabel* lab= new QLabel(key);
+        QLineEdit* le=new QLineEdit(QString::number(m_currentImageEffect->m_params[key]));
+
+        m_imageEffectsLineEdits[key] = le;
+        ui->grdEffectParams->addWidget(lab,row,0);
+        ui->grdEffectParams->addWidget(le,row,1);
+
+
+        row++;
+
+    }
+
+}
+
+void FormImageEditor::FillToImageParams()
+{
+    for (QString key: m_imageEffectsLineEdits.keys()) {
+        m_currentImageEffect->m_params[key] = m_imageEffectsLineEdits[key]->text().toFloat();
+    }
+}
+
 void FormImageEditor::SelectCharacter(int idx)
 {
     m_work.m_currentImage->m_image->SetCurrentType(LImage::WriteType::Character);
 //    Data::data.currentColor = idx;
     m_work.m_currentImage->m_image->setCurrentChar(idx);
 
+}
+
+void FormImageEditor::on_cmbEffect_currentIndexChanged(int index)
+{
+    m_currentImageEffect = m_imageEffects.m_effects[index];
+    FillImageEffect();
 }
 
 Ui::Formimageeditor *FormImageEditor::getUi() const
@@ -296,6 +335,17 @@ void FormImageEditor::on_btnExportAsm_clicked()
     mi->ExportAsm(fileName);
     //    mi->ExportRasBin(fileName, "");
 }
+
+void FormImageEditor::on_btnGenerate_clicked()
+{
+    FillToImageParams();
+    m_imageEffects.Render(ui->cmbEffect->currentText());
+    Data::data.Redraw();
+    Data::data.forceRedraw = true;
+
+
+}
+
 
 void FormImageEditor::on_btnFlipVert_clicked()
 {
@@ -646,6 +696,17 @@ void FormImageEditor::on_btnImportBin_clicked()
 
 void FormImageEditor::on_btnExportBin_clicked()
 {
+
+
+    if (m_work.m_currentImage->m_image->m_exportParams.keys().count()!=0) {
+        DialogExport* de = new DialogExport();
+        de->Init(m_work.m_currentImage->m_image);
+        de->exec();
+
+        if (!de->isOk)
+            return;
+
+    }
     QString fileName = QFileDialog::getSaveFileName(this,
                                                     tr("Export binary file"), m_projectIniFile->getString("project_path"),
                                                     tr("Bin (*.bin);"));

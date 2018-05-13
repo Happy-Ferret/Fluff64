@@ -20,7 +20,6 @@ begin
 	Poke(SCREEN_FG_COL, 0, BLACK);
 
 	Call(SIDFILE_1_PLAY);
-	asm(";crash");
 	Fill(^$D800 + ^40*^15, fade[(time/4) & 15], 40);
 	Fill(^$D800 + ^40*^17, fade[(time/4 + 5) & 15], 40);
 

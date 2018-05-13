@@ -156,7 +156,7 @@ begin
 	i:=(tmp)/8;// -m_rl_startx;//-m_rl_startx;
 	
 	//	i:=i-m_rl_starty;
-	j:=(spritey-42);
+	j:=(spritey-38);
 //	j:=j+joystickdown*8;
 //	j:=j-joystickup*8;
 	j:=j/8;

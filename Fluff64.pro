@@ -85,7 +85,8 @@ SOURCES += main.cpp\
     source/dialogmessage.cpp \
     source/messages.cpp \
     source/dialogabout.cpp \
-    source/dialoghelp.cpp
+    source/dialoghelp.cpp \
+    source/dialogexport.cpp
 
 
 HEADERS  += mainwindow.h \
@@ -141,7 +142,8 @@ HEADERS  += mainwindow.h \
     source/dialogmessage.h \
     source/messages.h \
     source/dialogabout.h \
-    source/dialoghelp.h
+    source/dialoghelp.h \
+    source/dialogexport.h
 
 FORMS    += mainwindow.ui \
     dialognewimage.ui \
@@ -151,7 +153,8 @@ FORMS    += mainwindow.ui \
     source/dialogtrsesettings.ui \
     source/dialogmessage.ui \
     source/dialogabout.ui \
-    source/dialoghelp.ui
+    source/dialoghelp.ui \
+    source/dialogexport.ui
 
 RESOURCES += \
     resources.qrc

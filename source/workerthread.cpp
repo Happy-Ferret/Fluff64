@@ -9,6 +9,11 @@ void WorkerThread::UpdateDrawing()
         return;
 
 
+    if (Data::data.currentIsColor) {
+        Data::data.currentIsColor=false;
+        m_work->m_currentImage->m_image->SetCurrentType(LImage::Color);
+    }
+
 
     if (!Data::data.forceRedraw && m_currentButton == 0)
     if ((abs(m_prevPos.x()-m_currentPos.x())<1) && (abs(m_prevPos.y()-m_currentPos.y()))<1)

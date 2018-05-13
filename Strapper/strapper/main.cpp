@@ -4,7 +4,7 @@
 #include "updater.h"
 using namespace std;
 
-float currentVersion = 0.008;
+float currentVersion = 0.009;
 
 void CheckVersion() {
     Updater u;

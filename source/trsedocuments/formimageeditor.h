@@ -12,8 +12,10 @@
 #include "source/limage/limageio.h"
 #include "dialognewimage.h"
 #include "dialogimport.h"
+#include "source/dialogexport.h"
 #include "source/util/util.h"
-
+#include "source/limage/limageeffects.h"
+#include <QLineEdit>
 namespace Ui {
 class Formimageeditor;
 }
@@ -31,6 +33,9 @@ public:
     Toolbox m_toolBox;
     QColor m_gridColor = QColor(64,128,128,128);
     LColorList* m_currentColorList = nullptr;
+    LImageEffects m_imageEffects;
+    QMap<QString, QLineEdit*> m_imageEffectsLineEdits;
+    LImageEffect* m_currentImageEffect = nullptr;
 
 
     void UpdatePalette();
@@ -52,6 +57,8 @@ public:
     void Load(QString filename) override;
     void Save(QString filename) override;
 
+    void FillImageEffect();
+    void FillToImageParams();
 
     Ui::Formimageeditor *getUi() const;
 
@@ -66,10 +73,16 @@ private:
 private slots:
     void on_btnExportAsm_clicked();
 
+    void on_btnGenerate_clicked();
+
     void on_btnFlipVert_clicked();
     void on_btnFlipHorisontal_clicked();
 
     void SelectCharacter(int j);
+
+    void on_cmbEffect_currentIndexChanged(int index);
+
+
 
 
 //    void on_btnLoad_clicked();

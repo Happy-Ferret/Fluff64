@@ -17,13 +17,19 @@ var
 
 
 
+
 // Define y_start as a global preprocessor constant
 @define y_start "5"
 // Remove the following line to ignore colors! much faster.
 @define include_color true
 
+@define tunnelpos "$3000"
+
+
 
 // Plasma procedure
+
+
 
 procedure Plasma();
 begin
