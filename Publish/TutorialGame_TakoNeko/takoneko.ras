@@ -8,7 +8,7 @@ var
 
 	levelChar: IncBin("charsets/charset_takoneko.bin","$4000");// $800 bytes
 	sprites0: IncBin("sprites/takoneko.bin", "$4C00");
-	levels: IncBin("levels/takonekolevel.flf", "$5000"); // 2400 in hex
+	levels: IncBin("levels/takonekoLevel.flf", "$5000"); // 2400 in hex
 
 //	sprite0data : incbin("sprites/fastfood.bin", "$5800"); // will be $1000 bytes // locally 2000
 

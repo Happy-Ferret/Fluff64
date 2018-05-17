@@ -1,7 +1,7 @@
 #ifndef TOOLBOXITEM_H
 #define TOOLBOXITEM_H
 
-#include "source/limage/LImage.h"
+#include "source/limage/limage.h"
 #include <QPixmap>
 #include <QString>
 

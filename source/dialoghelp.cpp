@@ -91,7 +91,7 @@ void Helper::LoadFromResource()
         int tab = 0;
         QString s=m_lst[i].replace("    ", "\t");
         if (s.trimmed()=="")continue;
-        while (s[tab]=="\t") tab++; // Find number of tabs
+        while (s[tab]=='\t') tab++; // Find number of tabs
         if (tab==0) {
             zero = new HelpTopic();
             zero->m_text = s.replace("\t", "");
@@ -117,7 +117,7 @@ void Helper::Build(HelpTopic& t, int curTab)
 
     QString s = m_lst[m_curIdx].replace("    ","\t");
     int noTabs = 0;
-    while (s[noTabs]=="\t") noTabs++; // Find number of tabs
+    while (s[noTabs]=='\t') noTabs++; // Find number of tabs
 
     while (curTab==noTabs && m_curIdx<m_lst.count()) {
         s = m_lst[m_curIdx].replace("    ","\t");

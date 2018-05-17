@@ -8,7 +8,7 @@ QT       += core gui
 QT += widgets
 
 
-TARGET = Fluff64
+TARGET = Fluff64p
 TEMPLATE = app
 
 # The following define makes your compiler emit warnings if you use
@@ -17,10 +17,12 @@ TEMPLATE = app
 # deprecated API in order to know how to port your code away from it.
 DEFINES += QT_DEPRECATED_WARNINGS
 
-# You can also make your code fail to compile if you use deprecated APIs.
+# You can also make yopur code fail to compile if you use deprecated APIs.
 # In order to do so, uncomment the following line.
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
+
+QMAKE_CXXFLAGS += -fopenmp -std=c++11
 
 win32-g++ {
   QMAKE_CXXFLAGS += -fopenmp
@@ -74,9 +76,9 @@ SOURCES += main.cpp\
     ..\Pmm\source/ast/nodewhileloop.cpp \
     ..\Pmm\source/ast/nodeforloop.cpp \
     ..\Pmm\source/ast/nodebuiltinmethod.cpp \
-    ..\Pmm\source/Assembler/assembler.cpp\
-    ..\Pmm\source/Assembler/mos6502.cpp\
-    ..\Pmm\source/Assembler/asmpascal.cpp \
+    ..\Pmm\source/assembler/assembler.cpp\
+    ..\Pmm\source/assembler/mos6502.cpp\
+    ..\Pmm\source/assembler/asmpascal.cpp \
     ../Pmm/source/ast/nodebinaryclause.cpp \
     source/trsedocuments/trsedocument.cpp \
     source/trsedocuments/formraseditor.cpp \
@@ -130,9 +132,9 @@ HEADERS  += mainwindow.h \
     ..\Pmm\source/ast/nodewhileloop.h \
     ..\Pmm\source/ast/nodeforloop.h \
     ..\Pmm\source/ast/nodebuiltinmethod.h\
-    ..\Pmm\source/Assembler/assembler.h\
-    ..\Pmm\source/Assembler/mos6502.h\
-    ..\Pmm\source/Assembler/asmpascal.h \
+    ..\Pmm\source/assembler/assembler.h\
+    ..\Pmm\source/assembler/mos6502.h\
+    ..\Pmm\source/assembler/asmpascal.h \
     ../Pmm/source/ast/nodebinaryclause.h \
     source/PmmEdit/codeeditor.h \
     source/trsedocuments/formraseditor.h \
@@ -162,12 +164,12 @@ RESOURCES += \
 
 #LELIB INCLUDES
 
-INCLUDEPATH += $$PWD/../lelib/
-DEPENDPATH += $$PWD/../lelib/
+INCLUDEPATH += $$PWD/../LeLib/
+DEPENDPATH += $$PWD/../LeLib/
 
 
-INCLUDEPATH += $$PWD/../pmm/
-DEPENDPATH += $$PWD/../pmm/
+INCLUDEPATH += $$PWD/../Pmm/
+DEPENDPATH += $$PWD/../Pmm/
 
 
 win32-g++ {
@@ -193,8 +195,12 @@ win32-msvc*{
  else:unix:!symbian: PRE_TARGETDEPS += $$OUT_PWD/../projects/lelib/liblelib.a
 
 }
+linux-g++ {
 
+    LIBS += -L$$PWD/../LeLib/release/ -lLeLib
+}
 
+    LIBS += -L$$PWD/../LeLib/release/ -lLeLib -fopenmp
 
 #LELIB INCLUDES ENDS
 

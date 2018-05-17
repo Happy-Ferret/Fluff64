@@ -1,5 +1,5 @@
-#include "FormImageEditor.h"
-#include "ui_FormImageEditor.h"
+#include "formimageeditor.h"
+#include "ui_formimageeditor.h"
 #include <algorithm>
 #include <cmath>
 #include <QPushButton>
