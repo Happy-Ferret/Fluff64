@@ -3,6 +3,8 @@ var
    index: byte; 
 	text : string = ("HELLO ","WORLD");
 begin
+
+	
 	// Super interesting!
 	moveto(5,12,$04);
 	printstring(text,0,40);

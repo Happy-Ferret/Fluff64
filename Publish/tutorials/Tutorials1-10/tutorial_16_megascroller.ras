@@ -100,6 +100,8 @@ begin
 		if (val<>0) then
 			for i:=0 to val do inczp(zeropage1, 16);
 
+
+
 		// val2 here is the actual character to draw, 74 is semi-filled char
 		val2:=74-shiftx+scrollsplit;
 		// Scrollsplit decides whether we use the first (0) char in a letter or the second (8)

@@ -8,7 +8,7 @@ QT       += core gui
 QT += widgets
 
 
-TARGET = Fluff64p
+TARGET = Fluff64
 TEMPLATE = app
 
 # The following define makes your compiler emit warnings if you use
@@ -88,7 +88,8 @@ SOURCES += main.cpp\
     source/messages.cpp \
     source/dialogabout.cpp \
     source/dialoghelp.cpp \
-    source/dialogexport.cpp
+    source/dialogexport.cpp \
+    source/dialogmemoryanalyze.cpp
 
 
 HEADERS  += mainwindow.h \
@@ -145,7 +146,8 @@ HEADERS  += mainwindow.h \
     source/messages.h \
     source/dialogabout.h \
     source/dialoghelp.h \
-    source/dialogexport.h
+    source/dialogexport.h \
+    source/dialogmemoryanalyze.h
 
 FORMS    += mainwindow.ui \
     dialognewimage.ui \
@@ -156,7 +158,8 @@ FORMS    += mainwindow.ui \
     source/dialogmessage.ui \
     source/dialogabout.ui \
     source/dialoghelp.ui \
-    source/dialogexport.ui
+    source/dialogexport.ui \
+    source/dialogmemoryanalyze.ui
 
 RESOURCES += \
     resources.qrc

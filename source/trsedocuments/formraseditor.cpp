@@ -88,7 +88,7 @@ void FormRasEditor::Build()
             QString fn = (filename +".prg");
             if (!QFile::exists(m_iniFile->getString("exomizer")))
                 Messages::messages.DisplayMessage(Messages::messages.NO_EXOMIZER);
-            processCompress.start(m_iniFile->getString("exomizer"), QStringList()<< "sfx" << "$0900" << fn<< "-o" << fn  );
+            processCompress.start(m_iniFile->getString("exomizer"), QStringList()<< "sfx" << "$0810" << fn<< "-o" << fn  );
             processCompress.waitForFinished();
         }
         QString output(process.readAllStandardOutput());
@@ -259,6 +259,9 @@ void FormRasEditor::keyPressEvent(QKeyEvent *e)
     }
     if (e->key() == Qt::Key_B &&  (QApplication::keyboardModifiers() & Qt::ControlModifier)) {
         Build();
+    }
+    if (e->key() == Qt::Key_U &&  (QApplication::keyboardModifiers() & Qt::ControlModifier)) {
+        MemoryAnalyze();
     }
     if (e->key() == Qt::Key_R &&  (QApplication::keyboardModifiers() & Qt::ControlModifier)) {
         Build();
@@ -434,6 +437,40 @@ void FormRasEditor::FillToIni()
 
 
     m_iniFile->Save();
+}
+
+void FormRasEditor::MemoryAnalyze()
+{
+    int i= m_iniFile->getdouble("perform_crunch");
+    m_iniFile->setFloat("perform_crunch",0);
+    Build();
+    m_iniFile->setFloat("perform_crunch",i);
+    QProcess process;
+    process.start(m_iniFile->getString("dasm"), QStringList()<<(filename +".asm") << ("-o"+filename+".prg") << "-v3");
+    process.waitForFinished();
+    //process;
+    int codeEnd=0;
+    QStringList output = QString(process.readAllStandardOutput()).split("\n");
+    for (QString s : output) {
+        if (s.toLower().contains("endsymbol")) {
+            s= s.remove("EndSymbol").trimmed();
+            bool ok;
+            codeEnd = s.toInt(&ok, 16);
+        }
+    }
+    if (interpreter.m_assembler==nullptr)
+        return;
+
+    interpreter.m_assembler->blocks.append(MemoryBlock(0x800, codeEnd, MemoryBlock::CODE, "code"));
+
+
+/*    for (MemoryBlock& mb:interpreter.m_assembler->blocks) {
+        qDebug() << QString::number(mb.m_start,16) << " to " <<QString::number(mb.m_end,16) << " " << mb.Type();
+    }*/
+    DialogMemoryAnalyze* dma = new DialogMemoryAnalyze();
+    dma->Initialize(interpreter.m_assembler->blocks);
+    dma->exec();
+
 }
 
 void FormRasEditor::Reload()

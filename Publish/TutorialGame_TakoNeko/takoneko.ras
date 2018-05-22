@@ -139,6 +139,9 @@ var
 @define screen2hi "$88"
 @define screenmem2 "^$8800"
 
+@userdata "$4800" "$4C00" "Bank 2 screen"
+@userdata "$8800" "$8C00" "Bank 3 screen"
+
 @define colorpointer zeropage3
 
 @define spritebank "2"

@@ -21,6 +21,7 @@ var
 @define textColor2 "LIGHT_GREEN"
 @define textColor3 "DARK_GREY"
 
+
 @define lineColor "DARK_GREY"
 
 // Y pos of scroller (in chars)

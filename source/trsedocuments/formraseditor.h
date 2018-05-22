@@ -11,10 +11,12 @@
 #include "source/interpreter.h"
 #include <QElapsedTimer>
 #include "source/dialoghelp.h"
+#include "source/dialogmemoryanalyze.h"
 
 namespace Ui {
     class FormRasEditor;
 }
+
 
 class FormRasEditor : public TRSEDocument
 {
@@ -53,6 +55,9 @@ public:
     bool BuildStep();
     void FillFromIni();
     void FillToIni();
+
+    void MemoryAnalyze() override;
+
 
     void Reload();
 

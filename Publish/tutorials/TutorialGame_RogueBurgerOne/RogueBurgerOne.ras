@@ -10,6 +10,11 @@ var
 	
 	multiColorChar: IncBin("charsets/lcharsetMC.bin", "$8800");
 	levels: IncBin("levels/levels.flf", "$9000"); // 2400 in hex
+
+	@userdata "$4400" "$4800" "Bank 1 screen"
+	@userdata "$8400" "$8800" "Bank 2 screen"
+	@userdata "$D800" "$E000" "Color space"
+
 	//	intro_image_data: IncBin("images/lemonspawn_data.bin", "$A000"); // $2000 suze
 	
 	//3832 lines

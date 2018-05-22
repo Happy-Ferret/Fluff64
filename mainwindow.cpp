@@ -675,3 +675,9 @@ void MainWindow::on_actionHelp_F1_triggered()
     DialogHelp* dh = new DialogHelp(this, "");
     dh->show();
 }
+
+void MainWindow::on_btnMemoryAnalyze_clicked()
+{
+    if (m_currentDoc!=nullptr)
+        m_currentDoc->MemoryAnalyze();
+}

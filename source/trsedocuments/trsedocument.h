@@ -37,6 +37,8 @@ public:
     virtual void Build() {}
     virtual void Run() {}
 
+    virtual void MemoryAnalyze() {}
+
     virtual void UpdateFromIni() {}
     virtual void Init() {}
     virtual void UpdateColors() { }

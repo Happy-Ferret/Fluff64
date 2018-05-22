@@ -214,6 +214,8 @@ private slots:
 
     void on_actionHelp_F1_triggered();
 
+    void on_btnMemoryAnalyze_clicked();
+
 private:
 
     QString FindPathInProjectFolders(const QModelIndex &index);
